@@ -1,0 +1,22 @@
+-DC+
+-Key calculation during reservation (pseudo random function with seed, round + subroundnumber)
+-Variable sized payloads
+-Collision handling, if 2 random numbers are the same during reservation 
+ Only testing has to be done.
+-Error handling  (what if somebody leaves the network without telling)
+-Timeouts (needed for errorhandling)
+-Statistics
+-Gui improvements
+-High level API / library
+-Sending traps.
+-REMOVE sleep interval in ManagementMessageTick
+-Maybe handle the broadcast lists within the round manager?
+-Documentation
+-Restore participants prefs.
+-Key management: revocation / expiry...
+-Joining: right now the oracle almost has no infos to decide upon whether to accept a participant, or not. Maybe I should add a challenge - response, to see whether the participant really has the public key's counter part...
+
+-Read:
+Scholz, I.: Dining cryptographers, the protocol. In: 24th Chaos Communication Congress. (2007)
+Diffie, W., Hellman, M.E.: New directions in cryptography. IEEE Transactions on Information Theory 22 (1976) 644–654
+Waidner, M., Pfitzmann, B.: Unconditional sender and recipient untraceability in spite of active attacks. In: EUROCRYPT. (1989) 302–319
