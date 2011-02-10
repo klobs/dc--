@@ -18,6 +18,8 @@ public class DCKey {
 	public static final int KEY_EXCHANGED	 = 2;
 	public static final int KEY_VOID		 = 3;
 	
+	private	boolean	inverseKey	= false;
+	
 	private 	int	state	= KEY_UNEXCHANGED;
 	
 	private BigInteger calculatedSecret = null;
@@ -30,14 +32,19 @@ public class DCKey {
 		return state;
 	}
 	
+	public boolean getInverse(){
+		return inverseKey;
+	}
+	
 	public boolean isKeyExchanged(){
 		if (state == KEY_EXCHANGED) return true;
 		return false;
 	}
 	
-	public void setCalculatedSecret(BigInteger i){
+	public void setCalculatedSecret(BigInteger i, boolean useInverse){
 		calculatedSecret = i;
 		state = KEY_EXCHANGED;
+		inverseKey = useInverse;
 	}
 	
 	public void setSate(int i){

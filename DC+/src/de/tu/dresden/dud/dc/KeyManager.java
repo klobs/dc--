@@ -156,7 +156,7 @@ public class KeyManager {
 	 * @param The other participants to exchange keys with.
 	 * @param pm The participant manager that contains all the Participants
 	 */
-	public void activateKeyExchangeBetween(String p1, ParticipantManager pm){
+	public void activateKeyExchangeBetween(String p1, boolean useInverse, ParticipantManager pm){
 		BigInteger 			 calculatedSecret 	= null;
 		ParticipantMgmntInfo pmi 				= null;
 		BigInteger 			 remoteDHPublicPart = null;
@@ -187,7 +187,7 @@ public class KeyManager {
 		
 		calculatedSecret = remoteDHPublicPart.modPow(dhPrivatePart, new BigInteger(P, 16));
 		
-		pmi.getKey().setCalculatedSecret(calculatedSecret);
+		pmi.getKey().setCalculatedSecret(calculatedSecret, useInverse);
 	}
 
 	/**

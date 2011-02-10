@@ -184,10 +184,10 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void commitKeyExchange(InfoServiceInfoKeyExchangeCommit i){
 		if (i.getP1().equals(assocParticipant.getId()))
-			assocKeyManager.activateKeyExchangeBetween(i.getP2(),
+			assocKeyManager.activateKeyExchangeBetween(i.getP2(), true,
 					assocParticipantManager);
 		if (i.getP2().equals(assocParticipant.getId()))
-			assocKeyManager.activateKeyExchangeBetween(i.getP1(),
+			assocKeyManager.activateKeyExchangeBetween(i.getP1(), false,
 					assocParticipantManager);
 	}
 

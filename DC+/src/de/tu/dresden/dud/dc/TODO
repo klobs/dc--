@@ -1,5 +1,4 @@
 -DC+
--Key calculation during reservation (pseudo random function with seed, round + subroundnumber)
 -Variable sized payloads
 -Collision handling, if 2 random numbers are the same during reservation 
  Only testing has to be done.

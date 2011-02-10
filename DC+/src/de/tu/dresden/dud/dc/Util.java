@@ -156,7 +156,7 @@ public class Util {
 		if (!(b.length <= 8 && b.length > 0)) throw new IllegalArgumentException("The value you provided can not be stuffed into an long.");
 		
 		for (int i=0; i < b.length; i++){
-			r = r | (((b[b.length - 1 - i]) & 0x00000000000000FF)<< 8 *i);
+			r = r | (((b[b.length - 1 - i]) & 0x00000000000000FFL)<< 8 *i);
 		}
 		
 		return r;
