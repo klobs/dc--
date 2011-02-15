@@ -66,8 +66,7 @@ public class WorkCycle extends Observable implements Observer {
 	private   boolean				trap_when_possible  = true;
 
 	// Semaphore
-	protected final Semaphore sem			= new Semaphore(0, true);
-	
+	protected final Semaphore sem	= new Semaphore(0, true);
 	
 	/**
 	 * do not use this constructor.
@@ -138,6 +137,20 @@ public class WorkCycle extends Observable implements Observer {
 			case WC_SENDING:
 				addedMessages.add(m); // redundancy rules
 				workCycleSending.addedMessageArrived(m);
+				break;
+			}
+		}
+		else if (method == WorkCycleManager.METHOD_DCPLUS){
+			switch (currentPhase) {
+			case WC_RESERVATION:
+				m.setReservation(true);
+				addedMessages.add(m);
+				sem.release();
+				break;
+			case WC_SENDING:
+				addedMessages.add(m); // redundancy rules
+				workCycleSending.addedMessageArrived(m);
+				sem.release();
 				break;
 			}
 		}
@@ -334,13 +347,12 @@ public class WorkCycle extends Observable implements Observer {
 			// Liste der zu erwartenden Participants updaten.
 
 			// Reservieren.
+			currentPhase = WC_RESERVATION;
+			workCycleReserving = new WorkCycleReserving(this);
+			t = new Thread(workCycleReserving, "WorkCycleReserving");
 	
-			// Senden.
-			workCycleSending = new WorkCycleSending(this);
-
-			workCycleSendingThread = new Thread(workCycleSending, "WorkCycleSending"+ String.valueOf(workcycleNumber));
-			workCycleSendingThread.start();
-
+			workCycleReserving.addObserver(this);
+			t.start();
 			break;
 		}	
 	}

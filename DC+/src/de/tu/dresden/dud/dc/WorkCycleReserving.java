@@ -341,8 +341,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			performDCReservationParticipantSide();
 			break;
 		case WorkCycleManager.METHOD_DCPLUS:
-			Log.print(Log.LOG_ERROR,
-					"Unsupported reservation method yet: DC PLUS", this);
+			performDCReservationParticipantSide();
 			break;
 		default:
 			Log.print(Log.LOG_ERROR, "Unknown reservation method", this);
