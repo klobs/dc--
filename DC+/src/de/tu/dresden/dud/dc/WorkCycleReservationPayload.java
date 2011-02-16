@@ -16,8 +16,6 @@ public class WorkCycleReservationPayload {
 	private long	rand					= 0;
 	
 	/**
-	 * @param rn the destination work cycle number
-	 * @param part 1 for desired participation during the next sending phase, 0 for no participation
 	 * @param payloadlength Which length shall the payload during the sending phase have?
 	 * @param rand the random number
 	 *	
