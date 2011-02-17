@@ -75,12 +75,14 @@ public class WorkCycleReserving extends WorkCycleSending {
 			SecretKeySpec s = null;
 			ParticipantMgmntInfo pmi = null;
 
+			// How much key material do we have to "produce" (One AES-Block is 16-Bytes)
 			int prn = WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE / 16;
 			int rrn = WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE % 16;
 
 			if (rrn > 0)
 				prn++;
 
+			// apl = active participants list
 			LinkedList<ParticipantMgmntInfo> apl = assocWorkCycleManag
 					.getAssocParticipantManager()
 					.getActivePartExtKeysMgmtInfo();
@@ -120,7 +122,17 @@ public class WorkCycleReserving extends WorkCycleSending {
 					cr = Util.concatenate(
 							cr,
 							c.doFinal(prern));
-					if (pmi.getKey().getInverse()){
+					
+					// if we use DC, we have the key here. If we use failstop,
+					// the fun only begins here: cr now contains a_{ij}^t now let's 
+					// go for the Σ-part
+					if (method == WorkCycleManager.METHOD_DCPLUS){
+						
+					}
+
+					
+					// Finally calculate the inverse, when needed.
+					if (pmi.getKey().getInverse()) {
 						cr = inverseKey(cr);
 					}
 				}
