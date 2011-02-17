@@ -27,6 +27,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
+	private static final long MODULUS	= 0xFFFFFFFFL;
+	
 	// internal variables
 	protected boolean finished = false;
 	protected byte[] payloadSend = null;
@@ -104,7 +106,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 			while (i.hasNext()) {
 				byte[] c = i.next();
-				b = mergeSending(b, c);
+				b = mergeDCwise(b, c);
 			}
 		}
 
@@ -135,11 +137,16 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	 * Before adding, it checks whether there are enough different participant
 	 * keys to be added.
 	 * 
+	 * @param length length in bytes. Must be multiple of 4.
 	 * @return
 	 */
-	public synchronized byte[] calcKeys() {
+	public synchronized byte[] calcKeys(int length) {
 
-		byte[] b = new byte[systemPayloadLength];
+		if((length % 4) != 0){
+			Log.print(Log.LOG_ERROR, "Required key length is no multiple of 4", this);
+		}
+		
+		byte[] b = new byte[length];
 		Arrays.fill(b, (byte) 0);
 
 		try {
@@ -147,12 +154,14 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			SecretKeySpec s = null;
 			ParticipantMgmntInfo pmi = null;
 
-			int prn = systemPayloadLength / 16;
-			int rrn = systemPayloadLength % 16;
+			// How much key material do we have to "produce" (One AES-Block is 16-Bytes)
+			int prn = length / 16;
+			int rrn = length % 16;
 
 			if (rrn > 0)
 				prn++;
 
+			// apl = active participants list
 			LinkedList<ParticipantMgmntInfo> apl = assocWorkCycleManag
 					.getAssocParticipantManager()
 					.getActivePartExtKeysMgmtInfo();
@@ -173,9 +182,9 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 				byte[] trn = Util.concatenate(
 						Util.getBytesByOffset(
-								Util.stuffLongIntoLong(workcycleNumber), 2, 6),
+								Util.stuffLongIntoLong(workcycleNumber), 0, 8),
 						Util.getBytesByOffset(
-								Util.stuffLongIntoLong(currentRound), 4, 4));
+								Util.stuffLongIntoLong(currentRound), 0, 8));
 
 				s = new SecretKeySpec(pmi.getKey().getCalculatedSecret()
 						.toByteArray(), 0, 32, "AES");
@@ -184,7 +193,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 				for (int j = 0; j < prn; j++) {
 					byte [] prern = Util.getBytesByOffset(pmi.getKey()
-							.getCalculatedSecret().toByteArray(), 32, 4);
+							.getCalculatedSecret().toByteArray(), 32, 6);
 					
 					prern = Util.concatenate(prern, trn);
 					prern = Util.concatenate(prern, Util.stuffIntIntoShort(j));
@@ -192,13 +201,26 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 					cr = Util.concatenate(
 							cr,
 							c.doFinal(prern));
+					
+					// if we use DC, we have the key here. If we use failstop,
+					// the fun only begins here: cr now contains a_{ij}^t now let's 
+					// go for the Σ-part
+					if (method == WorkCycleManager.METHOD_DCPLUS){
+						
+					}
+
+					
+					// Finally calculate the inverse, when needed.
+					if (pmi.getKey().getInverse()) {
+						cr = inverseKey(cr);
+					}
 				}
 
-				bl.add(Util.getBytesByOffset(cr, 0, systemPayloadLength));
+				bl.add(Util.getBytesByOffset(cr, 0, length));
 			}
 
 			for (byte[] w : bl) {
-				b = mergeSending(b, w);
+				b = mergeDCwise(b, w);
 			}
 
 		} catch (NoSuchAlgorithmException e) {
@@ -330,6 +352,25 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		return this.finished;
 	}
 
+	private byte[] inverseKey(byte[] keyToInverse){
+		
+		byte[] c = new byte[keyToInverse.length];
+
+		for (int i = 0; i< keyToInverse.length; i = i+4){
+			long d = (WorkCycleSending.MODULUS - Util
+					.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(
+							keyToInverse, i, 4)))
+					% WorkCycleSending.MODULUS;
+			if (d < 0) d = d + WorkCycleSending.MODULUS;
+			c[i]   = (byte) (d >>> 24);
+			c[i+1] = (byte) (d >>> 16);
+			c[i+2] = (byte) (d >>> 8 );
+			c[i+3] = (byte) d;
+		}
+		
+		return c;
+	}
+
 	public boolean isServerMode() {
 		return assocWorkCycle.getAssocWorkCycleManager().isServerMode();
 	}
@@ -341,7 +382,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	 * @param b
 	 * @return
 	 */
-	public static byte[] mergeSending(byte[] a, byte[] b) {
+	public static byte[] mergeDCwise(byte[] a, byte[] b) {
 
 		if (a == null | b == null | a.length != b.length)
 			throw new IllegalArgumentException(
@@ -349,11 +390,21 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 		byte[] c = new byte[a.length];
 
-		for (int i = 0; i < a.length; i++) {
-			c[i] = (byte) (a[i] ^ b[i]);
+		for (int i = 0; i< a.length; i = i+4){
+			
+			long ka = Util.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(a,i, 4)) % WorkCycleSending.MODULUS;
+			long kb = Util.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(b,i, 4)) % WorkCycleSending.MODULUS;
+			
+			long d = (ka + kb) % WorkCycleSending.MODULUS;
+			
+			c[i]   = (byte) (d >>> 24);
+			c[i+1] = (byte) (d >>> 16);
+			c[i+2] = (byte) (d >>> 8 );
+			c[i+3] = (byte) d;
 		}
-
+		
 		return c;
+
 	}
 
 	/**
@@ -366,10 +417,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		while (!finished) {
 			if (currentRound == relativeRound) {
 				byte[] p = WorkCycleSending.fillAndMergeSending(payloadSend,
-						calcKeys());
+						calcKeys(systemPayloadLength));
 				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
 			} else {
-				byte[] p = calcKeys();
+				byte[] p = calcKeys(systemPayloadLength);
 				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
 			}
 
