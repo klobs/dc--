@@ -38,6 +38,7 @@ public class WorkCycle extends Observable implements Observer {
 	public static final int WC_MIN_ACTIVE_KEYS		= 0; // TODO find a good minimum here
 	
 	protected LinkedList<ManagementMessageAdded> addedMessages = new LinkedList<ManagementMessageAdded>();
+	private   LinkedList<ManagementMessageAdded> addedMessagesBin = new LinkedList<ManagementMessageAdded>();
 	
 	protected LinkedHashSet<Connection> 	broadcastConnections = new LinkedHashSet<Connection>();  // Those connections will receive messages as a broadcast:
 	protected LinkedHashSet<Connection> 	confirmedConnections = new LinkedHashSet<Connection>();  // Connections  that  have  actually sent  packages  during  that  work cycle.
@@ -153,6 +154,7 @@ public class WorkCycle extends Observable implements Observer {
 				sem.release();
 				break;
 			}
+			addedMessagesBin.add(m);
 		}
 	}
 	
@@ -216,6 +218,10 @@ public class WorkCycle extends Observable implements Observer {
 		}
 	}
 
+/*	public byte[] failStopKeyGeneration(ParticipantMgmntInfo pmi){
+		
+	}
+	*/
 	public byte[] consumePayload(){
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
 			return WorkCycleSending.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
