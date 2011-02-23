@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
-	private static final long MODULUS	= 0xFFFFFFFFL;
+	private static final long MODULUS	= 0x100000000L;
 	
 	// internal variables
 	protected boolean finished = false;
