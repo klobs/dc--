@@ -44,7 +44,7 @@ public class Server implements Runnable {
 		// create InfoService
 		info = new InfoService(this);
 		
-		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DC ,0 /*Long.MIN_VALUE*/, symbollength);
+		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DCPLUS ,0 /*Long.MIN_VALUE*/, symbollength);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}

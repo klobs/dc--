@@ -38,7 +38,7 @@ public class WorkCycle extends Observable implements Observer {
 	public static final int WC_MIN_ACTIVE_KEYS		= 0; // TODO find a good minimum here
 	
 	protected LinkedList<ManagementMessageAdded> addedMessages = new LinkedList<ManagementMessageAdded>();
-	private   LinkedList<ManagementMessageAdded> addedMessagesBin = new LinkedList<ManagementMessageAdded>();
+	private   byte[] addedMessagesBin = new byte[0];
 	
 	protected LinkedHashSet<Connection> 	broadcastConnections = new LinkedHashSet<Connection>();  // Those connections will receive messages as a broadcast:
 	protected LinkedHashSet<Connection> 	confirmedConnections = new LinkedHashSet<Connection>();  // Connections  that  have  actually sent  packages  during  that  work cycle.
@@ -142,6 +142,7 @@ public class WorkCycle extends Observable implements Observer {
 			}
 		}
 		else if (method == WorkCycleManager.METHOD_DCPLUS){
+			Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -154,7 +155,6 @@ public class WorkCycle extends Observable implements Observer {
 				sem.release();
 				break;
 			}
-			addedMessagesBin.add(m);
 		}
 	}
 	
@@ -283,6 +283,10 @@ public class WorkCycle extends Observable implements Observer {
 	
 	public int getMethod(){
 		return this.method;
+	}
+
+	public byte[] getMessageBin(){
+		return addedMessagesBin;
 	}
 	
 	public LinkedList<byte[]> getPayloads(){
@@ -444,31 +448,40 @@ public class WorkCycle extends Observable implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if(o instanceof WorkCycleReserving){
-			if (((Integer) arg).intValue() == WorkCycle.WC_RESERVATION_FINISHED);
+		if (o instanceof WorkCycleReserving) {
+			if (((Integer) arg).intValue() == WorkCycle.WC_RESERVATION_FINISHED) {
 
-			// Suck out those information
-			expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
-			relativeRound  = ((WorkCycleReserving) o).getRelativeRound();
+				// Suck out those information
+				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
+				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 
-			currentPhase =  WC_SENDING;
-			
-			// Summierung Starten
-			workCycleSending = new WorkCycleSending(this);
-			workCycleSending.addObserver(this);
-			
-			if(!assocWorkCycleManag.isServerMode()) workCycleSending.performDCRoundsParticipantSide();
-			
-		} else if (o instanceof WorkCycleSending
-					&& ((Integer) arg).intValue() == WorkCycle.WC_SENDING_FINISHED){
+				currentPhase = WC_SENDING;
 
-			// TODO
-			// Statistiken: Durchschnittliche Rundendauer
-			// Durchschnittliche Teilnehmerzahl
+				workCycleSending = new WorkCycleSending(this);
+				workCycleSending.addObserver(this);
 
-			// Runde zu ende
-			setChanged();
-			notifyObservers(WC_FINISHED);
+				// Summierung Starten
+				if (method == WorkCycleManager.METHOD_DC) {
+
+					if (!assocWorkCycleManag.isServerMode())
+						workCycleSending.performDCRoundsParticipantSide();
+
+				} else if (method == WorkCycleManager.METHOD_DCPLUS) {
+					Thread t = new Thread(workCycleSending, "WorkCycleSending");
+
+					t.start();
+				}
+			} else if (o instanceof WorkCycleSending
+					&& ((Integer) arg).intValue() == WorkCycle.WC_SENDING_FINISHED) {
+
+				// TODO
+				// Statistiken: Durchschnittliche Rundendauer
+				// Durchschnittliche Teilnehmerzahl
+
+				// Runde zu ende
+				setChanged();
+				notifyObservers(WC_FINISHED);
+			}
 		}
 	}
 	

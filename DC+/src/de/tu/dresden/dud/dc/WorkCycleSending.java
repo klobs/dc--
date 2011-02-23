@@ -5,6 +5,7 @@
 package de.tu.dresden.dud.dc;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -68,10 +69,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			break;
 
 		case WorkCycleManager.METHOD_DCPLUS:
-			// See older revisions for first thoughts here. e.g.
-			// 0ab963335b1ee0aaf226a7436db61d0b75469208
+			rn = getRoundByRoundNumber(m.getRoundNumber());
+			rn.addMessageArrived(c, m);			
 			break;
-
+		
 		default:
 			break;
 		}
@@ -90,7 +91,6 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		case WorkCycleManager.METHOD_DC:
 			break;
 		case WorkCycleManager.METHOD_DCPLUS:
-			sem.release();
 			break;
 		}
 	}
@@ -176,7 +176,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			// the fun only begins here: cr now contains a_{ij}^t now let's
 			// go for the Σ-part
 			if (method == WorkCycleManager.METHOD_DCPLUS) {
-
+				cr = mergeDCwise(
+						cr,
+						calkKeysSigmaCaller(workcycleNumber, currentRound, pmi,
+								length));
 			}
 
 			// Finally calculate the inverse, when needed.
@@ -262,6 +265,52 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		return cr;
 	}
 
+	private synchronized byte[] calkKeysSigmaCaller(final long wcn, final int rn,
+			ParticipantMgmntInfo pmi,final int length){
+		
+		BigInteger 	b_ij 		= null;
+		byte[] 		cr 			= new byte[0];
+		BigInteger  mod			= BigInteger.valueOf(MODULUS);
+		byte[] 		oldmesages 	= assocWorkCycle.getMessageBin();
+		BigInteger	sigma		= null;
+		BigInteger	vt			= null;
+		int 		vtoffset 	= 0;
+		final byte[]zero		= new byte[4];
+				
+		for (int j = 0; j < (length / 4); j++) {
+			
+			sigma		= BigInteger.ZERO;
+			
+			for (int i = 0; i < (oldmesages.length / 4); i++) {
+
+				b_ij = new BigInteger(
+						calcKeysAESPRNG(workcycleNumber, currentRound,
+								Util.getBytesByOffset(pmi.getKey()
+										.getCalculatedSecret().toByteArray(),
+										0, 32), Util.getBytesByOffset(pmi
+										.getKey().getCalculatedSecret()
+										.toByteArray(), 36, 4), i));
+
+				vtoffset = oldmesages.length - ((i * 4) + 4);
+
+				vt = new BigInteger(Util.getBytesByOffset(oldmesages, vtoffset,
+						4));
+
+				b_ij = b_ij.multiply(vt);
+				b_ij = b_ij.mod(mod);
+
+				sigma.add(b_ij);
+				sigma.mod(mod);
+			}
+			
+			// Because we need longer keys than 4 byte, we assume
+			// each previous 4 byte message as passed with content 0
+			cr = Util.concatenate(cr, fillAndMergeSending(zero, sigma.toByteArray()));
+			oldmesages = Util.concatenate(oldmesages, zero);
+			
+		}
+		return cr;
+	}
 	
 	/**
 	 * Merge two unequally sized byte arrays (by xoring each element). The
@@ -455,31 +504,25 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 			if (currentRound >= expectedRounds)
 				finished = true;
+			
+			try{
+			if(method == WorkCycleManager.METHOD_DCPLUS)
+				assocWorkCycle.getSemaphore().acquire();
+			}
+			catch (InterruptedException e){
+				Log.print(Log.LOG_ERROR, e.toString(), this);
+			}
 		}
 		
 		setChanged();
 		notifyObservers(WorkCycle.WC_SENDING_FINISHED);		
 	}
 
-	/**
-	 * The DC+ rounds depend actively on the result of the last ADDED
-	 * message. Semaphores are used to block the thread (this is why
-	 * {@link WorkCycleSending} is actually a thread), until it get woken up by the mother
-	 * {@link WorkCycle}.
-	 */
-	protected void performDCPlusRounds() {
-		try {
-			sem.acquire();
-		} catch (InterruptedException e) {
-			Log.print(Log.LOG_WARN, e.toString(), this);
-		}
-	}
-
 	public void run() {
 		if (method == WorkCycleManager.METHOD_DC) {
 			performDCRoundsParticipantSide();
 		} else if (method == WorkCycleManager.METHOD_DCPLUS) {
-			performDCPlusRounds();
+			performDCRoundsParticipantSide();
 			Log.print(Log.LOG_ERROR, "There is no DC+ implemented", this);
 		}
 	}
