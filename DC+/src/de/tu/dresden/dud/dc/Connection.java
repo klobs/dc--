@@ -965,7 +965,7 @@ public class Connection extends Observable implements Runnable {
 			return;
 		}
 
-		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s, WorkCycleManager.METHOD_DC);
+		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s, assocWorkCycleManager.getMethod());
 		try {
 
 			Log.print(Log.LOG_DEBUG, "Sending WELCOME2SERVER: ", m.getMessage(),

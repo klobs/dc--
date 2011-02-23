@@ -231,7 +231,9 @@ public class Server implements Runnable {
             	clientSocket = this.serverSocket.accept();
             	
             	Connection c = new Connection(this, clientSocket, this);
-                
+            	
+            	c.setAssocWorkCycleManager(workCycleManager);
+            	
             	Log.print(Log.LOG_DEBUG, "New connection arrived from " + clientSocket.toString(), this);
             	
                 aspConns.add(c);
