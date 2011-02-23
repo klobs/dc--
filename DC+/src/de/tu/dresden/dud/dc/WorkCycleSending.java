@@ -184,7 +184,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 						Util.getBytesByOffset(
 								Util.stuffLongIntoLong(workcycleNumber), 0, 8),
 						Util.getBytesByOffset(
-								Util.stuffLongIntoLong(currentRound), 0, 8));
+								Util.stuffLongIntoLong(currentRound), 6, 2));
 
 				s = new SecretKeySpec(pmi.getKey().getCalculatedSecret()
 						.toByteArray(), 0, 32, "AES");
@@ -193,7 +193,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 				for (int j = 0; j < prn; j++) {
 					byte [] prern = Util.getBytesByOffset(pmi.getKey()
-							.getCalculatedSecret().toByteArray(), 32, 6);
+							.getCalculatedSecret().toByteArray(), 32, 4);
 					
 					prern = Util.concatenate(prern, trn);
 					prern = Util.concatenate(prern, Util.stuffIntIntoShort(j));
