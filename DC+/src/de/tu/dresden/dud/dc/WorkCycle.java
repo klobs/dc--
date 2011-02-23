@@ -280,14 +280,14 @@ public class WorkCycle extends Observable implements Observer {
 		return this.expectedRounds;
 	}
 
-	public LinkedList<byte[]> getPayloads(){
-		return this.payloads;
-	}
 	
 	public int getMethod(){
 		return this.method;
 	}
 	
+	public LinkedList<byte[]> getPayloads(){
+		return this.payloads;
+	}
 	/**
 	 * this information will be available after reservation;
 	 * 
