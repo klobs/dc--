@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.Util;
 
@@ -19,6 +20,9 @@ import de.tu.dresden.dud.dc.Util;
  */
 public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 	
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceInfoPassiveParticipantList.class);
+
 	private LinkedList<Participant> passiveParticipants = new LinkedList<Participant>();
 	
 	public InfoServiceInfoPassiveParticipantList(byte [] infopayload){
@@ -31,9 +35,7 @@ public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 		ArrayList<byte[]> p = new ArrayList<byte[]>(5);
 
 		if (infopayload.length < 8) {
-			Log.print(Log.LOG_WARN,
-					"Payload does not correspond to the required min size",
-					this);
+			log.warn("Payload does not correspond to the required min size");
 		}
 
 		info = infopayload;
@@ -49,18 +51,10 @@ public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 						p.add(j,Util.getBytesByOffset(infopayload, ul, pl));
 						ul = ul + pl;
 					} else {
-						Log
-								.print(
-										Log.LOG_WARN,
-										"Payload has strange differences between indicated and effective length: wrong information about id lengths",
-										this);
+						log.warn("Payload has strange differences between indicated and effective length: wrong information about id lengths");
 					}
 				} else {
-					Log
-							.print(
-									Log.LOG_WARN,
-									"Payload has strange differences between indicated and effective length: not enough data for the indicated number of users",
-									this);
+					log.warn("Payload has strange differences between indicated and effective length: not enough data for the indicated number of users");
 				}
 			}
 			passiveParticipants.add(new Participant(new String(p.get(0)),

@@ -6,8 +6,9 @@ package de.tu.dresden.dud.dc.InfoService;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.Util;
@@ -22,6 +23,9 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
  * 
  */
 public class InfoServiceInfoKeyExchangeCommit extends InfoServiceInfo {
+
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceInfoKeyExchangeCommit.class);
 
 	public String p1 = null;
 	public String p2 = null;
@@ -45,7 +49,7 @@ public class InfoServiceInfoKeyExchangeCommit extends InfoServiceInfo {
 		pl = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, ul, 2));
 		ul = ul + 2;
 		if (! (infopayload.length >= ul + pl + 2)){
-			Log.print(Log.LOG_ERROR, "Wrong false length for info packet", this);
+			log.error("Wrong false length for info packet");
 			return;
 		}
 		
@@ -55,7 +59,7 @@ public class InfoServiceInfoKeyExchangeCommit extends InfoServiceInfo {
 		pl = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, ul, 2));
 		ul = ul + 2;
 		if (! (infopayload.length >= ul + pl)){
-			Log.print(Log.LOG_ERROR, "Wrong false length for info packet", this);
+			log.error("Wrong false length for info packet");
 			return;
 		}
 		

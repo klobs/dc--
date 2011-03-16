@@ -9,15 +9,19 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.ParticipantManager;
 import de.tu.dresden.dud.dc.Util;
 
 public class InfoServiceUpdateActiveLeaving extends InfoServiceInfo {
 
-	private LinkedList<Participant> activeLeavingParticipants = new LinkedList<Participant>();
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceUpdateActiveLeaving.class);
+
+private LinkedList<Participant> activeLeavingParticipants = new LinkedList<Participant>();
 	private LinkedList<Long> workCycleNumbers = new LinkedList<Long>();	
 	
 	public InfoServiceUpdateActiveLeaving(
@@ -62,9 +66,7 @@ public class InfoServiceUpdateActiveLeaving extends InfoServiceInfo {
 		ArrayList<byte[]> p = new ArrayList<byte[]>(5);
 
 		if (infopayload.length < 10) {
-			Log.print(Log.LOG_WARN,
-					"Payload does not correspond to the required min size",
-					this);
+			log.warn("Payload does not correspond to the required min size");
 		}
 
 		info = infopayload;
@@ -85,18 +87,10 @@ public class InfoServiceUpdateActiveLeaving extends InfoServiceInfo {
 						p.add(j, Util.getBytesByOffset(infopayload, ul, pl));
 						ul = ul + pl;
 					} else {
-						Log
-								.print(
-										Log.LOG_WARN,
-										"Payload has strange differences between indicated and effective length: wrong information about id lengths",
-										this);
+						log.warn("Payload has strange differences between indicated and effective length: wrong information about id lengths");
 					}
 				} else {
-					Log
-							.print(
-									Log.LOG_WARN,
-									"Payload has strange differences between indicated and effective length: not enough data for the indicated number of users",
-									this);
+					log.warn("Payload has strange differences between indicated and effective length: not enough data for the indicated number of users");
 				}
 			}
 			activeLeavingParticipants.add(new Participant(new String(p.get(0)),

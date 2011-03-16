@@ -4,8 +4,9 @@
  */
 package de.tu.dresden.dud.dc.InfoService;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -13,6 +14,9 @@ import de.tu.dresden.dud.dc.Util;
  *
  */
 public abstract class InfoServiceInfo {
+
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceInfo.class);
 
 	// here we have a list of available information requests.
 	public static final int INFO_PASSIVEPARTICIPANTLIST 	= 0;
@@ -54,7 +58,7 @@ public abstract class InfoServiceInfo {
 		case INFO_COMMITKEYEXCHANGE:
 			return new InfoServiceInfoKeyExchangeCommit(info);
 		default:
-			Log.print(Log.LOG_WARN, "No such infotype defined: " + String.valueOf(infotype),null);
+			Logger.getLogger(InfoServiceInfo.class).warn("No such infotype defined: " + String.valueOf(infotype));
 			return null;
 		}
 		

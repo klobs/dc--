@@ -6,8 +6,9 @@ package de.tu.dresden.dud.dc.InfoService;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 
@@ -17,6 +18,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
  */
 public class InfoServiceInfoReqPassiveParticipantList extends InfoServiceInfoRequest{
 	
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceInfoReqPassiveParticipantList.class);
+
 	public InfoServiceInfoReqPassiveParticipantList(){
 		infoservicerequest = Util.stuffIntIntoShort(InfoServiceInfoRequest.IRQ_PASSIVEPARTICIPANTLIST);
 	}
@@ -24,7 +28,7 @@ public class InfoServiceInfoReqPassiveParticipantList extends InfoServiceInfoReq
 	@Override
 	public void handleRequest(Connection c) {
 		if (!c.isServerMode()) {
-			Log.print(Log.LOG_WARN, "Not in servermode - can not answer INFOREQUEST", this);
+			log.warn("Not in servermode - can not answer INFOREQUEST");
 			return;
 		}
 		

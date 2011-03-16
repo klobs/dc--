@@ -6,11 +6,15 @@ package de.tu.dresden.dud.dc.InfoService;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Util;
 
 public class InfoServiceInfoRequestKeyExchange extends InfoServiceInfoRequest {
+
+	// Logging
+	Logger log = Logger.getLogger(InfoServiceInfoRequestKeyExchange.class);
 
 	private String from = null;
 	private String to   = null;
@@ -38,19 +42,13 @@ public class InfoServiceInfoRequestKeyExchange extends InfoServiceInfoRequest {
 		int p  = 2;
 		
 		if (infopayload.length < 6) {
-			Log.print(Log.LOG_WARN,
-					"Payload does not correspond to the required min size",
-					this);
+			log.warn("Payload does not correspond to the required min size");
 		}
 	
 		fl = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, p, 2));
 		
 		if (infopayload.length < p + fl){
-			Log
-			.print(
-					Log.LOG_WARN,
-					"Payload has strange differences between indicated and effective length: wrong information about id lengths",
-					this);
+			log.warn("Payload has strange differences between indicated and effective length: wrong information about id lengths");
 		}
 		
 		p = p + 2;
@@ -62,11 +60,7 @@ public class InfoServiceInfoRequestKeyExchange extends InfoServiceInfoRequest {
 		tl = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, p, 2));
 
 		if (infopayload.length < p + tl){
-			Log
-			.print(
-					Log.LOG_WARN,
-					"Payload has strange differences between indicated and effective length: wrong information about id lengths",
-					this);
+			log.warn("Payload has strange differences between indicated and effective length: wrong information about id lengths");
 		}
 		
 		p = p + 2;
