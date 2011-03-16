@@ -506,7 +506,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(method == WorkCycleManager.METHOD_DCPLUS)
+			if(method == WorkCycleManager.METHOD_DCPLUS && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){
@@ -519,12 +519,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	}
 
 	public void run() {
-		if (method == WorkCycleManager.METHOD_DC) {
-			performDCRoundsParticipantSide();
-		} else if (method == WorkCycleManager.METHOD_DCPLUS) {
-			performDCRoundsParticipantSide();
-			Log.print(Log.LOG_ERROR, "There is no DC+ implemented", this);
-		}
+		performDCRoundsParticipantSide();
 	}
 
 	@Override

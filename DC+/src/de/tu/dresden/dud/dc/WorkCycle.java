@@ -467,11 +467,16 @@ public class WorkCycle extends Observable implements Observer {
 						workCycleSending.performDCRoundsParticipantSide();
 
 				} else if (method == WorkCycleManager.METHOD_DCPLUS) {
-					Thread t = new Thread(workCycleSending, "WorkCycleSending");
+					if (!assocWorkCycleManag.isServerMode()) {
 
-					t.start();
+						Thread t = new Thread(workCycleSending,
+								"WorkCycleSending");
+
+						t.start();
+					}
 				}
-			} else if (o instanceof WorkCycleSending
+			}
+		} else if (o instanceof WorkCycleSending
 					&& ((Integer) arg).intValue() == WorkCycle.WC_SENDING_FINISHED) {
 
 				// TODO
@@ -482,7 +487,6 @@ public class WorkCycle extends Observable implements Observer {
 				setChanged();
 				notifyObservers(WC_FINISHED);
 			}
-		}
 	}
 	
 	private void updateBroadcastAndExpectedConnections(){
