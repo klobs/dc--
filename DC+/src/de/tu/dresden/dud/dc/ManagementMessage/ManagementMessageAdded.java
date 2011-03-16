@@ -5,8 +5,10 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -15,6 +17,10 @@ import de.tu.dresden.dud.dc.Util;
  */
 public class ManagementMessageAdded extends ManagementMessage {
 
+
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageAdded.class);
+	
 	private byte[]	payload;
 	private int		payloadLength 	= 0;
 	private	boolean	reservation		= false;
@@ -56,9 +62,7 @@ public class ManagementMessageAdded extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding ADDED MESSAGE", this);
-		}
+		log.debug("Encoding ADDED MESSAGE");
 	}
 	
 	
@@ -79,7 +83,7 @@ public class ManagementMessageAdded extends ManagementMessage {
 		message = payload;
 		
 		if(payload.length < 8){
-				Log.print(Log.LOG_WARN, "Payload length < minimal expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length < minimal expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
@@ -87,14 +91,11 @@ public class ManagementMessageAdded extends ManagementMessage {
 		this.roundnumber =  Util.stuffBytesIntoUInt(Util.getBytesByOffset(payload, 8, 2));
 		this.payload 		=  Util.getBytesByOffset(payload, 10, payload.length - 10); 
 		this.payloadLength 	=  this.payload.length;
-		
 				
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding ADDED MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Work cycle number: " + this.workcyclenumber, this);
-			Log.print(Log.LOG_DEBUG, "	Round number: " + this.roundnumber, this);
-			Log.print(Log.LOG_DEBUG, "	Payload: ", this.payload, this);
-		}
+		log.debug("Decoding ADDED MESSAGE");
+		log.debug("	Work cycle number: " + this.workcyclenumber);
+		log.debug("	Round number: " + this.roundnumber);
+		log.debug("	Payload: " + Arrays.toString(this.payload));
 		
 	}
 		

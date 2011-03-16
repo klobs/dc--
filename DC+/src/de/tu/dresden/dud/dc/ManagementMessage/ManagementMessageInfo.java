@@ -6,7 +6,8 @@ package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 
@@ -17,6 +18,10 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
  */
 
 public class ManagementMessageInfo extends ManagementMessage {
+	
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageInfo.class);
+	
 	private InfoServiceInfo info = null;
 		
 		/**
@@ -42,7 +47,7 @@ public class ManagementMessageInfo extends ManagementMessage {
 		
 			this.message = craftMessage(b);
 			
-			Log.print(Log.LOG_DEBUG, "Sending INFO", this);
+			log.debug("Sending INFO");
 		}
 		
 		
@@ -63,7 +68,7 @@ public class ManagementMessageInfo extends ManagementMessage {
 			message = payload;
 			
 			if(payload.length < 2){
-					Log.print(Log.LOG_WARN, "Payload length < minimal expected payload Length! Dropping packet!", this);
+					log.warn( "Payload length < minimal expected payload Length! Dropping packet!");
 					errorProcessing = true;
 					return;
 			}

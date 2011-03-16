@@ -5,8 +5,10 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -14,6 +16,9 @@ import de.tu.dresden.dud.dc.Util;
  *
  */
 public class ManagementMessageTick extends ManagementMessage {
+
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageTick.class);
 
 
 	private long workcyclenumber;
@@ -51,11 +56,8 @@ public class ManagementMessageTick extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding TICK MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Work cycle number: " + workCycleNumber  + " / " , workcyclenumber, this);
-		}
-	
+		log.debug("Encoding TICK MESSAGE");
+		log.debug("	Work cycle number: " + workCycleNumber  + " / " + Arrays.toString(workcyclenumber));
 	}
 	
 	
@@ -76,17 +78,14 @@ public class ManagementMessageTick extends ManagementMessage {
 		message = payload;
 		
 		if(payload.length != 8){
-				Log.print(Log.LOG_WARN, "Payload length != expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length != expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
 		workcyclenumber = Util.stuffBytesIntoLongUnsigned(payload);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding TICK MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, " Work cycle number: " + workcyclenumber, this);
-		}
-		
+		log.debug("Decoding TICK MESSAGE");
+		log.debug(" Work cycle number: " + workcyclenumber);
 	}
 		
 	public long getWorkCycleNumber() {

@@ -5,12 +5,18 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 public class ManagementMessageAccepted4Service extends ManagementMessage{
 
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageAccepted4Service.class);
+
+	
 	public static final int ACCEPTED 	= 0;
 	public static final int REJECTED 	= 1;
 	
@@ -35,10 +41,8 @@ public class ManagementMessageAccepted4Service extends ManagementMessage{
 		b.add(messagetype	);
 		b.add(acc 			);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding ACCEPTED4SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Server accepted / rejected reason number: " + String.valueOf(a) + " / " , acc, this);
-		}
+		log.debug("Encoding ACCEPTED4SERVICE MESSAGE");
+		log.debug("	Server accepted / rejected reason number: " + String.valueOf(a) + " / " + Arrays.toString(acc));
 		
 		message = craftMessage(b);
 	}
@@ -55,17 +59,14 @@ public class ManagementMessageAccepted4Service extends ManagementMessage{
 	 public ManagementMessageAccepted4Service(byte[] payload){
 		
 		if(payload.length != 1){
-				Log.print(Log.LOG_WARN, "Payload does not correspond to the required fixed size", this);
+				log.warn( "Payload does not correspond to the required fixed size");
 				errorProcessing = true;
 		}
 		
 		accepted			= payload[0];
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding ACCEPTED4SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Server accpeted / rejected reason number: " + String.valueOf(accepted), this);
-		}
-		
+		log.debug("Decoding ACCEPTED4SERVICE MESSAGE");
+		log.debug("	Server accpeted / rejected reason number: " + String.valueOf(accepted));
 	}
 	 
 	 /**

@@ -5,10 +5,12 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Iterator;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.Util;
 
@@ -21,6 +23,9 @@ import de.tu.dresden.dud.dc.Util;
  */
 public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageWelcome2WorkCycle.class);
+	
 	public static final int ACCEPTED = 0;
 	public static final int REJECTED = 1;
 
@@ -91,16 +96,14 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 			b.add(p.getDHPublicPartSignature());
 		}
 
-		if (Log.getInstance().getLogLevel() >= Log.LOG_DEBUG) {
-			Log.print(Log.LOG_DEBUG, "Encoding WELCOME2WORKCYCLE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG,
-					"	Server accepted / rejected reason number: "
-							+ String.valueOf(accepted) + " / ", acc, this);
-			Log.print(Log.LOG_DEBUG, "	Send message for work cycle number: "
-					+ String.valueOf(workCycleNumber) + " / ", rno, this);
-			Log.print(Log.LOG_DEBUG, "	The timeout in ms has been set to: "
-					+ String.valueOf(timeout) + " / ", to, this);
-		}
+		log.debug("Encoding WELCOME2WORKCYCLE MESSAGE");
+		log.debug("	Server accepted / rejected reason number: "
+				+ String.valueOf(accepted) + " / " + Arrays.toString(acc));
+		log.debug("	Send message for work cycle number: "
+				+ String.valueOf(workCycleNumber) + " / "
+				+ Arrays.toString(rno));
+		log.debug("	The timeout in ms has been set to: "
+				+ String.valueOf(timeout) + " / " + Arrays.toString(to));
 
 		message = craftMessage(b);
 	}
@@ -142,9 +145,8 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 		ArrayList<byte[]> p = new ArrayList<byte[]>(5);
 		
 		if (payload.length < 13) {
-			Log.print(Log.LOG_WARN,
-					"Payload does not correspond to the required min size",
-					this);
+			log.warn(
+					"Payload does not correspond to the required min size");
 			errorProcessing = true;
 		}
 
@@ -164,19 +166,11 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 						p.add(Util.getBytesByOffset(payload, ul, pl));
 						ul = ul + pl;
 					} else {
-						Log
-								.print(
-										Log.LOG_WARN,
-										"Payload has strange differences between indicated and effective length: wrong information about id lengths",
-										this);
+						log.warn("Payload has strange differences between indicated and effective length: wrong information about id lengths");
 						errorProcessing = true;
 					}
 				} else {
-					Log
-							.print(
-									Log.LOG_WARN,
-									"Payload has strange differences between indicated and effective length: not enough data for the indicated number of users",
-									this);
+					log.warn("Payload has strange differences between indicated and effective length: not enough data for the indicated number of users");
 					errorProcessing = true;
 				}
 			}
@@ -185,18 +179,12 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 			p.clear();
 		}
 
-		if (Log.getInstance().getLogLevel() >= Log.LOG_DEBUG) {
-			Log.print(Log.LOG_DEBUG, "Decoding WELCOME2WORKCYCLE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG,
-					"	Server accpeted / rejected reason number: "
-							+ String.valueOf(accepted), this);
-			Log.print(Log.LOG_DEBUG,
-					"	Server want participant in work cycle number: "
-							+ String.valueOf(workcycle), this);
-			Log.print(Log.LOG_DEBUG, "	Timeout in ms has been set to: "
-					+ String.valueOf(timeout), this);
-		}
-
+		log.debug("Decoding WELCOME2WORKCYCLE MESSAGE");
+		log.debug("	Server accpeted / rejected reason number: "
+				+ String.valueOf(accepted));
+		log.debug("	Server want participant in work cycle number: "
+				+ String.valueOf(workcycle));
+		log.debug("	Timeout in ms has been set to: " + String.valueOf(timeout));
 	}
 
 	/**

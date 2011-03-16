@@ -6,7 +6,8 @@ package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -15,6 +16,9 @@ import de.tu.dresden.dud.dc.Util;
  * @author klobs
  */
 public class ManagementMessageJoinWorkCycle extends ManagementMessage {
+	
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageJoinWorkCycle.class);
 	
 	/**
 	 * 	Handles the JOINWORKCYCLE management message.
@@ -35,9 +39,7 @@ public class ManagementMessageJoinWorkCycle extends ManagementMessage {
 		
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding JOIN WORK CYCLE MESSAGE (no arguments)", this);
-		}
+		log.debug("Encoding JOIN WORK CYCLE MESSAGE (no arguments)");
 	}
 	
 	
@@ -56,9 +58,6 @@ public class ManagementMessageJoinWorkCycle extends ManagementMessage {
 		
 		message = payload;
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding JOIN WORK CYCLE MESSAGE (no argument)", this);
-		}
-		
+		log.debug("Decoding JOIN WORK CYCLE MESSAGE (no argument)");
 	}
 }

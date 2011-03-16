@@ -5,8 +5,10 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -15,6 +17,8 @@ import de.tu.dresden.dud.dc.Util;
  */
 public class ManagementMessageLeaveWorkCycle extends ManagementMessage {
 
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageLeaveWorkCycle.class);
 
 	private long workcyclenumber;
 
@@ -41,11 +45,8 @@ public class ManagementMessageLeaveWorkCycle extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding LEAVEWORKCYCLE message", this);
-			Log.print(Log.LOG_DEBUG, "	Work cycle number: " + workCycleNumber  + " / " , workcyclenumber, this);
-		}
-	
+		log.debug("Encoding LEAVEWORKCYCLE message");
+		log.debug("	Work cycle number: " + workCycleNumber  + " / " + Arrays.toString(workcyclenumber));
 	}
 	
 	
@@ -66,17 +67,14 @@ public class ManagementMessageLeaveWorkCycle extends ManagementMessage {
 		message = payload;
 		
 		if(payload.length != 8){
-				Log.print(Log.LOG_WARN, "Payload length != expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length != expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
 		workcyclenumber = Util.stuffBytesIntoLongUnsigned(payload);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding LEAVEWORKCYCLE message", this);
-			Log.print(Log.LOG_DEBUG, "	Work cycle number: " + workcyclenumber, this);
-		}
-		
+		log.debug("Decoding LEAVEWORKCYCLE message");
+		log.debug("	Work cycle number: " + workcyclenumber);
 	}
 		
 	public long geWorkCycleNumber() {

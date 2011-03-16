@@ -5,8 +5,10 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.Util;
 
@@ -15,6 +17,10 @@ import de.tu.dresden.dud.dc.Util;
  *
  */
 public class ManagementMessageWelcome2Service extends ManagementMessage{
+
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageWelcome2Service.class);
+
 	
 	private int version;
 	private int charLength;
@@ -64,16 +70,13 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 		b.add(urlLength		);
 		b.add(url			);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding WELCOME2SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Server protocol version: " + String.valueOf(VERSION) + " / " , version, this);
-			Log.print(Log.LOG_DEBUG, "	Server charlength: " + String.valueOf(s.getSymbolLength()) +  " / ", charLength, this);
-			Log.print(Log.LOG_DEBUG, "	Current users:" + String.valueOf(s.getInfoService().getParticipantCount()) + " / ", partCount, this);
-			Log.print(Log.LOG_DEBUG, "	Server is accepting new participants: " + String.valueOf(s.getInfoService().doAccept()) + " / ", acRej, this);
-			Log.print(Log.LOG_DEBUG, "	Service is using DC = 0, DC+ =1: " + String.valueOf(method), this);
-			Log.print(Log.LOG_DEBUG, "	Server's direcotory is located at (not yet implemented, though): " + s.getInfoService().getDirURL() + " / ", url, this);
-		}
-
+		log.debug("Encoding WELCOME2SERVICE MESSAGE");
+		log.debug("	Server protocol version: " + String.valueOf(VERSION) + " / " + Arrays.toString(version));
+		log.debug("	Server charlength: " + String.valueOf(s.getSymbolLength()) +  " / " + Arrays.toString(charLength));
+		log.debug("	Current users:" + String.valueOf(s.getInfoService().getParticipantCount()) + " / " + Arrays.toString(partCount));
+		log.debug("	Server is accepting new participants: " + String.valueOf(s.getInfoService().doAccept()) + " / " + Arrays.toString(acRej));
+		log.debug("	Service is using DC = 0, DC+ =1: " + String.valueOf(method));
+		log.debug("	Server's direcotory is located at (not yet implemented, though): " + s.getInfoService().getDirURL() + " / " + Arrays.toString(url));
 		
 		message = craftMessage(b);
 	}
@@ -101,7 +104,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	 public ManagementMessageWelcome2Service(byte[] payload){
 		
 		if(payload.length < 9){
-				Log.print(Log.LOG_WARN, "Payload length < minimal expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length < minimal expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
@@ -116,15 +119,12 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			errorProcessing = true;
 		url					= new String(payload, 9, urlLength);
 
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding WELCOME2SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Server requires " + String.valueOf(version) + " as protocol", this);
-			Log.print(Log.LOG_DEBUG, "	Server requires " + String.valueOf(charLength) + " as charlength", this);
-			Log.print(Log.LOG_DEBUG, "	There are currently " + String.valueOf(participantsCount) + " participants (not necissarily taking part in work cycles)", this);
-			Log.print(Log.LOG_DEBUG, "	Server is accepting new participants: " + String.valueOf(accept), this);
-			Log.print(Log.LOG_DEBUG, "	Server's direcotory is located at: " + url + " (not yet implemented, though)", this);
-		}
-		 
+		log.debug("Decoding WELCOME2SERVICE MESSAGE");
+		log.debug("	Server requires " + String.valueOf(version) + " as protocol");
+		log.debug("	Server requires " + String.valueOf(charLength) + " as charlength");
+		log.debug("	There are currently " + String.valueOf(participantsCount) + " participants (not necissarily taking part in work cycles)");
+		log.debug("	Server is accepting new participants: " + String.valueOf(accept));
+		log.debug("	Server's direcotory is located at: " + url + " (not yet implemented, though)");
 	 }
 
 	
@@ -136,7 +136,6 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	public int getCharLength() {
 		return charLength;
 	}
-
 
 	public int getParticipantsCount() {
 		return participantsCount;
@@ -154,7 +153,6 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	public int getUrlLength() {
 		return urlLength;
 	}
-
 
 	public String getUrl() {
 		return url;

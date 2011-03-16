@@ -5,8 +5,10 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -14,7 +16,10 @@ import de.tu.dresden.dud.dc.Util;
  *
  */
 public class ManagementMessageAdd extends ManagementMessage {
-
+	
+    // Logging
+    private Logger log = Logger.getLogger(ManagementMessageAdd.class);
+	
 	private byte[]	payload;
 	private int		payloadLength 	= 0;
 	private long 	workcyclenumber	= 0; //Long.MIN_VALUE;
@@ -51,10 +56,7 @@ public class ManagementMessageAdd extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding ADD MESSAGE", this);
-		}
-	
+		log.debug("Encoding ADD MESSAGE");
 	}
 	
 	
@@ -75,7 +77,7 @@ public class ManagementMessageAdd extends ManagementMessage {
 		message = payload;
 		
 		if(payload.length < 8){
-				Log.print(Log.LOG_WARN, "Payload length < minimal expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length < minimal expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
@@ -85,12 +87,10 @@ public class ManagementMessageAdd extends ManagementMessage {
 		this.payloadLength 	=  this.payload.length;
 		
 				
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding ADD MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Work cycle number: " + this.workcyclenumber, this);
-			Log.print(Log.LOG_DEBUG, "	Round number: " + this.roundnumber, this);
-			Log.print(Log.LOG_DEBUG, "	Payload: ",  this.payload, this);
-		}
+		log.debug("Decoding ADD MESSAGE");
+		log.debug("	Work cycle number: " + this.workcyclenumber);
+		log.debug("	Round number: " + this.roundnumber);
+		log.debug("	Payload: " + Arrays.toString(this.payload));
 		
 	}
 		

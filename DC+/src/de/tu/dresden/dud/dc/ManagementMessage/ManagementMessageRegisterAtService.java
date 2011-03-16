@@ -5,12 +5,17 @@
 package de.tu.dresden.dud.dc.ManagementMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 public class ManagementMessageRegisterAtService extends ManagementMessage {
 
+	// Logging
+	private Logger log = Logger.getLogger(ManagementMessageRegisterAtService.class);
+	
 	private byte[] dhPublicPart;
 	private byte[] dhPublicSig;
 	private String participantID;
@@ -42,7 +47,7 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 	 * @param dhs signature for diffie hellman public part.
 	 */	
 	public ManagementMessageRegisterAtService(String id, String u, byte[] s, byte[] dh, byte[] dhs){
-
+		
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		
 		byte[] messagetype		= Util.stuffIntIntoShort(ManagementMessage.REGISTERATSERVICE);
@@ -72,15 +77,12 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Encoding REGISTER AT SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Participant id " + id  + " / " , participantID, this);
-			Log.print(Log.LOG_DEBUG, "	Username: " + u + " / ", username, this);
-			Log.print(Log.LOG_DEBUG, "	Signature: " + new String(s) + " / ", signature, this);
-			Log.print(Log.LOG_DEBUG, "	DH: ", dh, this);
-			Log.print(Log.LOG_DEBUG, "	DH Sig: ", dhs, this);
-		}
-	
+		log.debug("Encoding REGISTER AT SERVICE MESSAGE");
+		log.debug("	Participant id " + id  + " / " + Arrays.toString(participantID));
+		log.debug("	Username: " + u + " / " + Arrays.toString(username));
+		log.debug("	Signature: " + new String(s) + " / " + Arrays.toString(signature));
+		log.debug("	DH: " + Arrays.toString(dh));
+		log.debug("	DH Sig: " + Arrays.toString(dhs));
 	}
 	
 	
@@ -115,7 +117,7 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 		message = payload;
 		
 		if(payload.length < 8){
-				Log.print(Log.LOG_WARN, "Payload length < minimal expected payload Length! Dropping packet!", this);
+				log.warn( "Payload length < minimal expected payload Length! Dropping packet!");
 				errorProcessing = true;
 		}
 		
@@ -159,15 +161,12 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 		}
 		dhPublicSig = Util.getBytesByOffset(payload, 8 + participantIDLength + usernameLength + signatureLength + dhLength, dhSigLength);
 		
-		if(Log.getInstance().getLogLevel() >= Log.LOG_DEBUG){
-			Log.print(Log.LOG_DEBUG, "Decoding REGISTER AT SERVICE MESSAGE", this);
-			Log.print(Log.LOG_DEBUG, "	Participant id: " + participantID, this);
-			Log.print(Log.LOG_DEBUG, "	Username: " + username, this);
-			Log.print(Log.LOG_DEBUG, "	Signature: ", signature, this);
-			Log.print(Log.LOG_DEBUG, "	DH Public part: ", dhPublicPart, this);
-			Log.print(Log.LOG_DEBUG, "	DH Signature: ", dhPublicSig, this);
-		}
-		
+		log.debug("Decoding REGISTER AT SERVICE MESSAGE");
+		log.debug("	Participant id: " + participantID);
+		log.debug("	Username: " + username);
+		log.debug("	Signature: " + Arrays.toString(signature));
+		log.debug("	DH Public part: " + Arrays.toString(dhPublicPart));
+		log.debug("	DH Signature: " + Arrays.toString(dhPublicSig));
 	}
 	
 	public byte[] getDHPublicPart(){
