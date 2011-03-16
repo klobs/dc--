@@ -4,6 +4,8 @@
  */
 package de.tu.dresden.dud.dc;
 
+import de.tu.dresden.dud.dc.Gui.Gui;
+
 	
 /**
  * SuperDuperTrooper-Class. Everything gets initialized here

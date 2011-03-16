@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
+import de.tu.dresden.dud.dc.InfoService.InfoService;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
+
 
 /**
  * This class is the Participant with all the needed functionalities.

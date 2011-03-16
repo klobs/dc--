@@ -21,6 +21,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.LinkedList;
 
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoPassiveParticipantList;
+
 
 /**
  * The Key Manager handles almost all the crypto stuff.
