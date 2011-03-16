@@ -9,8 +9,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Observable;
+
+import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
@@ -48,6 +51,9 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
  * @author klobs
  */
 public class Connection extends Observable implements Runnable {
+
+	// Logging
+	Logger log = Logger.getLogger(Connection.class);
 
 	/**
 	 *  Default port
@@ -172,11 +178,7 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void accept4Service(int acceptReject) {
 		if (!(currentMode == MODE_WELCOME2SERVICE)) {
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Bad transition. Not in WELCOME2SERVICE status, to send ACCEPTED4SERVICE message",
-							this);
+			log.warn("Bad transition. Not in WELCOME2SERVICE status, to send ACCEPTED4SERVICE message");
 			return;
 		}
 
@@ -187,7 +189,7 @@ public class Connection extends Observable implements Runnable {
 			currentMode = MODE_PASSIVE;
 
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Problems occured with the ACCEPTED4SERVICE message: " + e.toString(), this);
+			log.error("Problems occured with the ACCEPTED4SERVICE message: " + e.toString());
 		}
 	}
 	
@@ -371,11 +373,7 @@ public class Connection extends Observable implements Runnable {
 	public void joinWorkCycle(Participant p) {
 		if (!(assocParticipantManager.getParticipantMgmntInfoFor(p).isPassive() 
 				&& !assocParticipantManager.getParticipantMgmntInfoFor(p).isActive())) {
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Bad transition. Not in PASSIVE status, to send JOINWORKCYLE message",
-							this);
+			log.warn("Bad transition. Not in PASSIVE status, to send JOINWORKCYLE message");
 			return;
 		}
 
@@ -383,7 +381,7 @@ public class Connection extends Observable implements Runnable {
 			ManagementMessageJoinWorkCycle m = new ManagementMessageJoinWorkCycle();
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Problems occured within the joinWorkCycle method: " + e.toString(), this);
+			log.error("Problems occured within the joinWorkCycle method: " + e.toString());
 		}
 	}
 
@@ -399,11 +397,7 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void registerAtService(Participant p) {
 		if (!(currentMode == MODE_REGISTERATSERVICE)) {
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Bad transition. Not in broken status, to send REGISTER AT SERVICE message",
-							this);
+			log.warn("Bad transition. Not in broken status, to send REGISTER AT SERVICE message");
 			return;
 		}
 
@@ -413,7 +407,7 @@ public class Connection extends Observable implements Runnable {
 					.getDHPublicPart(), p.getDHPublicPartSignature());
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR,"Problems occured while being in the registerAtService method: " + e.toString(), this);
+			log.error("Problems occured while being in the registerAtService method: " + e.toString());
 		}
 	}
 
@@ -433,10 +427,7 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void leaveWorkCycle(Participant p) {
 		if (! assocParticipantManager.getParticipantMgmntInfoFor(p).isActive()) {
-			Log.print(
-					Log.LOG_WARN,
-					"Bad transition. Not in ACTIVE status, to send LEAVEWORKCYLE message",
-					this);
+			log.warn("Bad transition. Not in ACTIVE status, to send LEAVEWORKCYLE message");
 			return;
 		}
 
@@ -445,10 +436,7 @@ public class Connection extends Observable implements Runnable {
 					assocWorkCycleManager.getCurrentWorkCycleNumber() + assocWorkCycleManager.getLeaveOffset());
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
-			Log.print(
-					Log.LOG_ERROR,
-					"Problems occured within the leaveWorkCycle method: "
-							+ e.toString(), this);
+			log.error("Problems occured within the leaveWorkCycle method: " + e.toString());
 		}
 
 	}
@@ -488,13 +476,9 @@ public class Connection extends Observable implements Runnable {
 		if (pmi == null) {
 			requestPassiveConnections();
 			
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Sorry - remote participant is not known.\n\tNew ParticipantList requested.\n\t"
+			log.warn("Sorry - remote participant is not known.\n\tNew ParticipantList requested.\n\t"
 									+ id
-									+ " marked as unfinished key exchange request.\n\tKey exchange request aborted.",
-							this);
+									+ " marked as unfinished key exchange request.\n\tKey exchange request aborted.");
 			
 			assocKeyManager.addUnfinishedKeyExchangeRequest(id);
 			
@@ -502,7 +486,7 @@ public class Connection extends Observable implements Runnable {
 		}
 		
 		if(assocParticipant.getId().compareTo(pmi.getParticipant().getId()) == 0) {
-			Log.print(Log.LOG_DEBUG, "No need to exchange keys with yourself. Key exchange request aborted.", this);
+			log.debug("No need to exchange keys with yourself. Key exchange request aborted.");
 			return;
 		}
 		
@@ -511,7 +495,7 @@ public class Connection extends Observable implements Runnable {
 		if(dck.getState() != DCKey.KEY_UNEXCHANGED) return;
 		
 		if(! assocKeyManager.verifyKey(pmi.getParticipant())){
-			Log.print(Log.LOG_WARN, "Signature did not work with provided key. Key exchange request aborted.", this);
+			log.warn("Signature did not work with provided key. Key exchange request aborted.");
 			return;
 		}
 		
@@ -592,8 +576,7 @@ public class Connection extends Observable implements Runnable {
 
 					input.readFully(messageb, 0, length);
 
-					Log.print(Log.LOG_DEBUG, "received message from"
-							+ clientSocket.toString() + " ", messageb, this);
+					log.debug("received message from" + clientSocket.toString() + " " + Arrays.toString(messageb));
 
 					try {
 
@@ -603,28 +586,27 @@ public class Connection extends Observable implements Runnable {
 							setStatus(m);
 
 					} catch (IllegalArgumentException e) {
-						Log.print(Log.LOG_WARN, e.toString(), this);
-						Log.print(Log.LOG_WARN,
-								"Could not handle message correctly: "
+						log.warn(e.toString());
+						log.warn("Could not handle message correctly: "
 										+ String.valueOf(messagetype) + ","
-										+ String.valueOf(length) + ",",
-								messageb, this);
-						Log.print(Log.LOG_WARN, e.toString(), this);
+										+ String.valueOf(length) + ","
+										+ Arrays.toString(messageb));
+						log.warn(e.toString());
 					}
 				} catch (NullPointerException e) {
-					Log.print(Log.LOG_ERROR, "Experiencing problems with the connection: ", this);
-					Log.print(Log.LOG_ERROR, e.toString(), this);
+					log.error("Experiencing problems with the connection: ");
+					log.error(e.toString());
 				} catch (IndexOutOfBoundsException e) {
-					Log.print(Log.LOG_ERROR, e.toString(), this);
+					log.error(e.toString());
 				} catch (IOException e) {
-					Log.print(Log.LOG_ERROR, e.toString(), this);
-					Log.print(Log.LOG_INFO, "Remote part " + this.toString() + " seems to be disappeared", this);
-					Log.print(Log.LOG_DEBUG, "Better error handling should be installed.", this);
+					log.error(e.toString());
+					log.info("Remote part " + this.toString() + " seems to be disappeared");
+					log.debug("Better error handling should be installed.");
 					break;
 				}
 			}
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "IOExcheption caught", this);
+			log.error("IOExcheption caught");
 			e.printStackTrace();
 		} finally {
 			if (clientSocket != null)
@@ -651,14 +633,14 @@ public class Connection extends Observable implements Runnable {
 		if (output == null)
 			throw new IOException("No output stream ready to send response");
 
-		Log.print(Log.LOG_DEBUG, "Sending message: ", r, this);
+		log.debug("Sending message: " + Arrays.toString(r));
 
 		try {
 			output.write(r, 0, r.length);
 			// output.flush();
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Output error: " + e.toString(), this);
-			Log.print(Log.LOG_ERROR, "Closing Connection", this);
+			log.error("Output error: " + e.toString());
+			log.error("Closing Connection");
 			stopped = true;
 		}
 	}
@@ -774,14 +756,14 @@ public class Connection extends Observable implements Runnable {
 		    	//ADD
 		    	else if((m instanceof ManagementMessageAdd) && (currentMode == MODE_ACTIVE)){
 		    		this.lastAdd = (ManagementMessageAdd) m;
-		    		Log.print(Log.LOG_DEBUG, "ADD message arrived", this);
+		    		log.debug("ADD message arrived");
 		    		assocWorkCycleManager.addMessageArrived(this, lastAdd);
 		    		return;
 		    	}
 		    	//LEAVEWORKCYCLE
 		    	else if((m instanceof ManagementMessageLeaveWorkCycle) && (currentMode == MODE_ACTIVE)){
 		    		this.leaveWorkCycle = (ManagementMessageLeaveWorkCycle) m;
-		    		Log.print(Log.LOG_DEBUG, "LEAVEWORKCYCLE message arrived. Good bye and Thanks for participation.", this);
+		    		log.debug("LEAVEWORKCYCLE message arrived. Good bye and Thanks for participation.");
 		    		server.leaveWorkCycleRequested(this, leaveWorkCycle);
 		    		return;
 		    	}
@@ -863,7 +845,7 @@ public class Connection extends Observable implements Runnable {
 		    		lastAdded = (ManagementMessageAdded) m;
 		    		
 		    		if (assocWorkCycleManager == null){
-		    			Log.print(Log.LOG_ERROR, "ADDED message arrived before the first tick. Skipping message.", this);
+		    			log.error("ADDED message arrived before the first tick. Skipping message.");
 		    			return;
 		    		}
 		    		
@@ -887,7 +869,7 @@ public class Connection extends Observable implements Runnable {
 	    	
 	    	// error handling - if a certain amount of errors occur in a period of time,
 	    	// we stop the connection
-	    	Log.print(Log.LOG_INFO, "Could not react correctly on message: " + m.toString(), this);
+	    	log.info("Could not react correctly on message: " + m.toString());
 	    	
 	    	long n = System.currentTimeMillis();
 	    	
@@ -895,7 +877,7 @@ public class Connection extends Observable implements Runnable {
 	    		errorCount++;
 	    		if(errorCount > 2) {
 	    			stopped = true;
-	    			Log.print(Log.LOG_ERROR, "There were too many connection erros in the last few moments. Stopping connection", this);
+	    			log.error("There were too many connection erros in the last few moments. Stopping connection");
 	    		}
 	    	} else{
 	    		firstError = n;
@@ -949,11 +931,7 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void welcome2WorkCycle(int a, long r, int t) {
 		if (! assocParticipantManager.getParticipantMgmntInfoFor(this).isPassive()) {
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Bad transition. Not in PASSIVE status, to send WELCOME2WORKCYCLE message",
-							this);
+			log.warn("Bad transition. Not in PASSIVE status, to send WELCOME2WORKCYCLE message");
 			return;
 		}
 
@@ -963,7 +941,7 @@ public class Connection extends Observable implements Runnable {
 		try {
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Input error: " + e.toString(), this);
+			log.error("Input error: " + e.toString());
 		}
 
 	}
@@ -977,22 +955,17 @@ public class Connection extends Observable implements Runnable {
 	public void welcome2Service(Server s) {
 
 		if (!(currentMode == MODE_BROKEN)) {
-			Log
-					.print(
-							Log.LOG_WARN,
-							"Bad transition. Not in broken status, to send WELCOME2SERVICE message",
-							this);
+			log.warn("Bad transition. Not in broken status, to send WELCOME2SERVICE message");
 			return;
 		}
 
 		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s, assocWorkCycleManager.getMethod());
 		try {
 
-			Log.print(Log.LOG_DEBUG, "Sending WELCOME2SERVER: ", m.getMessage(),
-					this);
+			log.debug("Sending WELCOME2SERVER: " + Arrays.toString(m.getMessage()));
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Problemas occured with the WELCOME2SERVER message: " + e.toString(), this);
+			log.error("Problemas occured with the WELCOME2SERVER message: " + e.toString());
 		}
 	}
 }
