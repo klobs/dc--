@@ -178,7 +178,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			if (method == WorkCycleManager.METHOD_DCPLUS) {
 				cr = mergeDCwise(
 						cr,
-						calkKeysSigmaCaller(workcycleNumber, currentRound, pmi,
+						calcKeysSigmaCaller(workcycleNumber, currentRound, pmi,
 								length));
 			}
 
@@ -265,7 +265,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		return cr;
 	}
 
-	private synchronized byte[] calkKeysSigmaCaller(final long wcn, final int rn,
+	private synchronized byte[] calcKeysSigmaCaller(final long wcn, final int rn,
 			ParticipantMgmntInfo pmi,final int length){
 		
 		BigInteger 	b_ij 		= null;
