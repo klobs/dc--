@@ -170,7 +170,7 @@ public class Util {
 	 * @return the byte[1] representation of i. If i is beyond max/min values
 	 *         for a byte, an {@link IllegalArgumentException} is thrown.
 	 */
-	protected static byte[] stuffIntIntoByte(int i){
+	public static byte[] stuffIntIntoByte(int i){
 		
 		if(i > Byte.MAX_VALUE || i < Byte.MIN_VALUE) 
 			throw new IllegalArgumentException("The value you provided can not be stuffed into a byte.");
@@ -190,7 +190,7 @@ public class Util {
 	 * @return the byte[4] representation of i. If i is beyond max/min values
 	 *         for an integer, an {@link IllegalArgumentException} is thrown.
 	 */
-	protected static byte[] stuffIntIntoInt(int i){
+	public static byte[] stuffIntIntoInt(int i){
 	
 		byte []b = new byte[4];
 		
@@ -210,7 +210,7 @@ public class Util {
 	 * @return the byte[2] representation of i. If i is beyond max/min values
 	 *         for a short, an {@link IllegalArgumentException} is thrown.
 	 */
-	protected static byte[] stuffIntIntoShort(int i){
+	public static byte[] stuffIntIntoShort(int i){
 	
 		if(i > Short.MAX_VALUE || i < Short.MIN_VALUE) 
 			throw new IllegalArgumentException("The value you provided can not be stuffed into a short.");
@@ -231,7 +231,7 @@ public class Util {
 	 * @return the byte[8] representation of l. If l is beyond max/min values
 	 *         for a long, an {@link IllegalArgumentException} is thrown.
 	 */
-	protected static byte[] stuffLongIntoLong(long l){
+	public static byte[] stuffLongIntoLong(long l){
 		byte []b = new byte[8];
 	
 		b[7] = (byte) l;
@@ -255,7 +255,7 @@ public class Util {
 	 *            the string that you want to convert.
 	 * @return the byte[] representation of s. 
 	 */
-	protected static byte[] stuffStringIntoCharArray(String s){
+	public static byte[] stuffStringIntoCharArray(String s){
 		return s.getBytes();
 	}
 }

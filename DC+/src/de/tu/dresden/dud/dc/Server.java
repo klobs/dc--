@@ -37,7 +37,7 @@ public class Server implements Runnable {
 	/**
 	 * @param listenPort specifies the port on which the DC Service shall be provided.
 	 */
-	Server(int listenPort) {
+	public Server(int listenPort) {
 		// set port
 		if(port > 0){ this.port = listenPort; }
 		

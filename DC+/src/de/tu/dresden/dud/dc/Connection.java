@@ -73,7 +73,7 @@ public class Connection extends Observable implements Runnable {
 
 	// other internal variables
 	protected KeyManager	assocKeyManager = null;
-	protected Participant 	assocParticipant;
+	public	  Participant 	assocParticipant;
 	protected WorkCycleManager 	assocWorkCycleManager;
 	protected ParticipantManager assocParticipantManager;
 	protected int 			errorCount 			= 0;
