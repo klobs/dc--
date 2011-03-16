@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.InfoService.InfoService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
@@ -30,6 +32,9 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
  * 
  */
 public class Server implements Runnable {
+
+	// Logging
+	Logger log = Logger.getLogger(Server.class);
 
 	private int				symbollength	= 12;
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();
@@ -60,7 +65,7 @@ public class Server implements Runnable {
 	public void accept4Service(Connection c, ManagementMessageRegisterAtService m){
 		if(! aspConns.contains(c)){
 			// QUESTION do we need aspirants? Probably not.
-			Log.print(Log.LOG_INFO, c.getClientSocket().toString() + "Wanted to register at the service, but is not in the list of aspirants", this);
+			log.info(c.getClientSocket().toString() + "Wanted to register at the service, but is not in the list of aspirants");
 			return;
 		}
 		
@@ -169,11 +174,7 @@ public class Server implements Runnable {
 	 */
 	public void joinWorkCycleRequested(Connection c){
 		if (!(getConnections().contains(c))) {
-			Log.print(
-					Log.LOG_INFO,
-					c.getClientSocket().toString()
-							+ "Wanted to join the work cycles, but is not in the list of passive connections. We can not allow that.",
-					this);
+			log.info(c.getClientSocket().toString() + "Wanted to join the work cycles, but is not in the list of passive connections. We can not allow that.");
 			return;
 		}
 		
@@ -189,20 +190,14 @@ public class Server implements Runnable {
 	 */
 	public void leaveWorkCycleRequested(Connection c, ManagementMessageLeaveWorkCycle m){
 		if (!(getActiveConnections().contains(c))) {
-			Log.print(
-					Log.LOG_INFO,
-					c.getClientSocket().toString()
-							+ "Wanted to leave the work cycle, but is not in the list of active connections. We can not allow that.",
-					this);
+			log.info(c.getClientSocket().toString() + "Wanted to leave the work cycle, but is not in the list of active connections. We can not allow that.");
 			return;
 		}
 	
 		if (workCycleManager.getCurrentWorkCycleNumber() >= m.geWorkCycleNumber()){
-			Log.print(
-					Log.LOG_INFO,
+			log.info(
 					c.getClientSocket().toString()
-							+ "Wanted to leave the work cycle, but it is too soon. We can not allow that.",
-					this);
+							+ "Wanted to leave the work cycle, but it is too soon. We can not allow that.");
 			return;
 		}
 		
@@ -211,13 +206,13 @@ public class Server implements Runnable {
 	
 	private void openServerSocket(){
 		try {
-			Log.print(Log.LOG_INFO , "Opening ServerSocket on port " + String.valueOf(port), this);
+			log.info("Opening ServerSocket on port " + String.valueOf(port));
 
 			this.serverSocket = new ServerSocket(this.port);
 		
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, "Could not bind to port " + String.valueOf(port), this);
-			Log.print(Log.LOG_ERROR, e.toString(), this);
+			log.error( "Could not bind to port " + String.valueOf(port));
+			log.error(e.toString());
 		}
 	}
 
@@ -242,7 +237,7 @@ public class Server implements Runnable {
             	
             	c.setAssocWorkCycleManager(workCycleManager);
             	
-            	Log.print(Log.LOG_DEBUG, "New connection arrived from " + clientSocket.toString(), this);
+            	log.debug("New connection arrived from " + clientSocket.toString());
             	
                 aspConns.add(c);
 
@@ -251,7 +246,7 @@ public class Server implements Runnable {
             } catch (IOException e) {
                 
             	if(isStopped()) {
-                    Log.print(Log.LOG_INFO, "Server Stopped: " + e.toString(), this);
+                    log.info("Server Stopped: " + e.toString());
                     for(Connection d : getConnections()){
                     	d.stop(true);
                     }
@@ -263,7 +258,7 @@ public class Server implements Runnable {
             	
             }
         }
-        Log.print(Log.LOG_INFO, "Server Stopped.", this);
+        log.info("Server Stopped.");
     }
 
 	/**
