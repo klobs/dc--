@@ -10,8 +10,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.ParticipantManager;
 import de.tu.dresden.dud.dc.Server;
@@ -25,6 +26,8 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
  */
 public class WorkCycleManager implements Observer{
 
+	// Logging
+	Logger log = Logger.getLogger(WorkCycleManager.class);
 
 	public static final int METHOD_DC					= 0;
 	public static final int METHOD_DCPLUS				= 1;
@@ -95,7 +98,7 @@ public class WorkCycleManager implements Observer{
 			return 0;
 		}
 		else {
-			Log.print(Log.LOG_ERROR, "Message too long to enter the send queue. Rejected", this);
+			log.error("Message too long to enter the send queue. Rejected");
 			return 1;
 		}
 	}

@@ -6,10 +6,14 @@ package de.tu.dresden.dud.dc.WorkCycle;
 
 import java.util.ArrayList;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Util;
 
 public class WorkCycleReservationPayload {
+
+	// Logging
+	Logger log = Logger.getLogger(WorkCycleReservationPayload.class);
 
 	public static final int RESERVATION_PAYLOAD_SIZE	= 12;
 	
@@ -48,7 +52,7 @@ public class WorkCycleReservationPayload {
 		this.payload = payload;
 
 		if (payload.length != RESERVATION_PAYLOAD_SIZE) {
-			Log.print(Log.LOG_WARN,"Payload length != minimal expected payload Length! Dropping packet!", this);
+			log.warn("Payload length != minimal expected payload Length! Dropping packet!");
 		}
 
 		this.participants = Util.stuffBytesIntoUInt(Util.getBytesByOffset(payload, 0, 4));

@@ -22,8 +22,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
@@ -35,6 +36,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
  */
 public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
+	// Logging
+	Logger log = Logger.getLogger(WorkCycleSending.class);
+	
 	private static final long MODULUS	= 0x100000000L;
 	
 	// internal variables
@@ -88,10 +92,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
 		if (relativeRound == m.getRoundNumber()
 				&& !Arrays.equals(m.getPayload(), payloadSend)) {
-			Log.print(
-					Log.LOG_ERROR,
-					"Expected and actual received payloads are not equal! Something is messing around with us!",
-					this);
+			log.error("Expected and actual received payloads are not equal! Something is messing around with us!");
 		}
 
 		switch (method) {
@@ -133,7 +134,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				i.next().sendMessage(m.getMessage());
 			}
 		} catch (IOException o) {
-			Log.print(Log.LOG_ERROR, o.toString(), this);
+			log.error(o.toString());
 		}
 	}
 
@@ -150,8 +151,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	public synchronized byte[] calcKeysMain(int length) {
 
 		if ((length % 4) != 0) {
-			Log.print(Log.LOG_ERROR, "Required key length is no multiple of 4",
-					this);
+			log.error("Required key length is no multiple of 4");
 		}
 
 		byte[] b = new byte[length];
@@ -168,7 +168,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		ArrayList<byte[]> bl = new ArrayList<byte[]>(apl.size());
 
 		if (apl.size() < WorkCycle.WC_MIN_ACTIVE_KEYS) {
-			Log.print(Log.LOG_ERROR, "There are not enough active keys.", this);
+			log.error("There are not enough active keys.");
 			// TODO what is the resulting action we should perform?
 		}
 
@@ -258,7 +258,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			prn++;
 		
 		if (length%4 != 0){
-			Log.print(Log.LOG_ERROR, "Desired key length is not dividable by four", this);
+			log.error("Desired key length is not dividable by four");
 		}
 		
 		for (int i = 0; i<prn; i++) {
@@ -363,7 +363,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		payloads = r.getPayloads();
 		// Add up
 		addUp();
-		Log.print(Log.LOG_DEBUG, "add up this ", payloadSend, this);
+		log.debug("add up this " + Arrays.toString(payloadSend));
 		// After adding up
 		// send out the the added
 		broadcastSum();
@@ -504,7 +504,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				getAssocParticipantManager().getMyInfo().getAssocConnection()
 						.sendMessage(m.getMessage());
 			} catch (IOException o) {
-				Log.print(Log.LOG_ERROR, o.toString(), this);
+				log.error(o.toString());
 			}
 
 			currentRound++;
@@ -517,7 +517,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){
-				Log.print(Log.LOG_ERROR, e.toString(), this);
+				log.error(e.toString());
 			}
 		}
 		

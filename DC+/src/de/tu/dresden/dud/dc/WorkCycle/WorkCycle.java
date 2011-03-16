@@ -12,8 +12,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.ParticipantManager;
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
@@ -39,6 +40,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
  *  it adds removes the payload from the WorkCycleManager and feeds the WorkCycleRound during the sending phase correspondingly.
  */
 public class WorkCycle extends Observable implements Observer {
+
+	// Logging
+	Logger log = Logger.getLogger(WorkCycle.class);
 
 	// Events
 	public final static int WC_ROUND_ADDUP              = 0;
@@ -186,9 +190,7 @@ public class WorkCycle extends Observable implements Observer {
 					.getParticipantMgmntInfoByParticipantID(kec.getP2());
 
 			if (pmi1 == null || pmi2 == null) {
-				Log.print(Log.LOG_WARN,
-								"Did not find one of participants. Sorry. Can not acomplish Key Exchange Request",
-								this);
+				log.warn("Did not find one of participants. Sorry. Can not acomplish Key Exchange Request");
 				continue;
 			}
 			try {
@@ -433,7 +435,7 @@ public class WorkCycle extends Observable implements Observer {
 			// rest gets done as soon as messages arrive...
 			
 		} catch (IOException e) {
-			Log.print(Log.LOG_ERROR, e.toString(), this);
+			log.error(e.toString());
 		}
 	}
 

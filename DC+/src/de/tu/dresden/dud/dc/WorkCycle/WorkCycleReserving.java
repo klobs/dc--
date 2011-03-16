@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Iterator;
 
-import de.tu.dresden.dud.dc.Log;
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 
 
@@ -20,6 +21,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
  * 
  */
 public class WorkCycleReserving extends WorkCycleSending {
+	
+	// Logging
+	Logger log = Logger.getLogger(WorkCycleReserving.class);
 
 	private int 	actualRoundsCalculated	= 0;
 	private short	myRandomNumber	 			= 0;
@@ -95,7 +99,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			try {
 				getAssocParticipantManager().getMyInfo().getAssocConnection().sendMessage(m.getMessage());
 			} catch (IOException o) {
-				Log.print(Log.LOG_ERROR, o.toString(), this);
+				log.error(o.toString());
 			}
 
 			// lock the semaphore, because we need to wait for the reaction
@@ -103,7 +107,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			try{
 			assocWorkCycle.getSemaphore().acquire();
 			} catch (InterruptedException e) {
-				Log.print(Log.LOG_ERROR, e.toString(), this);
+				log.error(e.toString());
 			}
 			
 			// The semaphore has be unlocked form a different thread (the producer, the work cycle)
@@ -197,7 +201,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			performDCReservationParticipantSide();
 			break;
 		default:
-			Log.print(Log.LOG_ERROR, "Unknown reservation method", this);
+			log.error( "Unknown reservation method");
 		}
 
 

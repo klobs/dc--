@@ -6,8 +6,9 @@ package de.tu.dresden.dud.dc.WorkCycle;
 
 import java.util.LinkedHashSet;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 
 /**
@@ -22,6 +23,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
  */
 public class WorkCycleRound extends WorkCycle {
 
+	// Logging
+	Logger log = Logger.getLogger(WorkCycleRound.class);
+	
 	private int 			roundNumber = 0;
 
 	/**
@@ -56,19 +60,15 @@ public class WorkCycleRound extends WorkCycle {
 		expectedConnections.remove(c);
 		confirmedConnections.add(c);
 
-		Log.print(Log.LOG_DEBUG,
+		log.debug(
 				"New ADD message for work cycle "+ m.getWorkCycleNumber() +" and round "+ m.getRoundNumber() +" is being processed. There are now "
 						+ confirmedConnections.size()
 						+ " confirmed messages and "
 						+ expectedConnections.size()
-						+ " more expected  messages", this);
+						+ " more expected  messages");
 
 		if (expectedConnections.size() == 0) {
-			Log
-					.print(
-							Log.LOG_DEBUG,
-							"	there are no more new messages expected. ADDing notification",
-							this);
+			log.debug("	there are no more new messages expected. ADDing notification");
 			setChanged();
 			notifyObservers(WorkCycle.WC_ROUND_ADDUP);
 		}
