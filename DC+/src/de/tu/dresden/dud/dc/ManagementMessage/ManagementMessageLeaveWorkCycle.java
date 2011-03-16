@@ -45,8 +45,11 @@ public class ManagementMessageLeaveWorkCycle extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		log.debug("Encoding LEAVEWORKCYCLE message");
-		log.debug("	Work cycle number: " + workCycleNumber  + " / " + Arrays.toString(workcyclenumber));
+		if(log.isDebugEnabled()){
+			log.debug("Encoding LEAVEWORKCYCLE message");
+			log.debug("	Work cycle number: " + workCycleNumber); 
+			log.trace(" / " + Arrays.toString(workcyclenumber));
+		}
 	}
 	
 	

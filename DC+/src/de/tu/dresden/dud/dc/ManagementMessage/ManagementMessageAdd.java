@@ -87,10 +87,12 @@ public class ManagementMessageAdd extends ManagementMessage {
 		this.payloadLength 	=  this.payload.length;
 		
 				
-		log.debug("Decoding ADD MESSAGE");
-		log.debug("	Work cycle number: " + this.workcyclenumber);
-		log.debug("	Round number: " + this.roundnumber);
-		log.debug("	Payload: " + Arrays.toString(this.payload));
+		if(log.isDebugEnabled()){
+			log.debug("Decoding ADD MESSAGE");
+			log.debug("	Work cycle number: " + this.workcyclenumber);
+			log.debug("	Round number: " + this.roundnumber);
+			log.debug("	Payload: " + Arrays.toString(this.payload));
+		}
 		
 	}
 		

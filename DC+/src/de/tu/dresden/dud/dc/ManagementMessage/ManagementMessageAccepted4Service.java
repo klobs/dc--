@@ -41,8 +41,11 @@ public class ManagementMessageAccepted4Service extends ManagementMessage{
 		b.add(messagetype	);
 		b.add(acc 			);
 		
-		log.debug("Encoding ACCEPTED4SERVICE MESSAGE");
-		log.debug("	Server accepted / rejected reason number: " + String.valueOf(a) + " / " + Arrays.toString(acc));
+		if(log.isDebugEnabled()){
+			log.debug("Encoding ACCEPTED4SERVICE MESSAGE");
+			log.debug("	Server accepted / rejected reason number: " + String.valueOf(a) );
+			log.trace(" / " + Arrays.toString(acc));
+		}
 		
 		message = craftMessage(b);
 	}

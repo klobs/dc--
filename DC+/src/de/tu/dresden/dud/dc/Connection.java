@@ -576,7 +576,8 @@ public class Connection extends Observable implements Runnable {
 
 					input.readFully(messageb, 0, length);
 
-					log.debug("received message from" + clientSocket.toString() + " " + Arrays.toString(messageb));
+					log.debug("received message from" + clientSocket.toString());
+					log.trace(Arrays.toString(messageb));
 
 					try {
 
@@ -589,8 +590,8 @@ public class Connection extends Observable implements Runnable {
 						log.warn(e.toString());
 						log.warn("Could not handle message correctly: "
 										+ String.valueOf(messagetype) + ","
-										+ String.valueOf(length) + ","
-										+ Arrays.toString(messageb));
+										+ String.valueOf(length));
+						log.trace(Arrays.toString(messageb));
 						log.warn(e.toString());
 					}
 				} catch (NullPointerException e) {
@@ -633,7 +634,7 @@ public class Connection extends Observable implements Runnable {
 		if (output == null)
 			throw new IOException("No output stream ready to send response");
 
-		log.debug("Sending message: " + Arrays.toString(r));
+		log.debug("Sending message: "  + Arrays.toString(r));
 
 		try {
 			output.write(r, 0, r.length);
@@ -962,7 +963,8 @@ public class Connection extends Observable implements Runnable {
 		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s, assocWorkCycleManager.getMethod());
 		try {
 
-			log.debug("Sending WELCOME2SERVER: " + Arrays.toString(m.getMessage()));
+			log.debug("Sending WELCOME2SERVER: " );
+			log.trace(Arrays.toString(m.getMessage()));
 			this.sendMessage(m.getMessage());
 		} catch (IOException e) {
 			log.error("Problemas occured with the WELCOME2SERVER message: " + e.toString());

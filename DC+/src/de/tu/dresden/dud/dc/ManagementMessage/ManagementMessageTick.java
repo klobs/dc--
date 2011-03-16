@@ -56,8 +56,11 @@ public class ManagementMessageTick extends ManagementMessage {
 	
 		this.message = craftMessage(b);
 		
-		log.debug("Encoding TICK MESSAGE");
-		log.debug("	Work cycle number: " + workCycleNumber  + " / " + Arrays.toString(workcyclenumber));
+		if(log.isDebugEnabled()){
+			log.debug("Encoding TICK MESSAGE");
+			log.debug("	Work cycle number: " + workCycleNumber); 
+			log.trace(" / " + Arrays.toString(workcyclenumber));
+		}
 	}
 	
 	

@@ -76,13 +76,18 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 		b.add(diffieHellmanSig);
 	
 		this.message = craftMessage(b);
-		
-		log.debug("Encoding REGISTER AT SERVICE MESSAGE");
-		log.debug("	Participant id " + id  + " / " + Arrays.toString(participantID));
-		log.debug("	Username: " + u + " / " + Arrays.toString(username));
-		log.debug("	Signature: " + new String(s) + " / " + Arrays.toString(signature));
-		log.debug("	DH: " + Arrays.toString(dh));
-		log.debug("	DH Sig: " + Arrays.toString(dhs));
+
+		if(log.isDebugEnabled()){
+			log.debug("Encoding REGISTER AT SERVICE MESSAGE");
+			log.debug("	Participant id " + id );
+			log.trace(" / " + Arrays.toString(participantID));
+			log.debug("	Username: " + u );
+			log.trace(" / " + Arrays.toString(username));
+			log.debug("	Signature: " + new String(s) );
+			log.trace(" / " + Arrays.toString(signature));
+			log.debug("	DH: " + Arrays.toString(dh));
+			log.debug("	DH Sig: " + Arrays.toString(dhs));
+		}
 	}
 	
 	
@@ -161,12 +166,14 @@ public class ManagementMessageRegisterAtService extends ManagementMessage {
 		}
 		dhPublicSig = Util.getBytesByOffset(payload, 8 + participantIDLength + usernameLength + signatureLength + dhLength, dhSigLength);
 		
-		log.debug("Decoding REGISTER AT SERVICE MESSAGE");
-		log.debug("	Participant id: " + participantID);
-		log.debug("	Username: " + username);
-		log.debug("	Signature: " + Arrays.toString(signature));
-		log.debug("	DH Public part: " + Arrays.toString(dhPublicPart));
-		log.debug("	DH Signature: " + Arrays.toString(dhPublicSig));
+		if(log.isDebugEnabled()){
+			log.debug("Decoding REGISTER AT SERVICE MESSAGE");
+			log.debug("	Participant id: " + participantID);
+			log.debug("	Username: " + username);
+			log.debug("	Signature: " + Arrays.toString(signature));
+			log.debug("	DH Public part: " + Arrays.toString(dhPublicPart));
+			log.debug("	DH Signature: " + Arrays.toString(dhPublicSig));
+		}
 	}
 	
 	public byte[] getDHPublicPart(){

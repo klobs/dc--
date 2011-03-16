@@ -70,13 +70,20 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 		b.add(urlLength		);
 		b.add(url			);
 		
-		log.debug("Encoding WELCOME2SERVICE MESSAGE");
-		log.debug("	Server protocol version: " + String.valueOf(VERSION) + " / " + Arrays.toString(version));
-		log.debug("	Server charlength: " + String.valueOf(s.getSymbolLength()) +  " / " + Arrays.toString(charLength));
-		log.debug("	Current users:" + String.valueOf(s.getInfoService().getParticipantCount()) + " / " + Arrays.toString(partCount));
-		log.debug("	Server is accepting new participants: " + String.valueOf(s.getInfoService().doAccept()) + " / " + Arrays.toString(acRej));
-		log.debug("	Service is using DC = 0, DC+ =1: " + String.valueOf(method));
-		log.debug("	Server's direcotory is located at (not yet implemented, though): " + s.getInfoService().getDirURL() + " / " + Arrays.toString(url));
+		if(log.isDebugEnabled()){
+			log.debug("Encoding WELCOME2SERVICE MESSAGE");
+			log.debug("	Server protocol version: " + String.valueOf(VERSION));
+			log.trace(" / " + Arrays.toString(version));
+			log.debug("	Server charlength: " + String.valueOf(s.getSymbolLength()));
+			log.trace(" / " + Arrays.toString(charLength));
+			log.debug("	Current users:" + String.valueOf(s.getInfoService().getParticipantCount()));
+			log.trace(" / " + Arrays.toString(partCount));
+			log.debug("	Server is accepting new participants: " + String.valueOf(s.getInfoService().doAccept()));
+			log.trace(" / " + Arrays.toString(acRej));
+			log.debug("	Service is using DC = 0, DC+ =1: " + String.valueOf(method));
+			log.debug("	Server's direcotory is located at (not yet implemented, though): " + s.getInfoService().getDirURL());
+			log.trace(" / " + Arrays.toString(url));
+		}
 		
 		message = craftMessage(b);
 	}
@@ -119,12 +126,14 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			errorProcessing = true;
 		url					= new String(payload, 9, urlLength);
 
-		log.debug("Decoding WELCOME2SERVICE MESSAGE");
-		log.debug("	Server requires " + String.valueOf(version) + " as protocol");
-		log.debug("	Server requires " + String.valueOf(charLength) + " as charlength");
-		log.debug("	There are currently " + String.valueOf(participantsCount) + " participants (not necissarily taking part in work cycles)");
-		log.debug("	Server is accepting new participants: " + String.valueOf(accept));
-		log.debug("	Server's direcotory is located at: " + url + " (not yet implemented, though)");
+		if(log.isDebugEnabled()){
+			log.debug("Decoding WELCOME2SERVICE MESSAGE");
+			log.debug("	Server requires " + String.valueOf(version) + " as protocol");
+			log.debug("	Server requires " + String.valueOf(charLength) + " as charlength");
+			log.debug("	There are currently " + String.valueOf(participantsCount) + " participants (not necissarily taking part in work cycles)");
+			log.debug("	Server is accepting new participants: " + String.valueOf(accept));
+			log.debug("	Server's direcotory is located at: " + url + " (not yet implemented, though)");
+		}
 	 }
 
 	

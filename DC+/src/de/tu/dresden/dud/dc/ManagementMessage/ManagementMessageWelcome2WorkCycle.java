@@ -96,14 +96,16 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 			b.add(p.getDHPublicPartSignature());
 		}
 
-		log.debug("Encoding WELCOME2WORKCYCLE MESSAGE");
-		log.debug("	Server accepted / rejected reason number: "
-				+ String.valueOf(accepted) + " / " + Arrays.toString(acc));
-		log.debug("	Send message for work cycle number: "
-				+ String.valueOf(workCycleNumber) + " / "
-				+ Arrays.toString(rno));
-		log.debug("	The timeout in ms has been set to: "
-				+ String.valueOf(timeout) + " / " + Arrays.toString(to));
+		if(log.isDebugEnabled()){
+			log.debug("Encoding WELCOME2WORKCYCLE MESSAGE");
+			log.debug("	Server accepted / rejected reason number: "
+					+ String.valueOf(accepted) + " / " + Arrays.toString(acc));
+			log.debug("	Send message for work cycle number: "
+					+ String.valueOf(workCycleNumber) + " / "
+					+ Arrays.toString(rno));
+			log.debug("	The timeout in ms has been set to: "
+					+ String.valueOf(timeout) + " / " + Arrays.toString(to));
+		}
 
 		message = craftMessage(b);
 	}
@@ -179,12 +181,14 @@ public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 			p.clear();
 		}
 
-		log.debug("Decoding WELCOME2WORKCYCLE MESSAGE");
-		log.debug("	Server accpeted / rejected reason number: "
-				+ String.valueOf(accepted));
-		log.debug("	Server want participant in work cycle number: "
-				+ String.valueOf(workcycle));
-		log.debug("	Timeout in ms has been set to: " + String.valueOf(timeout));
+		if(log.isDebugEnabled()){
+			log.debug("Decoding WELCOME2WORKCYCLE MESSAGE");
+			log.debug("	Server accpeted / rejected reason number: "
+					+ String.valueOf(accepted));
+			log.debug("	Server want participant in work cycle number: "
+					+ String.valueOf(workcycle));
+			log.debug("	Timeout in ms has been set to: " + String.valueOf(timeout));
+		}
 	}
 
 	/**

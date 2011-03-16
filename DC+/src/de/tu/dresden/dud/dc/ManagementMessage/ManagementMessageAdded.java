@@ -92,10 +92,12 @@ public class ManagementMessageAdded extends ManagementMessage {
 		this.payload 		=  Util.getBytesByOffset(payload, 10, payload.length - 10); 
 		this.payloadLength 	=  this.payload.length;
 				
-		log.debug("Decoding ADDED MESSAGE");
-		log.debug("	Work cycle number: " + this.workcyclenumber);
-		log.debug("	Round number: " + this.roundnumber);
-		log.debug("	Payload: " + Arrays.toString(this.payload));
+		if(log.isDebugEnabled()){
+			log.debug("Decoding ADDED MESSAGE");
+			log.debug("	Work cycle number: " + this.workcyclenumber);
+			log.debug("	Round number: " + this.roundnumber);
+			log.debug("	Payload: " + Arrays.toString(this.payload));
+		}
 		
 	}
 		
