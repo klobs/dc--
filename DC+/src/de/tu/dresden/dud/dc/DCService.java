@@ -4,10 +4,9 @@
  */
 package de.tu.dresden.dud.dc;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.log4j.BasicConfigurator;
 
 
 import de.tu.dresden.dud.dc.Gui.Gui;
@@ -24,11 +23,9 @@ public class DCService {
 	 */
 	public static void main(String[] args) {
 
-		ConsoleAppender a = new ConsoleAppender(new PatternLayout());
-		a.setTarget("System.out");
+	    BasicConfigurator.configure();
 		
-		Logger.getRootLogger().setLevel(Level.DEBUG);
-		Logger.getRootLogger().addAppender(a);
+	    Logger.getRootLogger().setLevel(Level.DEBUG);
 		
 		Gui mainWindow = new Gui();
 		mainWindow.setVisible(true);
