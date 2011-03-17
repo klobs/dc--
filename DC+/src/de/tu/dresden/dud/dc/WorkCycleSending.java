@@ -299,8 +299,8 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				b_ij = b_ij.multiply(vt);
 				b_ij = b_ij.mod(mod);
 
-				sigma.add(b_ij);
-				sigma.mod(mod);
+				sigma = sigma.add(b_ij);
+				sigma = sigma.mod(mod);
 			}
 			
 			// Because we need longer keys than 4 byte, we assume
