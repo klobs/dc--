@@ -142,7 +142,7 @@ public class WorkCycle extends Observable implements Observer {
 			}
 		}
 		else if (method == WorkCycleManager.METHOD_DCPLUS){
-			Util.concatenate(addedMessagesBin, m.getPayload());
+			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
