@@ -305,7 +305,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			
 			// Because we need longer keys than 4 byte, we assume
 			// each previous 4 byte message as passed with content 0
-			cr = Util.concatenate(cr, fillAndMergeSending(zero, sigma.toByteArray()));
+			cr = Util.concatenate(cr, fillAndMergeSending(zero, Util.getLastBytes(sigma.toByteArray(), 4)));
 			oldmesages = Util.concatenate(oldmesages, zero);
 			
 		}

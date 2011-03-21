@@ -101,6 +101,21 @@ public class Util {
 		return b;
 	}
 	
+	public static byte[] getLastBytes(byte[] a, int n) {
+		if (n == a.length)
+			return a;
+		if (n > a.length || !(n > 0))
+			return new byte[0];
+
+		byte[] b = new byte[n];
+
+		for (int i = 1; i <= n; i++) {
+			b[n - i] = a[a.length - i];
+		}
+
+		return b;
+	}
+	
 	/**
 	 * Put a byte array into an integer. Interpret the byte array as unsigned.
 	 * Ugly work has to be done. 
