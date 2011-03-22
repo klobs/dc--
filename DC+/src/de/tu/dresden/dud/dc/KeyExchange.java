@@ -6,6 +6,8 @@ package de.tu.dresden.dud.dc;
 
 import java.util.HashSet;
 
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoRequestKeyExchange;
+
 public class KeyExchange {
 
 	private HashSet<String> exchange = new HashSet<String>();

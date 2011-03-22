@@ -12,12 +12,20 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.apache.log4j.Logger;
+
+import de.tu.dresden.dud.dc.InfoService.InfoService;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
+
 
 /**
  * This class is the Participant with all the needed functionalities.
  * @author klobs
  */
 public class Participant extends Observable implements Observer {
+
+	// Logging
+	Logger log = Logger.getLogger(Participant.class);
 
 	private ArrayList<Connection> 	connections = new ArrayList<Connection>();
 	private InfoService				infoService	= null;
@@ -100,7 +108,7 @@ public class Participant extends Observable implements Observer {
 			return c;
 			
 		} catch( IOException e){
-			Log.print(Log.LOG_ERROR,"Problems when establishing connection", this);
+			log.error("Problems when establishing connection");
 			return new Connection(null,null, this);
 		}
 	}

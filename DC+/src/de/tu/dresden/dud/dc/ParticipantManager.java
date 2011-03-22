@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 
+import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
+
 /**
  * A ParticipantManager keeps track of different {@link Participant}s that are
  * known to the {@link Server} or the {@link Participant}s.

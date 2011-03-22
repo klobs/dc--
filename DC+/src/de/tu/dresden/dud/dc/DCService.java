@@ -4,6 +4,13 @@
  */
 package de.tu.dresden.dud.dc;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+
+
+import de.tu.dresden.dud.dc.Gui.Gui;
+
 	
 /**
  * SuperDuperTrooper-Class. Everything gets initialized here
@@ -16,6 +23,10 @@ public class DCService {
 	 */
 	public static void main(String[] args) {
 
+	    BasicConfigurator.configure();
+		
+	    Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		Gui mainWindow = new Gui();
 		mainWindow.setVisible(true);
 	}

@@ -7,11 +7,23 @@ package de.tu.dresden.dud.dc;
 import java.io.IOException;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoRequestKeyExchange;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfoRequest;
+import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
+import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
+
 /**
  * @author klobs
  * This class will be used for key exchange, later
  */
 public class KeyExchangeManager {
+
+	// Logging
+	Logger log = Logger.getLogger(KeyExchangeManager.class);
 
 	private HashSet<String> exchanges = new HashSet<String>();
 	
@@ -30,11 +42,7 @@ public class KeyExchangeManager {
 					.getParticipantMgmntInfoByParticipantID(info.getTo());
 
 			if (pmi1 == null || pmi2 == null) {
-				Log
-						.print(
-								Log.LOG_WARN,
-								"Did not find one of participants. Sorry. Can not acomplish Key Exchange Request",
-								this);
+				log.warn("Did not find one of participants. Sorry. Can not acomplish Key Exchange Request");
 				return;
 			}
 

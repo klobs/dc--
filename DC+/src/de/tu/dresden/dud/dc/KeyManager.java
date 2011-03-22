@@ -21,6 +21,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoPassiveParticipantList;
+
 
 /**
  * The Key Manager handles almost all the crypto stuff.
@@ -44,6 +49,9 @@ import java.util.LinkedList;
  *
  */
 public class KeyManager {
+
+	// Logging
+	Logger log = Logger.getLogger(KeyManager.class);
 
 	// p and g taken from http://www.rfc-archive.org/getrfc.php?rfc=5114
 	public static final String P = new String
@@ -162,24 +170,24 @@ public class KeyManager {
 		BigInteger 			 remoteDHPublicPart = null;
 		
 		if (p1 == null || pm == null){
-			Log.print(Log.LOG_WARN, "Key commit arguments can not be null. Aborting Key Commitment.", this);
+			log.warn("Key commit arguments can not be null. Aborting Key Commitment.");
 			return;
 		}
 		
 		pmi = pm.getParticipantMgmntInfoByParticipantID(p1);
 		
 		if (p1.equals(pm.getMe().getId())) {
-			Log.print(Log.LOG_WARN, "No need to exchange keys with myself. Aborting Key Commitment.", this);
+			log.warn("No need to exchange keys with myself. Aborting Key Commitment.");
 			return;
 		}
 		
 		if(pmi == null) {
-			Log.print(Log.LOG_WARN, "Unable to find ParticipantManagementInfo for " + p1 + ". Aborting Key Commitment.", this);
+			log.warn("Unable to find ParticipantManagementInfo for " + p1 + ". Aborting Key Commitment.");
 			return;
 		}
 		
 		if (pmi.getKey().getState() != DCKey.KEY_REQUESTED) {
-			Log.print(Log.LOG_WARN, "Key of " + p1 + " is not in exchanged state. Aborting Key Commitment.", this);
+			log.warn("Key of " + p1 + " is not in exchanged state. Aborting Key Commitment.");
 			return;
 		}
 		
