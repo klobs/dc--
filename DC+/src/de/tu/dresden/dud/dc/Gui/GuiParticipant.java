@@ -30,7 +30,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.PreferenceSaver;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
@@ -215,8 +214,6 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	
 					textName.setText(u);
 										
-					Log.getInstance().addObserver(observer);
-					
 					assocParticipant = new Participant(u);
 					assocParticipant.addObserver(observer);
 	
@@ -651,11 +648,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	
 	public void update(Observable o, Object arg){
 	
-		if (o instanceof Log) {
-//			if (arg.toString().contains(participant.toString()))
-//				listOutputModel.addElement(arg.toString().substring(
-//						arg.toString().lastIndexOf("|")));
-		} else if (o instanceof Participant){
+		if (o instanceof Participant){
 		  
 			// WELCOME2SERVICE
 			// Character length

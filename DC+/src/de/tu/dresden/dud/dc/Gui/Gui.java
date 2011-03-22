@@ -21,7 +21,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 
 import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Log;
 import de.tu.dresden.dud.dc.Server;
 
 
@@ -186,11 +185,8 @@ public class Gui extends javax.swing.JFrame {
 				public void actionPerformed(ActionEvent evt) {
 					Server s = new Server(Connection.DEFAULTPORT);
 					GuiServer g = new GuiServer();
-					Log.getInstance().addObserver(g);
 					
 					new Thread(s, "Server").start();
-					
-					getMainPane().add("Server / Log output" , g);
 					
 					this.setEnabled(false);
 				}
