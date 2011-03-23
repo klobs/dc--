@@ -6,6 +6,7 @@ package de.tu.dresden.dud.dc;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -594,6 +595,8 @@ public class Connection extends Observable implements Runnable {
 						log.trace(Arrays.toString(messageb));
 						log.warn(e.toString());
 					}
+				} catch(EOFException e){
+					log.warn("Remote connection ended unexpectedly. Cleaing up that mess...");
 				} catch (NullPointerException e) {
 					log.error("Experiencing problems with the connection: ");
 					log.error(e.toString());
