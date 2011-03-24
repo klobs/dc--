@@ -40,7 +40,7 @@ public class Server implements Runnable {
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();
 	private InfoService		info			= null;
 	private boolean			isStopped    	= false;
-	private KeyExchangeManager keyExManager = new KeyExchangeManager();
+	private KeyExchangeManager keyExManager = new KeyExchangeManager(KeyExchangeManager.KEX_MANUAL);
 	private ParticipantManager participantManager = new ParticipantManager();
 	private int 			port 			= 6867;
 	private WorkCycleManager	workCycleManager	= null;
@@ -57,7 +57,7 @@ public class Server implements Runnable {
 		// create InfoService
 		info = new InfoService(this);
 		
-		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DCPLUS ,0 /*Long.MIN_VALUE*/, symbollength);
+		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE ,0 /*Long.MIN_VALUE*/, symbollength);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}
@@ -121,15 +121,6 @@ public class Server implements Runnable {
 		return this.aspConns;
 	}
 	
-	/**
-	 * How long is one symbol payload? 
-	 * @return character length in bytes
-	 */
-	public int getSymbolLength() {
-		return symbollength;
-	}
-	
-	
 	
 	/**
 	 * @return Returns the list with all connections of the running server
@@ -158,6 +149,10 @@ public class Server implements Runnable {
 	
 	public KeyExchangeManager getKeyExchangeManager(){
 		return keyExManager;
+	}
+	
+	public WorkCycleManager getWorkCycleManager(){
+		return workCycleManager;
 	}
 	
 	/**

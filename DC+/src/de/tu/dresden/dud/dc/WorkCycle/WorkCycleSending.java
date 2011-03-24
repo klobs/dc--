@@ -79,7 +79,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			rn.addMessageArrived(c, m);
 			break;
 
-		case WorkCycleManager.METHOD_DCPLUS:
+		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			rn = getRoundByRoundNumber(m.getRoundNumber());
 			rn.addMessageArrived(c, m);			
 			break;
@@ -98,7 +98,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		switch (method) {
 		case WorkCycleManager.METHOD_DC:
 			break;
-		case WorkCycleManager.METHOD_DCPLUS:
+		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			break;
 		}
 	}
@@ -182,7 +182,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			// if we use DC, we have the key here. If we use failstop,
 			// the fun only begins here: cr now contains a_{ij}^t now let's
 			// go for the Σ-part
-			if (method == WorkCycleManager.METHOD_DCPLUS) {
+			if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
 				cr = mergeDCwise(
 						cr,
 						calcKeysSigmaCaller(workcycleNumber, currentRound, pmi,
@@ -513,7 +513,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(method == WorkCycleManager.METHOD_DCPLUS && finished != true)
+			if(method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){

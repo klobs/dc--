@@ -60,7 +60,14 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public static final int DEFAULTPORT = 6867;
 
-	// available modes for the connection.
+	// Lost connection handling
+	
+	/**
+	 * No handling for lost / broken connections
+	 */
+	public static final short HANDLING_EXPLODE = 0; 
+	
+	// Modes for the connection.
 	
 	/**
 	 * Status indicator for connections. This connection is broken and can no

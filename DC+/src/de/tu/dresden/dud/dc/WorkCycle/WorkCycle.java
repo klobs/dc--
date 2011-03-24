@@ -160,7 +160,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (method == WorkCycleManager.METHOD_DCPLUS){
+		else if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -370,7 +370,7 @@ public class WorkCycle extends Observable implements Observer {
 			
 			break;
 			
-		case WorkCycleManager.METHOD_DCPLUS: //TODO
+		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
 			// Liste der zu erwartenden Participants updaten.
 
 			// Reservieren.
@@ -483,7 +483,7 @@ public class WorkCycle extends Observable implements Observer {
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (method == WorkCycleManager.METHOD_DCPLUS) {
+				} else if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,

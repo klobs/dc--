@@ -29,8 +29,8 @@ public class WorkCycleManager implements Observer{
 	// Logging
 	Logger log = Logger.getLogger(WorkCycleManager.class);
 
-	public static final int METHOD_DC					= 0;
-	public static final int METHOD_DCPLUS				= 1;
+	public static final short METHOD_DC							= 0;
+	public static final short METHOD_DC_FAIL_STOP_WORK_CYCLE	= 1;
 
 	
 	private ParticipantManager	assocParticipantManager = null;
@@ -44,7 +44,7 @@ public class WorkCycleManager implements Observer{
 	private boolean				participantmode = false;
 	private int 				payloadlengths	= 0;
 	private LinkedList<byte[]>	payloads		= new LinkedList<byte[]>();
-	private int 				method			= -1;
+	private short 				method			= -1;
 	private TreeSet<WorkCycle> 		workcycless 			= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private TreeSet<WorkCycle>		oldworkcycles		= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private Server				server			= null;
@@ -52,7 +52,7 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(int method, long workCycleNumber, int payloadLengths){
+	public WorkCycleManager(short method, long workCycleNumber, int payloadLengths){
 		payloadlengths = payloadLengths;
 		
 		this.method = method;
@@ -145,7 +145,7 @@ public class WorkCycleManager implements Observer{
 		return payloads;
 	}
 	
-	public int getMethod(){
+	public short getMethod(){
 		return this.method;
 	}
 	
@@ -217,6 +217,15 @@ public class WorkCycleManager implements Observer{
 	public synchronized Server getServer(){
 		return server;
 	}
+	
+	/**
+	 * How long is one symbol payload? 
+	 * @return character length in bytes
+	 */
+	public int getSymbolLength() {
+		return payloadlengths;
+	}
+	
 	
 	public boolean isRunning(){
 		return getCurrentWorkCycle().workCycleHasStarted();

@@ -197,7 +197,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 		case WorkCycleManager.METHOD_DC:
 			performDCReservationParticipantSide();
 			break;
-		case WorkCycleManager.METHOD_DCPLUS:
+		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			performDCReservationParticipantSide();
 			break;
 		default:
