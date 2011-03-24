@@ -45,7 +45,7 @@ public class ManagementMessage{
 	public static final int LEAVESERVICE		= 13;
 
 	// The spoken / implemented version
-	public static final char  VERSION			= 0;
+	public static final char  VERSION			= 1;
 	
 	// variable for the assembled payload
 	protected byte[] message = null;
