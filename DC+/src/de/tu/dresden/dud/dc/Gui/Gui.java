@@ -188,6 +188,8 @@ public class Gui extends javax.swing.JFrame {
 					
 					new Thread(s, "Server").start();
 					
+					getMainPane().add("Server / Log output" , g);
+					
 					this.setEnabled(false);
 				}
 			};
