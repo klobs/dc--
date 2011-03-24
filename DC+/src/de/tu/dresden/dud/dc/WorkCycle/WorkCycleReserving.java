@@ -7,6 +7,7 @@ package de.tu.dresden.dud.dc.WorkCycle;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -27,8 +28,9 @@ public class WorkCycleReserving extends WorkCycleSending {
 	// Logging
 	private static Logger log = Logger.getLogger(WorkCycleReserving.class);
 
-	private int 	actualRoundsCalculated	= 0;
+	private LinkedList<Integer> 	actualRoundsCalculated	= new LinkedList<Integer>();
 	private short	myRandomNumber	 			= 0;
+	
 	
 	/**
 	 * @param r
@@ -132,7 +134,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				wait = 1;
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated++;
+					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
 				}
 			}
 			else if (myRandomNumber <= a.getAverage() &&  relativeRound < 0) { // left side of the branch
@@ -140,8 +142,8 @@ public class WorkCycleReserving extends WorkCycleSending {
 				// Current average is my random number and I am the only sender
 				if ((a.getParticipantCount() == 1) && (myRandomNumber == a.getAverage()))
 				{
-					relativeRound = actualRoundsCalculated;
-					actualRoundsCalculated++;
+					relativeRound = actualRoundsCalculated.size();
+					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
 					expectedRounds--;
 				} 
 				// Current average is my random sum, but there are more people trying to send it -> collusion
@@ -171,7 +173,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				//Did somebody else find the slot?
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated++;
+					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
 					wait--;
 				} else if (collisionpayload != null 
 						&& collisionpayload.getAverage() == a.getAverage() 
@@ -190,7 +192,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			finished = (expectedRounds == 0);
 		}
 		
-		expectedRounds = actualRoundsCalculated;
+		expectedRounds = actualRoundsCalculated.size();
 		
 		if (collisiondetected == true) relativeRound = -1;
 		
