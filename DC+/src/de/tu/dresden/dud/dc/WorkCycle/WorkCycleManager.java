@@ -31,10 +31,13 @@ public class WorkCycleManager implements Observer{
 	// Logging
 	private static Logger log = Logger.getLogger(WorkCycleManager.class);
 
+	public static final short METHOD_MESSAGES_FIXED_LENGTHS = 0;
+	public static final short METHOD_MESSAGES_VARIABLE_LENGTHS = 1;
+	
 	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
-	private boolean				fixedMessagemode=true;
+	private short				messageLengthMode 	= METHOD_MESSAGES_FIXED_LENGTHS;
 	private int 				infoOffset		= 0;
 	private int					joinOffset		= 0;
 	private int 				leaveOffset		= 5;
@@ -50,10 +53,12 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths){
+	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths, short messageMode){
 		payloadlengths = payloadLengths;
 		
 		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod, this);
+		
+		this.messageLengthMode = messageMode;
 		
 		currentWorkCycle = workCycleNumber;
 		
@@ -89,7 +94,7 @@ public class WorkCycleManager implements Observer{
 	 */
 	public synchronized int addMessage(byte[] p){
 		if (p.length <= payloadlengths){
-			if(fixedMessagemode){
+			if(messageLengthMode == METHOD_MESSAGES_FIXED_LENGTHS){
 				p = Util.fillAndMergeSending(p, new byte[payloadlengths]);
 			}
 			payloads.add(p);
@@ -129,6 +134,10 @@ public class WorkCycleManager implements Observer{
 	 */
 	public synchronized long getEntryWorkCycleNumber(){
 		return getCurrentWorkCycle().getWorkCycleNumber() + joinOffset;
+	}
+	
+	public short getMessageLengthMode(){
+		return messageLengthMode;
 	}
 	
 	public long getInfoOffset(){
@@ -265,10 +274,6 @@ public class WorkCycleManager implements Observer{
 		oldworkcycles.add(c); // save the old work cycle
 		workcycless.remove(c);
 		currentWorkCycle = n.getWorkCycleNumber();
-	}
-	
-	public synchronized void setFixedMessageMode(boolean m){
-		fixedMessagemode = m;
 	}
 	
 	public synchronized void setInfoOffset(int i){

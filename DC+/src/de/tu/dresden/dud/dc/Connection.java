@@ -827,9 +827,8 @@ public class Connection extends Observable implements Runnable {
 						assocWorkCycleManager
 								.tickArrived(lastTick.getWorkCycleNumber());
 					} else {
-						assocWorkCycleManager = new WorkCycleManager(welcome2Service
-								.getMethod(), lastTick.getWorkCycleNumber(),
-								welcome2Service.getCharLength());
+						assocWorkCycleManager = new WorkCycleManager(welcome2Service.getMethod(), lastTick.getWorkCycleNumber(),
+								welcome2Service.getCharLength(), welcome2Service.getFeatureMessageLength());
 						assocWorkCycleManager.setParticipant(assocParticipant);
 						assocWorkCycleManager
 								.setAssocParticipantManager(assocParticipantManager);

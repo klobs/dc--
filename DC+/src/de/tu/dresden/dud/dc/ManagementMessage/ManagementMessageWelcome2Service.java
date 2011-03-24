@@ -14,6 +14,8 @@ import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
+import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
+
 
 /**
  * @author klobs
@@ -163,7 +165,15 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			return b.shortValue();
 		}
 		
-		return KeyGenerator.KGMETHOD_DC;
+		return KeyGenerator.KGMETHOD_NULL;
+	}
+	
+	public short getFeatureMessageLength(){
+		if (featureMap.containsKey(Short.valueOf(FEATURE_VARIABLE_PAYLOAD_LENGTH))){
+			return featureMap.get(Short.valueOf(FEATURE_VARIABLE_PAYLOAD_LENGTH)).shortValue();
+		}
+		
+		return WorkCycleManager.METHOD_MESSAGES_FIXED_LENGTHS;
 	}
 	
 	private void setupFeatureList(byte[] fa){

@@ -73,9 +73,9 @@ public class WorkCycle extends Observable implements Observer {
 	protected WorkCycleManager		assocWorkCycleManag	= null;
 	protected int					currentPhase		= 0;
 	protected int 					expectedRounds 	= 0;
-	protected int					method				= -1;
+	protected int					keyGenerationMethod				= -1;
 	protected LinkedList<byte[]> 	payloads 			= new LinkedList<byte[]>();
-	protected LinkedList<Integer>	otherPayloadLength	= new LinkedList<Integer>();
+	protected LinkedList<Integer>	individualPayloadLengths	= new LinkedList<Integer>();
 	protected int 					relativeRound 	= -1;
 	private	  ServerReservationChecker reservationChecker = null;
 	protected long 					workcycleNumber 		= 0; // Long.MIN_VALUE;
@@ -102,7 +102,7 @@ public class WorkCycle extends Observable implements Observer {
 		this.timeout = timeout;
 		this.systemPayloadLength = payloadLength;
 		this.assocWorkCycleManag = r;
-		this.method = r.getKeyGenerationMethod();
+		this.keyGenerationMethod  = r.getKeyGenerationMethod();
 		this.assocKeyGenerator = r.getKeyGenerator();
 		this.addObserver(this);
 	}
@@ -150,7 +150,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (KeyGenerator.isAsynchronous(method)) {
+		if (KeyGenerator.isAsynchronous(keyGenerationMethod)) {
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -163,7 +163,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (KeyGenerator.isSynchronous(method)){
+		else if (KeyGenerator.isSynchronous(keyGenerationMethod)){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -300,9 +300,16 @@ public class WorkCycle extends Observable implements Observer {
 		return this.expectedRounds;
 	}
 
+	public LinkedList<Integer> getIndividualMessageLenghts(){
+		if(assocWorkCycleManag.getMessageLengthMode() != WorkCycleManager.METHOD_MESSAGES_VARIABLE_LENGTHS){
+			log.warn("Individual message lengths requested, but not in right mode for using them");
+		}
+		
+		return individualPayloadLengths;
+	}
 	
-	public int getMethod(){
-		return this.method;
+	public int getKeyGenerationMethod(){
+		return this.keyGenerationMethod;
 	}
 
 	public byte[] getMessageBin(){
@@ -454,18 +461,22 @@ public class WorkCycle extends Observable implements Observer {
 				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 
+				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.METHOD_MESSAGES_FIXED_LENGTHS){
+					individualPayloadLengths = ((WorkCycleReserving) o).getIndividualMessageLengths();
+				}
+				
 				currentPhase = WC_SENDING;
 
 				workCycleSending = new WorkCycleSending(this);
 				workCycleSending.addObserver(this);
 
 				// Summierung Starten
-				if (KeyGenerator.isAsynchronous(method)) {
+				if (KeyGenerator.isAsynchronous(keyGenerationMethod)) {
 
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (KeyGenerator.isSynchronous(method)) {
+				} else if (KeyGenerator.isSynchronous(keyGenerationMethod)) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,

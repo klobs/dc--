@@ -48,7 +48,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		expectedConnections = r.getExpectedConnections();
 		expectedRounds = r.getExpectedRounds() < 1 ? -1 : r
 				.getExpectedRounds();
-		method = r.getMethod();
+		keyGenerationMethod = r.getKeyGenerationMethod();
 		relativeRound = r.getRelativeRound();
 		systemPayloadLength = r.getSystemPayloadLength();
 		workcycleNumber = r.getWorkCycleNumber();
@@ -213,7 +213,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(KeyGenerator.isSynchronous(method) && finished != true)
+			if(KeyGenerator.isSynchronous(keyGenerationMethod) && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){

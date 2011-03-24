@@ -200,6 +200,10 @@ public class WorkCycleReserving extends WorkCycleSending {
 		setChanged();
 		notifyObservers(WorkCycle.WC_RESERVATION_FINISHED);
 	}
+	
+	public LinkedList<Integer> getIndividualMessageLengths(){
+		return actualRoundsCalculated;
+	}
 
 	@Override
 	public void run(){
