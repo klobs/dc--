@@ -683,10 +683,12 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    	// ADDED
 	    	else if (arg instanceof ManagementMessageAdded){
 	    		ManagementMessageAdded m = (ManagementMessageAdded) arg;
+	    		if(assocConnection.getAssociatedWorkCycleManager() != null){
 	    		if (assocConnection.getAssociatedWorkCycleManager().getCurrentWorkCycle().getCurrentPhase() == WorkCycle.WC_RESERVATION)
 	    		modelListSums.addElement("R:" + m.getWorkCycleNumber() + ", SR:"+ m.getRoundNumber() + "(reservation): "+ Arrays.toString(m.getPayload()) );
 	    		else if (assocConnection.getAssociatedWorkCycleManager().getCurrentWorkCycle().getCurrentPhase() == WorkCycle.WC_SENDING)
 		    		modelListSums.addElement("R:" + m.getWorkCycleNumber() + ", SR:"+ m.getRoundNumber() + ": " + new String(m.getPayload()) +"/"+ Arrays.toString(m.getPayload()));
+	    		}
 
 	    	}
 	    	
