@@ -21,6 +21,11 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycleSending;
 
+/**
+ * K_{ij}^t = a_{ij}^t
+ * @author klobs
+ *
+ */
 public class KeyGeneratorNormalDC extends KeyGenerator {
 
 
