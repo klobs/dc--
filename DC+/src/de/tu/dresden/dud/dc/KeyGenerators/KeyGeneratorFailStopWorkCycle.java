@@ -33,6 +33,7 @@ public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 	 * @param length length in bytes. Must be multiple of 4 (bytes).
 	 * @return
 	 */
+	@Override
 	protected synchronized byte[] calcKeysMain(int length) {
 
 		if ((length % 4) != 0) {

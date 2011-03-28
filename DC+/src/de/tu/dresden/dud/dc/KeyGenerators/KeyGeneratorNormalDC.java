@@ -153,16 +153,6 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 			cr = calcKeysAESPRNGCaller(workcycleNumber, currentRound, pmi,
 					length);
 
-			// if we use DC, we have the key here. If we use failstop,
-			// the fun only begins here: cr now contains a_{ij}^t now let's
-			// go for the Σ-part
-/*			if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
-				cr = mergeDCwise(
-						cr,
-						calcKeysSigmaCaller(workcycleNumber, currentRound, pmi,
-								length));
-			}
-*/
 			// Finally calculate the inverse, when needed.
 			if (pmi.getKey().getInverse()) {
 				cr = inverseKey(cr);
