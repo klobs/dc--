@@ -18,7 +18,7 @@ public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 	
 	public KeyGeneratorFailStopWorkCycle(WorkCycleManager wcm) {
 		super(wcm);
-		actualKeyGeneratingMethod = KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE;
+		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE;
 		
 		assocWorkCycle = wcm.getCurrentWorkCycle();
 	}

@@ -64,12 +64,12 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			ManagementMessageAdd m) {
 
 		switch (method) {
-		case KeyGenerator.METHOD_DC:
+		case KeyGenerator.KGMETHOD_DC:
 			WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
 			rn.addMessageArrived(c, m);
 			break;
 
-		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
 			rn = getRoundByRoundNumber(m.getRoundNumber());
 			rn.addMessageArrived(c, m);			
 			break;
@@ -86,9 +86,9 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		}
 
 		switch (method) {
-		case KeyGenerator.METHOD_DC:
+		case KeyGenerator.KGMETHOD_DC:
 			break;
-		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
 			break;
 		}
 	}
@@ -233,7 +233,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
+			if(method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){

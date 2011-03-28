@@ -6,7 +6,7 @@ public class KeyGeneratorNull extends KeyGenerator {
 
 	public KeyGeneratorNull(WorkCycleManager wcm) {
 		super(wcm);
-		actualKeyGeneratingMethod = KeyGenerator.METHOD_NULL;
+		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_NULL;
 	}
 
 	@Override

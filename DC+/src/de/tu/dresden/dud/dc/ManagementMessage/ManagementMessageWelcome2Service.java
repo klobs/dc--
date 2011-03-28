@@ -163,7 +163,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			return b.shortValue();
 		}
 		
-		return KeyGenerator.METHOD_DC;
+		return KeyGenerator.KGMETHOD_DC;
 	}
 	
 	private void setupFeatureList(byte[] fa){

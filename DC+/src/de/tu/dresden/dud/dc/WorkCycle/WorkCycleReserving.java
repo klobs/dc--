@@ -203,10 +203,10 @@ public class WorkCycleReserving extends WorkCycleSending {
 	public void run(){
 		switch (method) {
 
-		case KeyGenerator.METHOD_DC:
+		case KeyGenerator.KGMETHOD_DC:
 			performDCReservationParticipantSide();
 			break;
-		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
 			performDCReservationParticipantSide();
 			break;
 		default:

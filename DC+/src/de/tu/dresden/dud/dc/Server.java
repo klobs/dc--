@@ -58,7 +58,7 @@ public class Server implements Runnable {
 		// create InfoService
 		info = new InfoService(this);
 		
-		workCycleManager = new WorkCycleManager(KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE ,0 /*Long.MIN_VALUE*/, symbollength);
+		workCycleManager = new WorkCycleManager(KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE ,0 /*Long.MIN_VALUE*/, symbollength);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}

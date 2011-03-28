@@ -32,7 +32,7 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 	
 	public KeyGeneratorNormalDC(WorkCycleManager wcm) {
 		super(wcm);
-		actualKeyGeneratingMethod = KeyGenerator.METHOD_DC;
+		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_DC;
 	}
 
 	@Override

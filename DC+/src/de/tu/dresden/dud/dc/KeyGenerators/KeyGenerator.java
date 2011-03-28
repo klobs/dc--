@@ -4,9 +4,10 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 
 public abstract class KeyGenerator {
 
-	public static final short METHOD_NULL						= 0;
-	public static final short METHOD_DC							= 1;
-	public static final short METHOD_DC_FAIL_STOP_WORK_CYCLE	= 2;
+	public static final short KGMETHOD_NULL						= 0;
+	public static final short KGMETHOD_DC						= 1;
+	public static final short KGMETHOD_DC_FAIL_STOP_WORK_CYCLE	= 2;
+	public static final short KGMETHOD_PROBAB_FAIL_STOP			= 3;
 
 	protected WorkCycleManager 	assocWorkCycleManag = null;
 	protected static short 		actualKeyGeneratingMethod;
@@ -23,9 +24,9 @@ public abstract class KeyGenerator {
 	
 	public static KeyGenerator keyGeneratorFactory(int keyGeneratorMethod, WorkCycleManager wcm){
 		switch(keyGeneratorMethod){
-		case METHOD_DC:
+		case KGMETHOD_DC:
 			return new KeyGeneratorNormalDC(wcm);
-		case METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
 			return new KeyGeneratorFailStopWorkCycle(wcm);
 		}
 		return null;

@@ -150,7 +150,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (method == KeyGenerator.METHOD_DC) {
+		if (method == KeyGenerator.KGMETHOD_DC) {
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -163,7 +163,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE){
+		else if (method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -359,7 +359,7 @@ public class WorkCycle extends Observable implements Observer {
 		started = true;
 		
 		switch (method) {
-		case KeyGenerator.METHOD_DC:
+		case KeyGenerator.KGMETHOD_DC:
 
 			// Liste der zu erwartenden Participants updaten.
 
@@ -373,7 +373,7 @@ public class WorkCycle extends Observable implements Observer {
 			
 			break;
 			
-		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
+		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
 			// Liste der zu erwartenden Participants updaten.
 
 			// Reservieren.
@@ -481,12 +481,12 @@ public class WorkCycle extends Observable implements Observer {
 				workCycleSending.addObserver(this);
 
 				// Summierung Starten
-				if (method == KeyGenerator.METHOD_DC) {
+				if (method == KeyGenerator.KGMETHOD_DC) {
 
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
+				} else if (method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,
