@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.InfoService.InfoService;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
@@ -57,7 +58,7 @@ public class Server implements Runnable {
 		// create InfoService
 		info = new InfoService(this);
 		
-		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE ,0 /*Long.MIN_VALUE*/, symbollength);
+		workCycleManager = new WorkCycleManager(KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE ,0 /*Long.MIN_VALUE*/, symbollength);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}

@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 
@@ -39,7 +40,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	// Logging
 	Logger log = Logger.getLogger(WorkCycleSending.class);
 	
-	private static final long MODULUS	= 0x100000000L;
+	public static final long MODULUS	= 0x100000000L;
 	
 	// internal variables
 	protected boolean finished = false;
@@ -74,12 +75,12 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			ManagementMessageAdd m) {
 
 		switch (method) {
-		case WorkCycleManager.METHOD_DC:
+		case KeyGenerator.METHOD_DC:
 			WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
 			rn.addMessageArrived(c, m);
 			break;
 
-		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			rn = getRoundByRoundNumber(m.getRoundNumber());
 			rn.addMessageArrived(c, m);			
 			break;
@@ -96,9 +97,9 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		}
 
 		switch (method) {
-		case WorkCycleManager.METHOD_DC:
+		case KeyGenerator.METHOD_DC:
 			break;
-		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			break;
 		}
 	}
@@ -513,7 +514,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
+			if(method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.Util;
-import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 
 /**
  * @author klobs
@@ -163,7 +163,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			return b.shortValue();
 		}
 		
-		return WorkCycleManager.METHOD_DC;
+		return KeyGenerator.METHOD_DC;
 	}
 	
 	private void setupFeatureList(byte[] fa){

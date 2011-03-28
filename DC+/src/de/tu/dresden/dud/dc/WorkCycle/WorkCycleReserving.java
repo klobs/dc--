@@ -10,6 +10,8 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import de.tu.dresden.dud.dc.Util;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 
 
@@ -194,10 +196,10 @@ public class WorkCycleReserving extends WorkCycleSending {
 	public void run(){
 		switch (method) {
 
-		case WorkCycleManager.METHOD_DC:
+		case KeyGenerator.METHOD_DC:
 			performDCReservationParticipantSide();
 			break;
-		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE:
+		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE:
 			performDCReservationParticipantSide();
 			break;
 		default:

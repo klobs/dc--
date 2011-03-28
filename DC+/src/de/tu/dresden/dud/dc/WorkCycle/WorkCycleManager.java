@@ -17,8 +17,10 @@ import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.ParticipantManager;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
+import de.tu.dresden.dud.dc.Util;
 
 /**
  * @author klobs
@@ -29,10 +31,6 @@ public class WorkCycleManager implements Observer{
 	// Logging
 	Logger log = Logger.getLogger(WorkCycleManager.class);
 
-	public static final short METHOD_DC							= 0;
-	public static final short METHOD_DC_FAIL_STOP_WORK_CYCLE	= 1;
-
-	
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
 	private boolean				fixedMessagemode=true;

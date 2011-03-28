@@ -22,6 +22,7 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceUpdateActiveJoining;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceUpdateActiveLeaving;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
@@ -147,7 +148,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (method == WorkCycleManager.METHOD_DC) {
+		if (method == KeyGenerator.METHOD_DC) {
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -160,7 +161,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE){
+		else if (method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -356,7 +357,7 @@ public class WorkCycle extends Observable implements Observer {
 		started = true;
 		
 		switch (method) {
-		case WorkCycleManager.METHOD_DC:
+		case KeyGenerator.METHOD_DC:
 
 			// Liste der zu erwartenden Participants updaten.
 
@@ -370,7 +371,7 @@ public class WorkCycle extends Observable implements Observer {
 			
 			break;
 			
-		case WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
+		case KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
 			// Liste der zu erwartenden Participants updaten.
 
 			// Reservieren.
@@ -478,12 +479,12 @@ public class WorkCycle extends Observable implements Observer {
 				workCycleSending.addObserver(this);
 
 				// Summierung Starten
-				if (method == WorkCycleManager.METHOD_DC) {
+				if (method == KeyGenerator.METHOD_DC) {
 
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (method == WorkCycleManager.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
+				} else if (method == KeyGenerator.METHOD_DC_FAIL_STOP_WORK_CYCLE) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,
