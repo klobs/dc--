@@ -31,6 +31,7 @@ public class WorkCycleManager implements Observer{
 	// Logging
 	Logger log = Logger.getLogger(WorkCycleManager.class);
 
+	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
 	private boolean				fixedMessagemode=true;
@@ -42,7 +43,6 @@ public class WorkCycleManager implements Observer{
 	private boolean				participantmode = false;
 	private int 				payloadlengths	= 0;
 	private LinkedList<byte[]>	payloads		= new LinkedList<byte[]>();
-	private short 				keyGenerationMethod			= -1;
 	private TreeSet<WorkCycle> 		workcycless 			= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private TreeSet<WorkCycle>		oldworkcycles		= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private Server				server			= null;
@@ -53,7 +53,7 @@ public class WorkCycleManager implements Observer{
 	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths){
 		payloadlengths = payloadLengths;
 		
-		this.keyGenerationMethod = keyGenerationMethod;
+		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod, this);
 		
 		currentWorkCycle = workCycleNumber;
 		
@@ -90,7 +90,7 @@ public class WorkCycleManager implements Observer{
 	public synchronized int addMessage(byte[] p){
 		if (p.length <= payloadlengths){
 			if(fixedMessagemode){
-				p = WorkCycleSending.fillAndMergeSending(p, new byte[payloadlengths]);
+				p = Util.fillAndMergeSending(p, new byte[payloadlengths]);
 			}
 			payloads.add(p);
 			return 0;
@@ -143,8 +143,14 @@ public class WorkCycleManager implements Observer{
 		return payloads;
 	}
 	
+	public KeyGenerator getKeyGenerator(){
+		return assocKeyGenerator;
+	}
+	
 	public short getKeyGenerationMethod(){
-		return this.keyGenerationMethod;
+		if (assocKeyGenerator != null)
+			return assocKeyGenerator.getKeyGenerationMethod();
+		return -1;
 	}
 	
 	/**

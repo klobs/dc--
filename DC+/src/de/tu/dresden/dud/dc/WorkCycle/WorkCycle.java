@@ -69,6 +69,7 @@ public class WorkCycle extends Observable implements Observer {
 	
 	private   LinkedList<InfoServiceInfoKeyExchangeCommit> keyExchangeCommitMessages = new LinkedList<InfoServiceInfoKeyExchangeCommit>();
 	
+	protected KeyGenerator			assocKeyGenerator	= null;
 	protected WorkCycleManager		assocWorkCycleManag	= null;
 	protected int					currentPhase		= 0;
 	protected int 					expectedRounds 	= 0;
@@ -93,7 +94,7 @@ public class WorkCycle extends Observable implements Observer {
 	 * do not use this constructor.
 	 */
 	public WorkCycle(){
-		
+		log.warn("Do not use this constructor directly");
 	}
 
 	public WorkCycle(long workcycleNumber, int timeout, int payloadLength, WorkCycleManager r) {
@@ -102,6 +103,7 @@ public class WorkCycle extends Observable implements Observer {
 		this.systemPayloadLength = payloadLength;
 		this.assocWorkCycleManag = r;
 		this.method = r.getKeyGenerationMethod();
+		this.assocKeyGenerator = r.getKeyGenerator();
 		this.addObserver(this);
 	}
 	
@@ -242,7 +244,7 @@ public class WorkCycle extends Observable implements Observer {
 	*/
 	public byte[] consumePayload(){
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
-			return WorkCycleSending.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
+			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
 		}
 		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
 		return assocWorkCycleManag.getPayloadList().removeFirst();

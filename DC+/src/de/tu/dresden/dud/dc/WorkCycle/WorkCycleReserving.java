@@ -56,7 +56,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 
 		while (i.hasNext()) {
 			byte[] c = i.next();
-			b = mergeDCwise(b, c);
+			b = Util.mergeDCwise(b, c, WorkCycleSending.MODULUS);
 		}
 
 		payloadSend = b;
@@ -88,12 +88,19 @@ public class WorkCycleReserving extends WorkCycleSending {
 					&& (this.assocWorkCycle.hasPayload())
 					&& !collisiondetected) {
 				// Yes, we do want, so prepare the message with the right keys.
-				byte[] p = mergeDCwise(rp.getPayload(), calcKeysMain(WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE));
+				byte[] p = Util.mergeDCwise(
+						rp.getPayload(),
+						assocKeyGenerator
+								.calcKeys(
+										WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
+										workcycleNumber, currentRound), WorkCycleSending.MODULUS);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 				waited = 0;
 			} else {
 				// no, so only an empty message with the keys has to be sent.
-				byte[] p = calcKeysMain(WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE);
+				byte[] p = assocKeyGenerator.calcKeys(
+						WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
+						workcycleNumber, currentRound);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 			}
 			

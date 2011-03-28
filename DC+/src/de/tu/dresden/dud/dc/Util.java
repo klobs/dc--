@@ -63,6 +63,46 @@ public class Util {
 	    return data;
 	}
 	
+
+	/**
+	 * Merge two unequally sized byte arrays (by xoring each element). The
+	 * shorter one will be padded up to the length of the longer one with 0s.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static byte[] fillAndMergeSending(byte[] a, byte[] b) {
+
+		if (a == null | b == null)
+			throw new IllegalArgumentException("The arrays a, b are null.");
+
+		int i;
+		byte[] shorterone = null;
+		byte[] longerone = null;
+
+		if (a.length <= b.length) {
+			shorterone = a;
+			longerone = b;
+		} else {
+			shorterone = b;
+			longerone = a;
+		}
+
+		byte[] c = new byte[longerone.length];
+
+		for (i = 0; i < shorterone.length; i++) {
+			c[i] = (byte) (a[i] ^ b[i]);
+		}
+
+		while (i < longerone.length) {
+			c[i] = longerone[i];
+			i++;
+		}
+
+		return c;
+	}
+	
 	/**
 	 * Returns the first n bytes of array a
 	 * @param a The array that contains the info
@@ -114,6 +154,38 @@ public class Util {
 		}
 
 		return b;
+	}
+	
+	/**
+	 * Merge two equally sized byte arrays (by xoring each element).
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static byte[] mergeDCwise(byte[] a, byte[] b, final long modulus) {
+
+		if (a == null | b == null | a.length != b.length)
+			throw new IllegalArgumentException(
+					"The arrays a, b are null or do not have the same length.");
+
+		byte[] c = new byte[a.length];
+
+		for (int i = 0; i< a.length; i = i+4){
+			
+			long ka = Util.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(a,i, 4)) % modulus;
+			long kb = Util.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(b,i, 4)) % modulus;
+			
+			long d = (ka + kb) % modulus;
+			
+			c[i]   = (byte) (d >>> 24);
+			c[i+1] = (byte) (d >>> 16);
+			c[i+2] = (byte) (d >>> 8 );
+			c[i+3] = (byte) d;
+		}
+		
+		return c;
+
 	}
 	
 	/**
