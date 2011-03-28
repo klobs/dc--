@@ -44,7 +44,7 @@ public class WorkCycleManager implements Observer{
 	private boolean				participantmode = false;
 	private int 				payloadlengths	= 0;
 	private LinkedList<byte[]>	payloads		= new LinkedList<byte[]>();
-	private short 				method			= -1;
+	private short 				keyGenerationMethod			= -1;
 	private TreeSet<WorkCycle> 		workcycless 			= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private TreeSet<WorkCycle>		oldworkcycles		= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private Server				server			= null;
@@ -52,10 +52,10 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(short method, long workCycleNumber, int payloadLengths){
+	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths){
 		payloadlengths = payloadLengths;
 		
-		this.method = method;
+		this.keyGenerationMethod = keyGenerationMethod;
 		
 		currentWorkCycle = workCycleNumber;
 		
@@ -145,8 +145,8 @@ public class WorkCycleManager implements Observer{
 		return payloads;
 	}
 	
-	public short getMethod(){
-		return this.method;
+	public short getKeyGenerationMethod(){
+		return this.keyGenerationMethod;
 	}
 	
 	/**

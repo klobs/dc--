@@ -25,7 +25,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
     private Logger log = Logger.getLogger(ManagementMessageWelcome2Service.class);
 
     // Features
-    public static final short FEATURE_METHOD 					= 0;
+    public static final short FEATURE_KEY_GENERATION 			= 0;
     public static final short FEATURE_LOST_CONNECTION_HANDLING 	= 1;
     public static final short FEATURE_KEY_EXCHANGE				= 2;
     public static final short FEATURE_VARIABLE_PAYLOAD_LENGTH	= 3;
@@ -158,7 +158,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	}
 
 	public short getMethod(){
-		Short b = featureMap.get(Short.valueOf(FEATURE_METHOD));
+		Short b = featureMap.get(Short.valueOf(FEATURE_KEY_GENERATION));
 		if (b != null){
 			return b.shortValue();
 		}
@@ -180,7 +180,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	}
 	
 	private void setupFeatureList(Server s){
-		featureMap.put(Short.valueOf(FEATURE_METHOD), Short.valueOf(s.getWorkCycleManager().getMethod()));
+		featureMap.put(Short.valueOf(FEATURE_KEY_GENERATION), Short.valueOf(s.getWorkCycleManager().getKeyGenerationMethod()));
 
 		featureMap.put(Short.valueOf(FEATURE_LOST_CONNECTION_HANDLING), Short
 				.valueOf(Connection.HANDLING_EXPLODE));

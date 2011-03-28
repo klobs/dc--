@@ -100,7 +100,7 @@ public class WorkCycle extends Observable implements Observer {
 		this.timeout = timeout;
 		this.systemPayloadLength = payloadLength;
 		this.assocWorkCycleManag = r;
-		this.method = r.getMethod();
+		this.method = r.getKeyGenerationMethod();
 		this.addObserver(this);
 	}
 	
