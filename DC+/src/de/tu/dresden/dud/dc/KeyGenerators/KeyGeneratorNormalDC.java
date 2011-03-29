@@ -30,7 +30,7 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleManager.class);
+	private Logger log = Logger.getLogger(KeyGeneratorNormalDC.class);
 	
 	protected long workcycleNumber;
 	protected int  currentRound;

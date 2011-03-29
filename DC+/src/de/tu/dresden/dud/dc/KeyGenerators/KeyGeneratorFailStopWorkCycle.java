@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
@@ -14,6 +16,10 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleSending;
 
 public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 
+	// Logging
+	private Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
+
+	
 	WorkCycle assocWorkCycle;
 	
 	public KeyGeneratorFailStopWorkCycle(WorkCycleManager wcm) {
