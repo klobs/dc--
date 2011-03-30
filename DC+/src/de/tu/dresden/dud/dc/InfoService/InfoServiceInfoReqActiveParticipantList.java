@@ -19,7 +19,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 public class InfoServiceInfoReqActiveParticipantList extends InfoServiceInfoRequest{
 	
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceInfoReqActiveParticipantList.class);
+	private static Logger log = Logger.getLogger(InfoServiceInfoReqActiveParticipantList.class);
 
 	public InfoServiceInfoReqActiveParticipantList(){
 		infoservicerequest = Util.stuffIntIntoShort(InfoServiceInfoRequest.IRQ_ACTIVEPARTICIPANTLIST);

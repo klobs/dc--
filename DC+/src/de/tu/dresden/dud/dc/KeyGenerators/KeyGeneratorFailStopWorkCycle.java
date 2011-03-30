@@ -17,7 +17,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleSending;
 public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 
 	// Logging
-	private Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
+	private static Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
 
 	
 	WorkCycle assocWorkCycle;

@@ -20,7 +20,7 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 public class ManagementMessageInfo extends ManagementMessage {
 	
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageInfo.class);
+    private static Logger log = Logger.getLogger(ManagementMessageInfo.class);
 	
 	private InfoServiceInfo info = null;
 		

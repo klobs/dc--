@@ -1,9 +1,14 @@
 package de.tu.dresden.dud.dc.KeyGenerators;
 
+import org.apache.log4j.Logger;
+
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 
 public abstract class KeyGenerator {
 
+	// Logging
+	private static Logger log = Logger.getLogger(KeyGenerator.class);
+	
 	public static final short KGMETHOD_NULL						= 0;
 	public static final short KGMETHOD_DC						= 1;
 	public static final short KGMETHOD_DC_FAIL_STOP_WORK_CYCLE	= 2;

@@ -23,7 +23,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class KeyExchangeManager {
 
 	// Logging
-	Logger log = Logger.getLogger(KeyExchangeManager.class);
+	private static Logger log = Logger.getLogger(KeyExchangeManager.class);
 
 	// Key exchange methods
 	

@@ -13,7 +13,7 @@ import de.tu.dresden.dud.dc.Util;
 public class WorkCycleReservationPayload {
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleReservationPayload.class);
+	private static Logger log = Logger.getLogger(WorkCycleReservationPayload.class);
 
 	public static final int RESERVATION_PAYLOAD_SIZE	= 12;
 	

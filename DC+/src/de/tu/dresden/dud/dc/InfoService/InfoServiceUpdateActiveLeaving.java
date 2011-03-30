@@ -19,7 +19,7 @@ import de.tu.dresden.dud.dc.Util;
 public class InfoServiceUpdateActiveLeaving extends InfoServiceInfo {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceUpdateActiveLeaving.class);
+	private static Logger log = Logger.getLogger(InfoServiceUpdateActiveLeaving.class);
 
 private LinkedList<Participant> activeLeavingParticipants = new LinkedList<Participant>();
 	private LinkedList<Long> workCycleNumbers = new LinkedList<Long>();	

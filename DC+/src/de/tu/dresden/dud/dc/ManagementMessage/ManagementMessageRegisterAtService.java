@@ -14,7 +14,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageRegisterAtService extends ManagementMessage {
 
 	// Logging
-	private Logger log = Logger.getLogger(ManagementMessageRegisterAtService.class);
+	private static Logger log = Logger.getLogger(ManagementMessageRegisterAtService.class);
 	
 	private byte[] dhPublicPart;
 	private byte[] dhPublicSig;

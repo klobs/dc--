@@ -53,7 +53,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class Connection extends Observable implements Runnable {
 
 	// Logging
-	Logger log = Logger.getLogger(Connection.class);
+	private static Logger log = Logger.getLogger(Connection.class);
 
 	/**
 	 *  Default port

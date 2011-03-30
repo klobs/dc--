@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.Util;
 public class InfoServiceUpdateActiveJoining extends InfoServiceInfo {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceUpdateActiveJoining.class);
+	private static Logger log = Logger.getLogger(InfoServiceUpdateActiveJoining.class);
 
 	private LinkedList<Participant> activeJoiningParticipants = new LinkedList<Participant>();
 	private LinkedList<Long> workCycleNumbers = new LinkedList<Long>();	

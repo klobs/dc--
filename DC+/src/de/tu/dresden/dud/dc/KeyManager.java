@@ -51,7 +51,7 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoPassiveParticipantList;
 public class KeyManager {
 
 	// Logging
-	Logger log = Logger.getLogger(KeyManager.class);
+	private static Logger log = Logger.getLogger(KeyManager.class);
 
 	// p and g taken from http://www.rfc-archive.org/getrfc.php?rfc=5114
 	public static final String P = new String

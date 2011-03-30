@@ -23,7 +23,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleSending;
 public class KeyGeneratorProbabFailStop extends KeyGeneratorNormalDC {
 
 	// Logging
-	private Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
+	private static Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
 	
 	private WorkCycle assocWorkCycle = null;
 	private HashMap<ParticipantMgmntInfo, byte[]> lastKeys = new HashMap<ParticipantMgmntInfo, byte[]>();

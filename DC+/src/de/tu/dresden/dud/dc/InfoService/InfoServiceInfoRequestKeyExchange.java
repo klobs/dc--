@@ -14,7 +14,7 @@ import de.tu.dresden.dud.dc.Util;
 public class InfoServiceInfoRequestKeyExchange extends InfoServiceInfoRequest {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceInfoRequestKeyExchange.class);
+	private static Logger log = Logger.getLogger(InfoServiceInfoRequestKeyExchange.class);
 
 	private String from = null;
 	private String to   = null;

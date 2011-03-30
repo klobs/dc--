@@ -22,7 +22,7 @@ import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 public class ManagementMessageWelcome2Service extends ManagementMessage{
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageWelcome2Service.class);
+    private static Logger log = Logger.getLogger(ManagementMessageWelcome2Service.class);
 
     // Features
     public static final short FEATURE_KEY_GENERATION 			= 0;

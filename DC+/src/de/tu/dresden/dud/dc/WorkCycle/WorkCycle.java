@@ -43,7 +43,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 public class WorkCycle extends Observable implements Observer {
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycle.class);
+	private static Logger log = Logger.getLogger(WorkCycle.class);
 
 	// Events
 	public final static int WC_ROUND_ADDUP              = 0;

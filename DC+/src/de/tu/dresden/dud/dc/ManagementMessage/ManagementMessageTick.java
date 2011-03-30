@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageTick extends ManagementMessage {
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageTick.class);
+    private static Logger log = Logger.getLogger(ManagementMessageTick.class);
 
 
 	private long workcyclenumber;

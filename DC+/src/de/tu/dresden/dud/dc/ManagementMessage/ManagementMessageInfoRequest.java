@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoRequest;
 public class ManagementMessageInfoRequest extends ManagementMessage {
 
 	// Logging
-	private Logger log = Logger.getLogger(ManagementMessageInfoRequest.class);
+	private static Logger log = Logger.getLogger(ManagementMessageInfoRequest.class);
 	
 	private InfoServiceInfoRequest inforequest = null;
 	

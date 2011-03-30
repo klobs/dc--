@@ -21,7 +21,7 @@ import de.tu.dresden.dud.dc.Util;
 public class InfoServiceInfoActiveParticipantList extends InfoServiceInfo {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceInfoActiveParticipantList.class);
+	private static Logger log = Logger.getLogger(InfoServiceInfoActiveParticipantList.class);
 
 	private LinkedList<Participant> activeParticipant = new LinkedList<Participant>();
 	

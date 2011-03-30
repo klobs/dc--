@@ -25,7 +25,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
 public class Participant extends Observable implements Observer {
 
 	// Logging
-	Logger log = Logger.getLogger(Participant.class);
+	private static Logger log = Logger.getLogger(Participant.class);
 
 	private ArrayList<Connection> 	connections = new ArrayList<Connection>();
 	private InfoService				infoService	= null;

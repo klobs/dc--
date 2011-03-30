@@ -26,7 +26,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleSending.class);
+	private static Logger log = Logger.getLogger(WorkCycleSending.class);
 	
 	public static final long MODULUS	= 0x100000000L;
 	

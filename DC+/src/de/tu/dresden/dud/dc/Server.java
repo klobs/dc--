@@ -35,7 +35,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class Server implements Runnable {
 
 	// Logging
-	Logger log = Logger.getLogger(Server.class);
+	private static Logger log = Logger.getLogger(Server.class);
 
 	private int				symbollength	= 12;
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();

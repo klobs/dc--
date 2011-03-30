@@ -25,7 +25,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 public class WorkCycleReserving extends WorkCycleSending {
 	
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleReserving.class);
+	private static Logger log = Logger.getLogger(WorkCycleReserving.class);
 
 	private int 	actualRoundsCalculated	= 0;
 	private short	myRandomNumber	 			= 0;

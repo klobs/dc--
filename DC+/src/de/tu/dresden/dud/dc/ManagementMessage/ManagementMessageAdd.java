@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageAdd extends ManagementMessage {
 	
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageAdd.class);
+    private static Logger log = Logger.getLogger(ManagementMessageAdd.class);
 	
 	private byte[]	payload;
 	private int		payloadLength 	= 0;

@@ -25,7 +25,7 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
 public class InfoServiceInfoKeyExchangeCommit extends InfoServiceInfo {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceInfoKeyExchangeCommit.class);
+	private static Logger log = Logger.getLogger(InfoServiceInfoKeyExchangeCommit.class);
 
 	public String p1 = null;
 	public String p2 = null;

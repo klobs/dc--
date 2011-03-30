@@ -29,7 +29,7 @@ import de.tu.dresden.dud.dc.Util;
 public class WorkCycleManager implements Observer{
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleManager.class);
+	private static Logger log = Logger.getLogger(WorkCycleManager.class);
 
 	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
