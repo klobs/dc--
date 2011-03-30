@@ -93,14 +93,14 @@ public class WorkCycleReserving extends WorkCycleSending {
 						assocKeyGenerator
 								.calcKeys(
 										WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
-										workcycleNumber, currentRound), WorkCycleSending.MODULUS);
+										workcycleNumber, rc), WorkCycleSending.MODULUS);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 				waited = 0;
 			} else {
 				// no, so only an empty message with the keys has to be sent.
 				byte[] p = assocKeyGenerator.calcKeys(
 						WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
-						workcycleNumber, currentRound);
+						workcycleNumber, rc);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 			}
 			
@@ -201,18 +201,6 @@ public class WorkCycleReserving extends WorkCycleSending {
 
 	@Override
 	public void run(){
-		switch (method) {
-
-		case KeyGenerator.KGMETHOD_DC:
-			performDCReservationParticipantSide();
-			break;
-		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
-			performDCReservationParticipantSide();
-			break;
-		default:
-			log.error( "Unknown reservation method");
-		}
-
-
+		performDCReservationParticipantSide();
 	}
 }

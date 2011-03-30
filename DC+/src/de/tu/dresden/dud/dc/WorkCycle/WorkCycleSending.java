@@ -62,34 +62,14 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 	public synchronized void addMessageArrived(Connection c,
 			ManagementMessageAdd m) {
-
-		switch (method) {
-		case KeyGenerator.KGMETHOD_DC:
-			WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
-			rn.addMessageArrived(c, m);
-			break;
-
-		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
-			rn = getRoundByRoundNumber(m.getRoundNumber());
-			rn.addMessageArrived(c, m);			
-			break;
-		
-		default:
-			break;
-		}
+		WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
+		rn.addMessageArrived(c, m);			
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
 		if (relativeRound == m.getRoundNumber()
 				&& !Arrays.equals(m.getPayload(), payloadSend)) {
 			log.error("Expected and actual received payloads are not equal! Something is messing around with us!");
-		}
-
-		switch (method) {
-		case KeyGenerator.KGMETHOD_DC:
-			break;
-		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE:
-			break;
 		}
 	}
 
@@ -233,7 +213,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				finished = true;
 			
 			try{
-			if(method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE && finished != true)
+			if(KeyGenerator.isSynchronous(method) && finished != true)
 				assocWorkCycle.getSemaphore().acquire();
 			}
 			catch (InterruptedException e){

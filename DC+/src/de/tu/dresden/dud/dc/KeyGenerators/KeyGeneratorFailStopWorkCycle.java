@@ -20,13 +20,9 @@ public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 	private static Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
 
 	
-	WorkCycle assocWorkCycle;
-	
 	public KeyGeneratorFailStopWorkCycle(WorkCycleManager wcm) {
 		super(wcm);
 		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE;
-		
-		assocWorkCycle = wcm.getCurrentWorkCycle();
 	}
 	
 	/**
@@ -99,7 +95,7 @@ public class KeyGeneratorFailStopWorkCycle extends KeyGeneratorNormalDC {
 		BigInteger 	b_ij 		= null;
 		byte[] 		cr 			= new byte[0];
 		BigInteger  mod			= BigInteger.valueOf(WorkCycleSending.MODULUS);
-		byte[] 		oldmesages 	= assocWorkCycle.getMessageBin();
+		byte[] 		oldmesages 	= getCurrentWorkCycle().getMessageBin();
 		BigInteger	sigma		= null;
 		BigInteger	vt			= null;
 		int 		vtoffset 	= 0;

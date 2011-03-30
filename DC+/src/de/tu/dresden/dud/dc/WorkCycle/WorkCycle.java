@@ -150,7 +150,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (method == KeyGenerator.KGMETHOD_DC) {
+		if (KeyGenerator.isAsynchronous(method)) {
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -163,7 +163,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE){
+		else if (KeyGenerator.isSynchronous(method)){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -355,36 +355,15 @@ public class WorkCycle extends Observable implements Observer {
 	/**
 	 * Actually does the work for a work cycle on the side of the participants
 	 */
-	public void performSendingOnParticipantSide(){
+	public void performSendingOnParticipantSide() {
 		started = true;
-		
-		switch (method) {
-		case KeyGenerator.KGMETHOD_DC:
 
-			// Liste der zu erwartenden Participants updaten.
+		currentPhase = WC_RESERVATION;
+		workCycleReserving = new WorkCycleReserving(this);
+		Thread t = new Thread(workCycleReserving, "WorkCycleReserving");
 
-			// Reservieren.
-			currentPhase = WC_RESERVATION;
-			workCycleReserving = new WorkCycleReserving(this);
-			Thread t = new Thread(workCycleReserving, "WorkCycleReserving");
-
-			workCycleReserving.addObserver(this);
-			t.start();
-			
-			break;
-			
-		case KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE: //TODO
-			// Liste der zu erwartenden Participants updaten.
-
-			// Reservieren.
-			currentPhase = WC_RESERVATION;
-			workCycleReserving = new WorkCycleReserving(this);
-			t = new Thread(workCycleReserving, "WorkCycleReserving");
-	
-			workCycleReserving.addObserver(this);
-			t.start();
-			break;
-		}	
+		workCycleReserving.addObserver(this);
+		t.start();
 	}
 
 	/**
@@ -481,12 +460,12 @@ public class WorkCycle extends Observable implements Observer {
 				workCycleSending.addObserver(this);
 
 				// Summierung Starten
-				if (method == KeyGenerator.KGMETHOD_DC) {
+				if (KeyGenerator.isAsynchronous(method)) {
 
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (method == KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE) {
+				} else if (KeyGenerator.isSynchronous(method)) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,

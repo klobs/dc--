@@ -172,6 +172,10 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 		return b;
 	}
 	
+	protected WorkCycle getCurrentWorkCycle(){
+		return assocWorkCycleManag.getCurrentWorkCycle();
+	}
+	
 	protected byte[] inverseKey(byte[] keyToInverse){
 		
 		byte[] c = new byte[keyToInverse.length];

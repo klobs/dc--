@@ -25,14 +25,11 @@ public class KeyGeneratorProbabFailStop extends KeyGeneratorNormalDC {
 	// Logging
 	private static Logger log = Logger.getLogger(KeyGeneratorFailStopWorkCycle.class);
 	
-	private WorkCycle assocWorkCycle = null;
 	private HashMap<ParticipantMgmntInfo, byte[]> lastKeys = new HashMap<ParticipantMgmntInfo, byte[]>();
 	
 	public KeyGeneratorProbabFailStop(WorkCycleManager wcm) {
 		super(wcm);
 		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP;
-		
-		assocWorkCycle = wcm.getCurrentWorkCycle();
 	}
 
 	/**
@@ -86,13 +83,13 @@ public class KeyGeneratorProbabFailStop extends KeyGeneratorNormalDC {
 				cr = Util.mergeDCwise(cr, calcKeysEPart(pmi, length),
 						WorkCycleSending.MODULUS);
 			}
+
+			lastKeys.put(pmi, cr);
 			
 			// Finally calculate the inverse, when needed.
 			if (pmi.getKey().getInverse()) {
 				cr = inverseKey(cr);
 			}
-		
-			lastKeys.put(pmi, cr);
 			
 			bl.add(cr);
 		}
@@ -138,27 +135,28 @@ public class KeyGeneratorProbabFailStop extends KeyGeneratorNormalDC {
 	}
 	
 	private byte[] calcKeysEPart(ParticipantMgmntInfo pmi, int length){
-		byte[] cr 			= null;
-		byte[] oldMessages 	= assocWorkCycle.getMessageBin();
-		
+		byte[] cr = new byte[length];
+		byte[] oldMessages = getCurrentWorkCycle().getMessageBin();
+
 		BigInteger e = new BigInteger(Util.getBytesByOffset(pmi.getKey()
 				.getCalculatedSecret().toByteArray(), 40, 40));
-		
-		if(oldMessages.length != lastKeys.get(pmi).length)
-			log.warn("Wrong old message length!");
-		
-		BigInteger i_tminus1 = new BigInteger(Util.getLastBytes(oldMessages,
-				lastKeys.get(pmi).length));
-		
-		e.multiply(i_tminus1);
 
-		cr = e.toByteArray();
-		
-		if (cr.length > length)
-			cr = Util.getLastBytes(cr, length);
-		
-		if (cr.length < length)
-			cr = Util.fillAndMergeSending(cr, new byte[length]);
+		if (oldMessages.length < lastKeys.get(pmi).length)
+			log.debug("Not enough old message material - ommitting e part!");
+		else {
+			BigInteger i_tminus1 = new BigInteger(Util.getLastBytes(
+					oldMessages, lastKeys.get(pmi).length));
+
+			e.multiply(i_tminus1);
+
+			cr = e.toByteArray();
+
+			if (cr.length > length)
+				cr = Util.getLastBytes(cr, length);
+
+			if (cr.length < length)
+				cr = Util.fillAndMergeSending(cr, new byte[length]);
+		}
 		
 		return cr;
 	}
