@@ -190,12 +190,14 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	}
 	
 	private void setupFeatureList(Server s){
-		featureMap.put(Short.valueOf(FEATURE_KEY_GENERATION), Short.valueOf(s.getWorkCycleManager().getKeyGenerationMethod()));
+		featureMap.put(Short.valueOf(FEATURE_KEY_GENERATION), Short.valueOf(s
+				.getWorkCycleManager().getKeyGenerationMethod()));
 
 		featureMap.put(Short.valueOf(FEATURE_LOST_CONNECTION_HANDLING), Short
 				.valueOf(Connection.HANDLING_EXPLODE));
 		
-		featureMap.put(Short.valueOf(FEATURE_KEY_EXCHANGE), Short.valueOf(s.getKeyExchangeManager().getKexHandling()));
+		featureMap.put(Short.valueOf(FEATURE_KEY_EXCHANGE), Short.valueOf(s
+				.getKeyExchangeManager().getKexHandling()));
 	}
 	
 	
