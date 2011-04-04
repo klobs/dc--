@@ -66,8 +66,8 @@ public class WorkCycleReservationPayload {
 		else return rand / participants;
 	}
 	
-	public int getDesiredPayloadLength(){
-		return desiredPayloadLength;
+	public Integer getDesiredPayloadLength(){
+		return Integer.valueOf(desiredPayloadLength);
 	}
 	
 	public int getParticipantCount(){

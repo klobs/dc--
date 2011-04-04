@@ -207,15 +207,23 @@ public class WorkCycle extends Observable implements Observer {
 	
 	public boolean checkWhetherReservationIsFinishedOnServerSide(ManagementMessageAdded m){
 		if (reservationChecker.hasReservationFinished(m)){
+			
 			expectedRounds = reservationChecker.getExpectedRounds();
+			
+			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE)
+				individualPayloadLengths = reservationChecker.getIndividualPayloadLengths();
+			
 			currentPhase = WC_RESERVATION_FINISHED;
+			
 			if (reservationChecker.getExpectedRounds() > 0) {
 				workCycleSending = new WorkCycleSending(this);
 				workCycleSending.addObserver(this);
+			
 			} else {
 				setChanged();
 				notifyObservers(WC_FINISHED);
 			}
+			
 			return true;
 		}
 		return false;
@@ -314,6 +322,14 @@ public class WorkCycle extends Observable implements Observer {
 
 	public byte[] getMessageBin(){
 		return addedMessagesBin;
+	}
+	
+	public byte[] getNextPayload(){
+		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
+			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
+		}
+		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
+		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
 	public LinkedList<byte[]> getPayloads(){

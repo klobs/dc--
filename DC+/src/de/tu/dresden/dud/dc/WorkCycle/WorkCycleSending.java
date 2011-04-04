@@ -53,10 +53,16 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		systemPayloadLength = r.getSystemPayloadLength();
 		workcycleNumber = r.getWorkCycleNumber();
 		timeout = r.getTimeout();
+		
 		if (relativeRound >= 0)
 			payloadSend = r.consumePayload();
 		else
 			payloadSend = null;
+		
+		if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
+			individualPayloadLengths = r.getIndividualMessageLenghts();
+		}
+		
 		this.addObserver(this);
 	}
 
@@ -77,17 +83,24 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		byte[] b = null;
 		if (assocWorkCycle.getCurrentPhase() == WorkCycle.WC_RESERVATION) {
 			b = new byte[WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE];
+
 		} else {
+				
 			b = new byte[systemPayloadLength];
 
+			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
+				b = new byte[assocWorkCycle.getIndividualMessageLenghts().get(currentRound)];
+			}
+			
 			Iterator<byte[]> i = payloads.iterator();
 
 			while (i.hasNext()) {
 				byte[] c = i.next();
 				b = Util.mergeDCwise(b, c, WorkCycleSending.MODULUS);
 			}
-		}
 
+		} 
+		
 		payloadSend = b;
 	}
 
@@ -190,7 +203,23 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	 */
 	public void performDCRoundsParticipantSide() {
 		ManagementMessageAdd m = null;
+		int currentMessageLength = 0;
+		
+		if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
+			payloadSend = Util.fillAndMergeSending(payloadSend,
+					new byte[individualPayloadLengths.get(relativeRound)
+							.intValue()]);
+		}
+		
 		while (!finished) {
+			
+			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
+				currentMessageLength = individualPayloadLengths.get(
+						currentRound).intValue();
+			} else {
+				currentMessageLength = systemPayloadLength;
+			}
+			
 			if (currentRound == relativeRound) {
 				byte[] p = Util.mergeDCwise(payloadSend,
 						assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, currentRound), MODULUS);

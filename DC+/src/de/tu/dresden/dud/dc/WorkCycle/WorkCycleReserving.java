@@ -65,6 +65,15 @@ public class WorkCycleReserving extends WorkCycleSending {
 	
 	
 	private void performDCReservationParticipantSide() {
+		int desiredMessageLength = getSystemPayloadLength();
+		
+		if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
+			desiredMessageLength = (assocWorkCycle.getNextPayload().length % 4 == 0) ? assocWorkCycle
+					.getNextPayload().length
+					: assocWorkCycle.getNextPayload().length
+							+ (4 - (assocWorkCycle.getNextPayload().length % 4));
+		}
+		
 		WorkCycleReservationPayload		 	a = null;
 		WorkCycleReservationPayload 		rp = new WorkCycleReservationPayload(desiredMessageLength, myRandomNumber);
 		ManagementMessageAdd 			m = null;
@@ -133,7 +142,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				wait = 1;
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 				}
 			}
 			else if (myRandomNumber <= a.getAverage() &&  relativeRound < 0) { // left side of the branch
@@ -142,7 +151,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				if ((a.getParticipantCount() == 1) && (myRandomNumber == a.getAverage()))
 				{
 					relativeRound = actualRoundsCalculated.size();
-					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 					expectedRounds--;
 				} 
 				// Current average is my random sum, but there are more people trying to send it -> collusion
@@ -172,7 +181,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				//Did somebody else find the slot?
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated.add(Integer.valueOf(a.getDesiredPayloadLength()));
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 					wait--;
 				} else if (collisionpayload != null 
 						&& collisionpayload.getAverage() == a.getAverage() 

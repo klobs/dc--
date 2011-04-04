@@ -198,6 +198,9 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 		
 		featureMap.put(Short.valueOf(FEATURE_KEY_EXCHANGE), Short.valueOf(s
 				.getKeyExchangeManager().getKexHandling()));
+		
+		featureMap.put(Short.valueOf(FEATURE_VARIABLE_PAYLOAD_LENGTH), Short
+				.valueOf(s.getWorkCycleManager().getMessageLengthMode()));
 	}
 	
 	
