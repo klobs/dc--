@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.Util;
-import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 
 
