@@ -31,13 +31,13 @@ public class WorkCycleManager implements Observer{
 	// Logging
 	private static Logger log = Logger.getLogger(WorkCycleManager.class);
 
-	public static final short METHOD_MESSAGES_FIXED_LENGTHS = 0;
-	public static final short METHOD_MESSAGES_VARIABLE_LENGTHS = 1;
+	public static final short MESSAGE_LENGTHS_FIXED = 0;
+	public static final short MESSAGE_LENGTHS_VARIABLE = 1;
 	
 	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
-	private short				messageLengthMode 	= METHOD_MESSAGES_FIXED_LENGTHS;
+	private short				messageLengthMode 	= MESSAGE_LENGTHS_FIXED;
 	private int 				infoOffset		= 0;
 	private int					joinOffset		= 0;
 	private int 				leaveOffset		= 5;
@@ -53,12 +53,12 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths, short messageMode){
+	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths, short messageLengthMode){
 		payloadlengths = payloadLengths;
 		
 		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod, this);
 		
-		this.messageLengthMode = messageMode;
+		this.messageLengthMode = messageLengthMode;
 		
 		currentWorkCycle = workCycleNumber;
 		
@@ -94,7 +94,7 @@ public class WorkCycleManager implements Observer{
 	 */
 	public synchronized int addMessage(byte[] p){
 		if (p.length <= payloadlengths){
-			if(messageLengthMode == METHOD_MESSAGES_FIXED_LENGTHS){
+			if(messageLengthMode == MESSAGE_LENGTHS_FIXED){
 				p = Util.fillAndMergeSending(p, new byte[payloadlengths]);
 			}
 			payloads.add(p);

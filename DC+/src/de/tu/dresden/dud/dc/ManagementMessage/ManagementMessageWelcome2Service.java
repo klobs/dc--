@@ -173,7 +173,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 			return featureMap.get(Short.valueOf(FEATURE_VARIABLE_PAYLOAD_LENGTH)).shortValue();
 		}
 		
-		return WorkCycleManager.METHOD_MESSAGES_FIXED_LENGTHS;
+		return WorkCycleManager.MESSAGE_LENGTHS_FIXED;
 	}
 	
 	private void setupFeatureList(byte[] fa){

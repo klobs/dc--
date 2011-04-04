@@ -66,7 +66,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 	
 	private void performDCReservationParticipantSide() {
 		WorkCycleReservationPayload		 	a = null;
-		WorkCycleReservationPayload 		rp = new WorkCycleReservationPayload(getSystemPayloadLength(), myRandomNumber);
+		WorkCycleReservationPayload 		rp = new WorkCycleReservationPayload(desiredMessageLength, myRandomNumber);
 		ManagementMessageAdd 			m = null;
 		
 		// collision detection

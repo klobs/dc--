@@ -301,7 +301,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public LinkedList<Integer> getIndividualMessageLenghts(){
-		if(assocWorkCycleManag.getMessageLengthMode() != WorkCycleManager.METHOD_MESSAGES_VARIABLE_LENGTHS){
+		if(assocWorkCycleManag.getMessageLengthMode() != WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
 			log.warn("Individual message lengths requested, but not in right mode for using them");
 		}
 		
@@ -461,7 +461,7 @@ public class WorkCycle extends Observable implements Observer {
 				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 
-				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.METHOD_MESSAGES_FIXED_LENGTHS){
+				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
 					individualPayloadLengths = ((WorkCycleReserving) o).getIndividualMessageLengths();
 				}
 				

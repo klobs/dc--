@@ -193,10 +193,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		while (!finished) {
 			if (currentRound == relativeRound) {
 				byte[] p = Util.mergeDCwise(payloadSend,
-						assocKeyGenerator.calcKeys(systemPayloadLength, workcycleNumber, currentRound), MODULUS);
+						assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, currentRound), MODULUS);
 				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
 			} else {
-				byte[] p = assocKeyGenerator.calcKeys(systemPayloadLength, workcycleNumber, currentRound);
+				byte[] p = assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, currentRound);
 				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
 			}
 

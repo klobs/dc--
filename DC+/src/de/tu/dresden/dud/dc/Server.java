@@ -61,7 +61,7 @@ public class Server implements Runnable {
 		workCycleManager = new WorkCycleManager(
 				KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP, 0 /*Better: Long.MIN_VALUE */,
 				symbollength,
-				WorkCycleManager.METHOD_MESSAGES_FIXED_LENGTHS);
+				WorkCycleManager.MESSAGE_LENGTHS_VARIABLE);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}
