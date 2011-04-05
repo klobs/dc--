@@ -1,4 +1,3 @@
--Variable sized payloads
 -Collision handling, if 2 random numbers are the same during reservation 
  Only testing has to be done.
 -Error handling  (what if somebody leaves the network without telling)
