@@ -177,6 +177,11 @@ public class Participant extends Observable implements Observer {
 			c.leaveWorkCycle(this);
 	}
 	
+	public void quitService(Connection c){
+		if(connections.contains(c))
+			c.quitService(this);
+	}
+	
 	public void setId(String id) {
 		this.id = id;
 	}

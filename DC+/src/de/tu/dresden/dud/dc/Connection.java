@@ -28,6 +28,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfoRequest;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageJoinWorkCycle;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageQuitService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2Service;
@@ -139,6 +140,7 @@ public class Connection extends Observable implements Runnable {
 	protected ManagementMessageAdded			lastAdded;
 	protected ManagementMessage 				lastMessage;
 	protected ManagementMessageTick 			lastTick;
+	protected ManagementMessageQuitService		lastQuit;
 	protected ManagementMessageWelcome2Service 	welcome2Service;
 	protected ManagementMessageWelcome2WorkCycle 	welcome2WorkCycle;
 
@@ -447,6 +449,21 @@ public class Connection extends Observable implements Runnable {
 		}
 
 	}
+	
+	public void quitService(Participant p){
+		if (assocParticipantManager.getParticipantMgmntInfoFor(p).isActive()) {
+			log.warn("My dear, you should first become inactive! Just leave the work cycles");
+			return;
+		}
+
+		try {
+			ManagementMessageQuitService m = new ManagementMessageQuitService();
+			this.sendMessage(m.getMessage());
+		} catch (IOException e) {
+			log.error("Problems occured within the quitService method: " + e.toString());
+		}
+	}
+	
 	
 	/**
 	 * A {@link Participant} can call this method to request a list of all
@@ -776,6 +793,11 @@ public class Connection extends Observable implements Runnable {
 		    		return;
 		    	}
 		    	//LEAVESERVICE
+		    	else if((m instanceof ManagementMessageQuitService)){
+		    		this.lastQuit = (ManagementMessageQuitService) m;
+		    		server.quitServiceRequest(this);
+		    	}
+		    	
 	    	} 
 	    	// only messages that can go from Server -> Participant
 	    	else if ( !servermode ) {

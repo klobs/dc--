@@ -214,6 +214,14 @@ public class Server implements Runnable {
 			log.error(e.toString());
 		}
 	}
+	
+	public void quitServiceRequest(Connection c){
+		// If connection active -> set inactive
+		// notify all others?
+		// remove connection from all tables
+		// send quit confirmation
+		// close connection
+	}
 
 	/**
 	 * Start the server
