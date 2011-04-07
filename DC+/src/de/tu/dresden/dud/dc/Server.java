@@ -41,7 +41,7 @@ public class Server implements Runnable {
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();
 	private InfoService		info			= null;
 	private boolean			isStopped    	= false;
-	private KeyExchangeManager keyExManager = new KeyExchangeManager(KeyExchangeManager.KEX_MANUAL);
+	private KeyExchangeManager keyExManager = new KeyExchangeManager(KeyExchangeManager.KEX_FULLY_AUTOMATIC);
 	private ParticipantManager participantManager = new ParticipantManager();
 	private int 			port 			= 6867;
 	private WorkCycleManager	workCycleManager	= null;
@@ -59,7 +59,8 @@ public class Server implements Runnable {
 		info = new InfoService(this);
 		
 		workCycleManager = new WorkCycleManager(
-				KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP, 0 /*Better: Long.MIN_VALUE */,
+				KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP,
+				0 /*Better: Long.MIN_VALUE */,
 				symbollength,
 				WorkCycleManager.MESSAGE_LENGTHS_VARIABLE);
 		workCycleManager.setServer(this);

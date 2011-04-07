@@ -53,10 +53,10 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(short keyGenerationMethod, long workCycleNumber, int payloadLengths, short messageLengthMode){
+	public WorkCycleManager(short keyGenerationMethod,long workCycleNumber, int payloadLengths, short messageLengthMode){
 		payloadlengths = payloadLengths;
 		
-		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod, this);
+		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod,this);
 		
 		this.messageLengthMode = messageLengthMode;
 		
