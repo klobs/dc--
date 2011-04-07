@@ -447,32 +447,30 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 				        .addGroup(jPanel4Layout.createParallelGroup()
 				            .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				                .addComponent(getJLabel9(), GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
-				                .addGap(42))
+				                .addGap(55))
 				            .addComponent(getJLabel8(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				        .addGroup(jPanel4Layout.createParallelGroup()
-				            .addComponent(getLabelTick(), GroupLayout.Alignment.LEADING, 0, 52, Short.MAX_VALUE)
-				            .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-				                .addPreferredGap(getLabelTick(), getLabelWorkCycle(), LayoutStyle.ComponentPlacement.INDENT)
-				                .addComponent(getLabelWorkCycle(), GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))))
+				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.LEADING, 0, 121, Short.MAX_VALUE)
+				            .addComponent(getLabelTick(), GroupLayout.Alignment.LEADING, 0, 121, Short.MAX_VALUE)))
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				        .addPreferredGap(buttonJoinWorkCycle, getJScrollPane2(), LayoutStyle.ComponentPlacement.INDENT)
-				        .addComponent(getJScrollPane2(), 0, 260, Short.MAX_VALUE)))
+				        .addComponent(getJScrollPane2(), 0, 375, Short.MAX_VALUE)))
 				.addContainerGap());
 				jPanel4Layout.setVerticalGroup(jPanel4Layout.createSequentialGroup()
 				.addGroup(jPanel4Layout.createParallelGroup()
 				    .addGroup(jPanel4Layout.createSequentialGroup()
 				        .addGroup(jPanel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 18, GroupLayout.PREFERRED_SIZE)
 				            .addComponent(getJLabel9(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				        .addGroup(jPanel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(getLabelTick(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJLabel8(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)))
+				            .addComponent(getJLabel8(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getLabelTick(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)))
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				        .addGap(12)
 				        .addComponent(buttonJoinWorkCycle, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJScrollPane2(), 0, 272, Short.MAX_VALUE)
+				.addComponent(getJScrollPane2(), 0, 400, Short.MAX_VALUE)
 				.addContainerGap(22, 22));
 		}
 		return jPanel4;
@@ -639,7 +637,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 					    .addComponent(getJPanel5(), 0, 176, Short.MAX_VALUE))
 					.addComponent(getJPanel1(), GroupLayout.Alignment.LEADING, 0, 790, Short.MAX_VALUE)
 					.addComponent(getJPanel2(), GroupLayout.Alignment.LEADING, 0, 790, Short.MAX_VALUE));
-			this.setPreferredSize(new java.awt.Dimension(800, 499));
+			this.setPreferredSize(new java.awt.Dimension(1036, 628));
 			this.setBackground(new java.awt.Color(233,233,233));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -714,11 +712,11 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 				        .addGap(6))
 				    .addComponent(getJScrollPane1(), GroupLayout.Alignment.LEADING, 0, 164, Short.MAX_VALUE)
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefresPassiveParts(), GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, Short.MAX_VALUE))
+				        .addComponent(getJButtonRefresPassiveParts(), 0, 160, Short.MAX_VALUE)
+				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE))
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, Short.MAX_VALUE)))
+				        .addComponent(getJButtonRefreshActiveParts(), 0, 160, Short.MAX_VALUE)
+				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE)))
 				.addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
 				    .addPreferredGap(getJScrollPane4(), getButtonExchangeKeyPassive(), LayoutStyle.ComponentPlacement.INDENT)
 				    .addComponent(getButtonExchangeKeyPassive(), 0, 152, Short.MAX_VALUE)
