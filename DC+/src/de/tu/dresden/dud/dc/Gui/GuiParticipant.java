@@ -111,6 +111,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	private JTextField textName;
 	private Participant assocParticipant;
 	private JButton buttonExchangeKeyPassive;
+	private AbstractAction actionQuitService;
 	private AbstractAction actionExchangeKeyPassive;
 	private JTable tableActiveParts;
 	private JTable tablePassivParts;
@@ -205,7 +206,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	
 	private AbstractAction getStartAction() {
 		if(actionStart == null) {
-			actionStart = new AbstractAction("Start Client", null) {
+			actionStart = new AbstractAction("Start Participant", null) {
 				private static final long serialVersionUID = 8749319356187884901L;
 
 				public void actionPerformed(ActionEvent evt) {
@@ -235,6 +236,9 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 					getSendAction().setEnabled(true);
 					getActionSaveParticipant().setEnabled(true);
 					this.setEnabled(false);
+					
+					getActionQuitService().setEnabled(true);
+					buttonStartClient.setAction(actionQuitService);
 					
 					buttonRegisterAtService.requestFocus();
 				}
@@ -708,30 +712,25 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 			jPanel5Layout.setHorizontalGroup(jPanel5Layout.createParallelGroup()
 				.addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createParallelGroup()
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJScrollPane4(), 0, 158, Short.MAX_VALUE)
+				        .addComponent(getJScrollPane4(), 0, 163, Short.MAX_VALUE)
 				        .addGap(6))
-				    .addComponent(getJScrollPane1(), GroupLayout.Alignment.LEADING, 0, 164, Short.MAX_VALUE)
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefresPassiveParts(), 0, 160, Short.MAX_VALUE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE))
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefreshActiveParts(), 0, 160, Short.MAX_VALUE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE)))
+				    .addComponent(getJButtonRefreshActiveParts(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE)
+				    .addComponent(getJButtonRefresPassiveParts(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE)
+				    .addComponent(getJScrollPane1(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE))
 				.addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
 				    .addPreferredGap(getJScrollPane4(), getButtonExchangeKeyPassive(), LayoutStyle.ComponentPlacement.INDENT)
-				    .addComponent(getButtonExchangeKeyPassive(), 0, 152, Short.MAX_VALUE)
+				    .addComponent(getButtonExchangeKeyPassive(), 0, 145, Short.MAX_VALUE)
 				    .addContainerGap()));
 			jPanel5Layout.setVerticalGroup(jPanel5Layout.createSequentialGroup()
-				.addComponent(getJScrollPane1(), 0, 95, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJButtonRefresPassiveParts(), GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getButtonExchangeKeyPassive(), GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+				.addComponent(getJScrollPane1(), GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJScrollPane4(), 0, 94, Short.MAX_VALUE)
+				.addComponent(getJButtonRefresPassiveParts(), 0, 28, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE)
+				.addComponent(getButtonExchangeKeyPassive(), GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(43, 43));
+				.addComponent(getJScrollPane4(), GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE));
 		}
 		return jPanel5;
 	}
@@ -897,6 +896,26 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 			};
 		}
 		return actionExchangeKeyPassive;
+	}
+	
+	private AbstractAction getActionQuitService() {
+		if(actionQuitService == null) {
+			actionQuitService = new AbstractAction("Quit", null) {
+				private static final long serialVersionUID = 4619644940971896342L;
+
+				public void actionPerformed(ActionEvent evt) {
+					
+					assocParticipant.quitService(assocConnection);
+					
+					getActionQuitService().setEnabled(false);
+					getStartAction().setEnabled(true);
+					
+					buttonStartClient.setAction(getStartAction());
+				}
+			};
+			actionQuitService.setEnabled(false);
+		}
+		return actionQuitService;
 	}
 
 }
