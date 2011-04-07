@@ -137,6 +137,7 @@ public class Connection extends Observable implements Runnable {
 	protected ManagementMessageRegisterAtService 		regsiterAtService;
 	protected ManagementMessageJoinWorkCycle 	joinWorkCycle;
 	protected ManagementMessageLeaveWorkCycle	leaveWorkCycle;
+	protected ManagementMessageKThxBye			kThxBye = null;
 	protected ManagementMessageAdd				lastAdd;
 	protected ManagementMessageAdded			lastAdded;
 	protected ManagementMessage 				lastMessage;
@@ -203,6 +204,11 @@ public class Connection extends Observable implements Runnable {
 		}
 	}
 	
+	public boolean checkWhetherQuitRequestedOnParticipantSide(){
+		if(kThxBye != null)
+			return true;
+		return false;
+	}
 	
 	/**
 	 * Analyses an {@link InfoServiceInfoKeyExchangeCommit} and activates the
@@ -477,8 +483,7 @@ public class Connection extends Observable implements Runnable {
 	
 	public void quitService(Participant p){
 		if (assocParticipantManager.getParticipantMgmntInfoFor(p).isActive()) {
-			log.warn("My dear, you should first become inactive! Just leave the work cycles");
-			return;
+			log.debug("My dear, next time you better leave the work cycles");
 		}
 
 		try {
@@ -935,7 +940,13 @@ public class Connection extends Observable implements Runnable {
 		    	
 		    	// K THX BYE
 		    	else if ((m instanceof ManagementMessageKThxBye)){
-		    		stop(true);
+		    		kThxBye = (ManagementMessageKThxBye) m;
+		    		if(kThxBye.getQuitOK() == ManagementMessageKThxBye.QUITOK_ALL_OK){
+		    			kThxBye = null;
+		    			stop(true);
+		    		}
+		    		else if (kThxBye.getQuitOK() == ManagementMessageKThxBye.QUITOK_LEAVE_WC_FIRST)
+		    			assocParticipant.leaveWorkCycle(this);
 		    		return;
 		    	}
 	    	}
@@ -983,13 +994,15 @@ public class Connection extends Observable implements Runnable {
 		this.stopped = s;
 	}
 
-	public void tellGoodByeFromService(){
-		ManagementMessageKThxBye m = new ManagementMessageKThxBye();
+	public void tellGoodByeFromService(final short quitOK){
+		ManagementMessageKThxBye m = new ManagementMessageKThxBye(quitOK);
 
 		try{
 			sendMessage(m.getMessage());
-			stop(true);
-			clientSocket.close();
+			if (quitOK == ManagementMessageKThxBye.QUITOK_ALL_OK) {
+				stop(true);
+				clientSocket.close();
+			}
 		} catch (IOException e){
 			log.error(e.toString());
 		}

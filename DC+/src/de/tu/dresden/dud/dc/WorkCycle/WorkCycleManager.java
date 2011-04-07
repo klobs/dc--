@@ -365,6 +365,8 @@ public class WorkCycleManager implements Observer{
 					
 					if (assocParticipantManager.getParticipantMgmntInfoFor(participant).getInactiveInWorkCycle() == currentWorkCycle + 1){
 						assocParticipantManager.update(currentWorkCycle + 1);
+						
+						assocParticipantManager.getParticipantMgmntInfoFor(participant).getAssocConnection().quitService(participant);
 					}
 				}
 				break;

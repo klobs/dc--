@@ -35,6 +35,7 @@ import de.tu.dresden.dud.dc.PreferenceSaver;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2WorkCycle;
@@ -236,9 +237,6 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 					getSendAction().setEnabled(true);
 					getActionSaveParticipant().setEnabled(true);
 					this.setEnabled(false);
-					
-					getActionQuitService().setEnabled(true);
-					buttonStartClient.setAction(actionQuitService);
 					
 					buttonRegisterAtService.requestFocus();
 				}
@@ -662,6 +660,11 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    		labelLength.setText( String.valueOf(m.getCharLength()));
 	    		labelVersion.setText(String.valueOf(m.getVersion()));
 	    		labelParticipants.setText(String.valueOf(m.getParticipantsCount()));
+	    		
+	    		getStartAction().setEnabled(false);
+	    		getActionQuitService().setEnabled(true);
+	    		
+	    		buttonStartClient.setAction(getActionQuitService());
 	    	}
 	    	
 	    	// ACCEPTED4SERVICE
@@ -676,6 +679,17 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    		
 	    	} 	
 	    	
+	    	//K THX BYE
+	    	else if (arg instanceof ManagementMessageKThxBye){
+	    		ManagementMessageKThxBye m = (ManagementMessageKThxBye) arg;
+	    		
+	    		if (m.getQuitOK() == ManagementMessageKThxBye.QUITOK_ALL_OK){
+	    			getStartAction().setEnabled(true);
+	    			getActionQuitService().setEnabled(false);
+	    			
+	    			buttonStartClient.setAction(getStartAction());
+	    		}
+	    	}
 	    	// TICK
 	    	else if (arg instanceof ManagementMessageTick){
 	    		ManagementMessageTick m = (ManagementMessageTick) arg;
@@ -691,7 +705,6 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    		else if (assocConnection.getAssociatedWorkCycleManager().getCurrentWorkCycle().getCurrentPhase() == WorkCycle.WC_SENDING)
 		    		modelListSums.addElement("R:" + m.getWorkCycleNumber() + ", SR:"+ m.getRoundNumber() + ": " + new String(m.getPayload()) +"/"+ Arrays.toString(m.getPayload()));
 	    		}
-
 	    	}
 	    	
 	    	else if (arg instanceof ManagementMessageInfo){
@@ -904,13 +917,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 				private static final long serialVersionUID = 4619644940971896342L;
 
 				public void actionPerformed(ActionEvent evt) {
-					
 					assocParticipant.quitService(assocConnection);
-					
-					getActionQuitService().setEnabled(false);
-					getStartAction().setEnabled(true);
-					
-					buttonStartClient.setAction(getStartAction());
 				}
 			};
 			actionQuitService.setEnabled(false);

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import de.tu.dresden.dud.dc.InfoService.InfoService;
 import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2WorkCycle;
@@ -220,25 +221,24 @@ public class Server implements Runnable {
 		
 		if (participantManager.getParticipantMgmntInfoFor(c) == null){
 			aspConns.remove(c);
-			c.tellGoodByeFromService();
+			c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_ALL_OK);
 			return;
 		}
 		
-		// If connection active -> set inactive
-		// notify all others?
-		// remove connection from all tables
-		// send quit confirmation
-		// close connection
+		ParticipantMgmntInfo pmi = participantManager.getParticipantMgmntInfoFor(c);
 
-		ParticipantMgmntInfo pmi = null;
+		if (pmi.isActive()){
+			c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_LEAVE_WC_FIRST);
+			return;
+		}
 		
 		// if participant is not active, it should be easy to remove him...
-		if (!participantManager.getParticipantMgmntInfoFor(c).isActive()){
+		if (!pmi.isActive()){
 			pmi = participantManager.getParticipantMgmntInfoFor(c);
 			participantManager.removeParticipant(pmi);
 		}
 
-		c.tellGoodByeFromService();
+		c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_ALL_OK);
 		
 	}
 

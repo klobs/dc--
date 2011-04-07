@@ -19,6 +19,11 @@ public class ManagementMessageKThxBye extends ManagementMessage {
     // Logging
     private static Logger log = Logger.getLogger(ManagementMessageKThxBye.class);
 
+    public static final short QUITOK_INVALID		= -1;
+    public static final short QUITOK_ALL_OK 		= 0;
+    public static final short QUITOK_LEAVE_WC_FIRST	= 1;
+    
+    private int quitOk = QUITOK_INVALID;
 	/**
 	 * 	Handles the QUITSERVICE management message.
 	 *  Handling means interpreting the payload and setting corresponding 
@@ -28,13 +33,14 @@ public class ManagementMessageKThxBye extends ManagementMessage {
 	 *  Fields are:
 	 * 		no fields 
 	 */	
-	public ManagementMessageKThxBye() {
+	public ManagementMessageKThxBye(final short quitOk) {
 
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		
 		byte[] messagetype		= Util.stuffIntIntoShort(ManagementMessage.KTHXBYE);
 		
 		b.add(messagetype 	);
+		b.add(Util.stuffIntIntoShort(quitOk));
 		
 		this.message = craftMessage(b);
 		
@@ -58,6 +64,13 @@ public class ManagementMessageKThxBye extends ManagementMessage {
 		
 		message = payload;
 		
+		quitOk = Util.stuffBytesIntoUInt(Util.getFirstBytes(payload, 2));
+		
 		log.debug("Decoding QUITSERVICE confirmation message");
 	}
+	
+	public int getQuitOK(){
+		return quitOk;
+	}
+	
 }
