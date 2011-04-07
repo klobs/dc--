@@ -217,11 +217,29 @@ public class Server implements Runnable {
 	}
 	
 	public void quitServiceRequest(Connection c){
+		
+		if (participantManager.getParticipantMgmntInfoFor(c) == null){
+			aspConns.remove(c);
+			c.tellGoodByeFromService();
+			return;
+		}
+		
 		// If connection active -> set inactive
 		// notify all others?
 		// remove connection from all tables
 		// send quit confirmation
 		// close connection
+
+		ParticipantMgmntInfo pmi = null;
+		
+		// if participant is not active, it should be easy to remove him...
+		if (!participantManager.getParticipantMgmntInfoFor(c).isActive()){
+			pmi = participantManager.getParticipantMgmntInfoFor(c);
+			participantManager.removeParticipant(pmi);
+		}
+
+		c.tellGoodByeFromService();
+		
 	}
 
 	/**

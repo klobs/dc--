@@ -179,6 +179,10 @@ public class ManagementMessage{
 			m = new ManagementMessageQuitService(payload);
 			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as QUITSERVICE Message");
 			return m;
+		} else if (messageType == ManagementMessage.KTHXBYE){
+			m = new ManagementMessageKThxBye(payload);
+			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as QUIT SERVICE CONFIRMATION Message");
+			return m;
 		} else {
 			throw new IllegalArgumentException("The Payload you provided could not be evaluated as any Message (perhaps messagetype " + String.valueOf(messageType) + " is not implemented, or invalid)");
 		}

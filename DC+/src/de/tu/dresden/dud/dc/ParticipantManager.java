@@ -249,6 +249,20 @@ public class ParticipantManager extends Observable{
 		return participantDB.size();
 	}
 	
+	public void removeParticipant(ParticipantMgmntInfo pmi){
+		if (participantDB.contains(pmi)){
+			participantDB.remove(pmi);
+		}
+	}
+	
+	public void removeParticipant(Participant p){
+		ParticipantMgmntInfo pmi = getParticipantMgmntInfoFor(p);
+		
+		if (pmi != null){
+			participantDB.remove(pmi);
+		}
+	}
+	
 	/**
 	 * Standard setter.
 	 * 

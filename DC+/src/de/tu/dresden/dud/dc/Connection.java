@@ -27,6 +27,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfoRequest;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageJoinWorkCycle;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageQuitService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
@@ -820,6 +821,7 @@ public class Connection extends Observable implements Runnable {
 		    	else if((m instanceof ManagementMessageQuitService)){
 		    		this.lastQuit = (ManagementMessageQuitService) m;
 		    		server.quitServiceRequest(this);
+		    		return;
 		    	}
 		    	
 	    	} 
@@ -930,6 +932,12 @@ public class Connection extends Observable implements Runnable {
 		    		assocWorkCycleManager.addedMessageArrived(lastAdded);
 		    		return;
 		    	}
+		    	
+		    	// K THX BYE
+		    	else if ((m instanceof ManagementMessageKThxBye)){
+		    		stop(true);
+		    		return;
+		    	}
 	    	}
 	    	// only messages that could go to both directions could go here.
 	    	// or messages that were send in a bad state.
@@ -975,6 +983,18 @@ public class Connection extends Observable implements Runnable {
 		this.stopped = s;
 	}
 
+	public void tellGoodByeFromService(){
+		ManagementMessageKThxBye m = new ManagementMessageKThxBye();
+
+		try{
+			sendMessage(m.getMessage());
+			stop(true);
+			clientSocket.close();
+		} catch (IOException e){
+			log.error(e.toString());
+		}
+	}
+	
 	/**
 	 * This method has to be called on {@link Participant} side after a
 	 * {@link ManagementMessageTick} arrived.
