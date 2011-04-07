@@ -11,6 +11,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.Connection;
+import de.tu.dresden.dud.dc.KeyExchangeManager;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
@@ -159,13 +160,22 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 		return accept;
 	}
 
-	public short getMethod(){
+	public short getKeGMethod(){
 		Short b = featureMap.get(Short.valueOf(FEATURE_KEY_GENERATION));
 		if (b != null){
 			return b.shortValue();
 		}
 		
 		return KeyGenerator.KGMETHOD_NULL;
+	}
+	
+	public short getKeXMethod(){
+		Short b = featureMap.get(Short.valueOf(FEATURE_KEY_EXCHANGE));
+		if (b != null){
+			return b.shortValue();
+		}
+		
+		return KeyExchangeManager.KEX_MANUAL;
 	}
 	
 	public short getFeatureMessageLength(){

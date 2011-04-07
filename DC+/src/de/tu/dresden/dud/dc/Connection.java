@@ -221,7 +221,25 @@ public class Connection extends Observable implements Runnable {
 			assocKeyManager.activateKeyExchangeBetween(i.getP1(), false,
 					assocParticipantManager);
 	}
-
+	
+	/**
+	 * Call this method when using automatic key exchange.
+	 * @param p
+	 */
+	public void commitKeyExchange(final String p){
+		
+		if (p.compareToIgnoreCase(assocParticipant.getId()) < 0){
+			assocKeyManager.activateKeyExchangeBetween(p, true,
+					assocParticipantManager);
+		} else if (p.compareToIgnoreCase(assocParticipant.getId()) > 0){
+			assocKeyManager.activateKeyExchangeBetween(p, false,
+					assocParticipantManager);
+		}
+		
+		log.debug("Automatic key exchange: no need to exchange keys with yourself");
+		
+	}
+	
 	/**
 	 * Each {@link Participant} can decide at any time to send DC/DC+ messages
 	 * over a communication, whether the {@link WorkCycle}s are already running, or
@@ -316,6 +334,12 @@ public class Connection extends Observable implements Runnable {
 	
 	public long getExpectedLeavingWorkCycle(){
 		return expectedLeavingWC;
+	}
+	
+	public short getKeyExchangeMethod(){
+		if (welcome2Service != null)
+			return welcome2Service.getKeXMethod();
+		return KeyExchangeManager.KEX_MANUAL;
 	}
 	
 	/**
@@ -822,16 +846,41 @@ public class Connection extends Observable implements Runnable {
 					&& (currentMode == MODE_PASSIVE)) {
 		    		this.welcome2WorkCycle = (ManagementMessageWelcome2WorkCycle) m;
 		    		
-		    		if (welcome2WorkCycle.isAccepted()) {
-		    			
-		    			this.currentMode = MODE_ACTIVE;
-		    			this.setExpectedEntryWorkCycle(welcome2WorkCycle.getWorkCycle());
-		    			
-					if (welcome2WorkCycle.isAccepted())
-						assocParticipantManager.setParticipantActiveAfterWorkCycle(
-								assocParticipant, welcome2WorkCycle.getWorkCycle());
-		    			assocParticipantManager.setParticipantsActive(welcome2WorkCycle
-							.getActiveParticipantIDs());
+				if (welcome2WorkCycle.isAccepted()) {
+
+					this.currentMode = MODE_ACTIVE;
+					this.setExpectedEntryWorkCycle(welcome2WorkCycle
+							.getWorkCycle());
+
+					assocParticipantManager.setParticipantActiveAfterWorkCycle(
+							assocParticipant, welcome2WorkCycle.getWorkCycle());
+					assocParticipantManager
+							.setParticipantsActive(welcome2WorkCycle
+									.getActiveParticipantIDs());
+					
+					// Exchange keys if mode is automatic
+					if (welcome2Service.getKeXMethod() == KeyExchangeManager.KEX_FULLY_AUTOMATIC) {
+						for (int i = 0; i < welcome2WorkCycle.getActiveParticipantIDs().size();	i++){
+							if (!assocParticipantManager
+									.getParticipantMgmntInfoByParticipantID(
+											welcome2WorkCycle
+													.getActiveParticipantIDs()
+													.get(i).getId())
+									.hasExchangedKey()) {
+
+								assocParticipantManager
+										.getParticipantMgmntInfoByParticipantID(
+												welcome2WorkCycle
+														.getActiveParticipantIDs()
+														.get(i).getId())
+										.getKey().setSate(DCKey.KEY_REQUESTED);
+								
+								commitKeyExchange(welcome2WorkCycle
+										.getActiveParticipantIDs().get(i)
+										.getId());
+							}
+						}
+					}
 		    		}
 				return;
 			} 	
@@ -849,7 +898,7 @@ public class Connection extends Observable implements Runnable {
 						assocWorkCycleManager
 								.tickArrived(lastTick.getWorkCycleNumber());
 					} else {
-						assocWorkCycleManager = new WorkCycleManager(welcome2Service.getMethod(), lastTick.getWorkCycleNumber(),
+						assocWorkCycleManager = new WorkCycleManager(welcome2Service.getKeGMethod(), lastTick.getWorkCycleNumber(),
 								welcome2Service.getCharLength(), welcome2Service.getFeatureMessageLength());
 						assocWorkCycleManager.setParticipant(assocParticipant);
 						assocWorkCycleManager
