@@ -98,7 +98,7 @@ public class Server implements Runnable {
 		c.setAssocWorkCycleManager(workCycleManager);
 	}
 	
-	public void deactivateConnection(Connection c, long workcycle){
+	private void deactivateConnection(Connection c, long workcycle){
 		participantManager.unsetParticipantActiveAfterWorkCycle(c.getAssociatedParticipant(), workcycle);
 		c.setExpectedLeavingWorkCycle(workcycle);
 		this.workCycleManager.addLeavingConnection(c);
