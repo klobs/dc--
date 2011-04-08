@@ -12,6 +12,9 @@
 -Restore participants prefs.
 -Key management: revocation / expiry...
 -Joining: right now the oracle almost has no infos to decide upon whether to accept a participant, or not. Maybe I should add a challenge - response, to see whether the participant really has the public key's counter part...
+-Study Bitcoins
+-React properly on failing connections
+-Design library / API
 
 -Read:
 Scholz, I.: Dining cryptographers, the protocol. In: 24th Chaos Communication Congress. (2007)
