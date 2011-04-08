@@ -688,6 +688,8 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    			getActionQuitService().setEnabled(false);
 	    			
 	    			buttonStartClient.setAction(getStartAction());
+	    			getJoinWorkCycleAction().setEnabled(false);
+	    			buttonJoinWorkCycle.setAction(getJoinWorkCycleAction());
 	    		}
 	    	}
 	    	// TICK
