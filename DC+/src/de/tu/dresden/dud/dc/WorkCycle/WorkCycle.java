@@ -94,7 +94,6 @@ public class WorkCycle extends Observable implements Observer {
 	 * do not use this constructor.
 	 */
 	public WorkCycle(){
-		log.warn("Do not use this constructor directly");
 	}
 
 	public WorkCycle(long workcycleNumber, int timeout, int payloadLength, WorkCycleManager r) {
