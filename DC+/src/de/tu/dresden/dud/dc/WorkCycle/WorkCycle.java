@@ -425,8 +425,18 @@ public class WorkCycle extends Observable implements Observer {
 					c.sendMessage(m.getMessage());
 				}
 			}
+		 	
 			currentPhase = WC_STARTED;
-			// Zeichen geben, dass naechste Runde an der Reihe ist.
+			
+			// Zeichen geben, dass naechste Runde an der Reihe ist,
+			// aber vorher nochmal kurze Verschnaufpause.
+			try {
+				Thread.sleep(assocWorkCycleManag.getTickPause());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
 			m = new ManagementMessageTick(workcycleNumber);
 			for (Connection c : getBroadcastConnections()) {
 				c.sendMessage(m.getMessage());

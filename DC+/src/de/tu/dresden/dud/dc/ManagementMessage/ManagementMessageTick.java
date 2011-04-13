@@ -36,16 +36,6 @@ public class ManagementMessageTick extends ManagementMessage {
 	 */	
 	public ManagementMessageTick(long workCycleNumber) {
 
-// TODO
-//remove me
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//remove me
-	
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		
 		byte[] messagetype		= Util.stuffIntIntoShort(ManagementMessage.TICK);

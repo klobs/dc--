@@ -6,7 +6,6 @@
 -Gui improvements
 -High level API / library
 -Sending traps.
--REMOVE sleep interval in ManagementMessageTick
 -Maybe handle the broadcast lists within the round manager?
 -Documentation
 -Restore participants prefs.
