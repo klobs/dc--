@@ -4,12 +4,15 @@
  */
 package de.tu.dresden.dud.dc.Gui;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
@@ -23,7 +26,9 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 
 import de.tu.dresden.dud.dc.Connection;
+import de.tu.dresden.dud.dc.KeyExchangeManager;
 import de.tu.dresden.dud.dc.Server;
+import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -55,7 +60,8 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 	private DefaultComboBoxModel outputListModel;
 	private JButton toggleServerButton;
 	private AbstractAction actionToggleServer;
-	private JRadioButton jRadioButtonTickSleep20;
+	private JPanel jPanel3;
+	private JRadioButton jRadioButtonTickSleep2;
 	private JRadioButton jRadioButtonTickSleep1;
 	private JPanel jPanel2;
 	private JRadioButton jRadioButtonTickSleep0;
@@ -63,7 +69,19 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 	private JCheckBox jCheckBoxVariableMessageLength;
 	private JComboBox jComboBoxKeG;
 	private JComboBox jComboBoxKeX;
-
+	
+	private Server assocServer = null;
+	
+	private ActionListener actionTickButton = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			assocServer.getWorkCycleManager().setTickPause(getTickTimer());
+		}
+	};
+	
+	private ButtonGroup buttonGroupTick = new ButtonGroup();
+	
 	public GuiServer() {
 		super();
 		initGUI();
@@ -90,32 +108,43 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 					public void keyPressed(KeyEvent e) {
 						// TODO Auto-generated method stub
 						if (e.getKeyChar() == KeyEvent.VK_ENTER) getActionStartServer().actionPerformed(null);
+
 					}
 				});
+				
+				buttonGroupTick.add(getJRadioButtonTickSleep0());
+				buttonGroupTick.add(getJRadioButtonTickSleep1());
+				buttonGroupTick.add(getJRadioButtonTickSleep2());
+
+				getJRadioButtonTickSleep0().addActionListener(actionTickButton);
+				getJRadioButtonTickSleep1().addActionListener(actionTickButton);
+				getJRadioButtonTickSleep2().addActionListener(actionTickButton);
+				
+				Component com[] = getJPanel2().getComponents();
+				
+				for (int a = 0; a < com.length; a++) {
+					com[a].setEnabled(false);
+				}
+
 			}
 				thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(getJPanel1(), GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
-					.addGroup(thisLayout.createParallelGroup()
-					    .addGroup(thisLayout.createSequentialGroup()
-					        .addComponent(getJPanel2(), GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
-					        .addGap(0, 0, Short.MAX_VALUE))
-					    .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					        .addComponent(toggleServerButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					        .addGap(0, 51, Short.MAX_VALUE)))
-					.addContainerGap(355, 355));
+					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					.addComponent(toggleServerButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					.addComponent(getJPanel3(), GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(285, Short.MAX_VALUE));
 				thisLayout.setHorizontalGroup(thisLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(thisLayout.createParallelGroup()
 					    .addGroup(thisLayout.createSequentialGroup()
-					        .addComponent(getJPanel1(), GroupLayout.PREFERRED_SIZE, 861, GroupLayout.PREFERRED_SIZE)
+					        .addComponent(toggleServerButton, GroupLayout.PREFERRED_SIZE, 861, GroupLayout.PREFERRED_SIZE)
 					        .addGap(0, 0, Short.MAX_VALUE))
-					    .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					        .addComponent(getJPanel2(), GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
-					        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-					        .addComponent(toggleServerButton, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)
-					        .addGap(0, 566, Short.MAX_VALUE)))
+					    .addComponent(getJPanel3(), GroupLayout.Alignment.LEADING, 0, 861, Short.MAX_VALUE)
+					    .addGroup(thisLayout.createSequentialGroup()
+					        .addComponent(getJPanel1(), GroupLayout.PREFERRED_SIZE, 861, GroupLayout.PREFERRED_SIZE)
+					        .addGap(0, 0, Short.MAX_VALUE)))
 					.addContainerGap());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,9 +158,23 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 				private static final long serialVersionUID = 10L;
 
 				public void actionPerformed(ActionEvent evt) {
-					Server s = new Server(Connection.DEFAULTPORT);
-					new Thread(s, "Server").start();
+					assocServer = new Server(Connection.DEFAULTPORT,
+							getKeyGenerationMethod(), getKeyExchangeMethod(),
+							getVariableMessageLengthsFeature());
 					
+					new Thread(assocServer, "Server").start();
+					
+					Component[] com = getJPanel1().getComponents();
+					
+					for (int a = 0; a < com.length; a++) {
+					     com[a].setEnabled(false);
+					}
+					
+					com = getJPanel2().getComponents();
+
+					for (int a = 0; a < com.length; a++) {
+					     com[a].setEnabled(true);
+					}
 					
 					this.setEnabled(false);
 				}
@@ -160,7 +203,7 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 		if(jComboBoxKeG == null) {
 			ComboBoxModel jComboBoxKeGModel = 
 				new DefaultComboBoxModel(
-						new String[] { "Probabilistic-Fail-Stop during work cycle", "Normal DC-Keys", "Fail-Stop during work cycles", "Null keys"});
+						new String[] { "Null keys", "Normal DC-Keys", "Fail-Stop during work cycles", "Probabilistic-Fail-Stop during work cycle"});
 			jComboBoxKeG = new JComboBox();
 			jComboBoxKeG.setModel(jComboBoxKeGModel);
 		}
@@ -180,7 +223,7 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 			jPanel1 = new JPanel();
 			GroupLayout jPanel1Layout = new GroupLayout((JComponent)jPanel1);
 			jPanel1.setLayout(jPanel1Layout);
-			jPanel1.setBorder(BorderFactory.createTitledBorder(""));
+			jPanel1.setBorder(BorderFactory.createTitledBorder("Adjust before you start"));
 			jPanel1Layout.setHorizontalGroup(jPanel1Layout.createSequentialGroup()
 				.addComponent(getJComboBoxKeX(), GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
@@ -215,30 +258,74 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 			jPanel2.setBorder(BorderFactory.createTitledBorder(null, "Sleep during ticks", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION));
 			jPanel2Layout.setHorizontalGroup(jPanel2Layout.createParallelGroup()
 				.addComponent(getJRadioButtonTickSleep0(), GroupLayout.Alignment.LEADING, 0, 155, Short.MAX_VALUE)
-				.addComponent(getJRadioButton1(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJRadioButton2(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE));
+				.addComponent(getJRadioButtonTickSleep1(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
+				.addComponent(getJRadioButtonTickSleep2(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE));
 			jPanel2Layout.setVerticalGroup(jPanel2Layout.createSequentialGroup()
 				.addComponent(getJRadioButtonTickSleep0(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJRadioButton1(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJRadioButton2(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+				.addComponent(getJRadioButtonTickSleep1(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+				.addComponent(getJRadioButtonTickSleep2(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 		}
 		return jPanel2;
 	}
 	
-	private JRadioButton getJRadioButton1() {
+	private JRadioButton getJRadioButtonTickSleep1() {
 		if(jRadioButtonTickSleep1 == null) {
 			jRadioButtonTickSleep1 = new JRadioButton();
 			jRadioButtonTickSleep1.setText("1 sec");
+			jRadioButtonTickSleep1.setSelected(true);
 		}
 		return jRadioButtonTickSleep1;
 	}
 	
-	private JRadioButton getJRadioButton2() {
-		if(jRadioButtonTickSleep20 == null) {
-			jRadioButtonTickSleep20 = new JRadioButton();
-			jRadioButtonTickSleep20.setText("20 sec");
+	private JRadioButton getJRadioButtonTickSleep2() {
+		if(jRadioButtonTickSleep2 == null) {
+			jRadioButtonTickSleep2 = new JRadioButton();
+			jRadioButtonTickSleep2.setText("20 sec");
 		}
-		return jRadioButtonTickSleep20;
+		return jRadioButtonTickSleep2;
+	}
+	
+	private JPanel getJPanel3() {
+		if(jPanel3 == null) {
+			jPanel3 = new JPanel();
+			GroupLayout jPanel3Layout = new GroupLayout((JComponent)jPanel3);
+			jPanel3.setLayout(jPanel3Layout);
+			jPanel3.setBorder(BorderFactory.createTitledBorder("Adjust while running"));
+			jPanel3.setEnabled(true);
+			jPanel3Layout.setVerticalGroup(jPanel3Layout.createSequentialGroup()
+				.addGroup(jPanel3Layout.createSequentialGroup()
+				    .addComponent(getJPanel2(), GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)));
+			jPanel3Layout.setHorizontalGroup(jPanel3Layout.createSequentialGroup()
+				.addGroup(jPanel3Layout.createSequentialGroup()
+				    .addComponent(getJPanel2(), GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)));
+		}
+		return jPanel3;
+	}
+	
+	private short getKeyGenerationMethod(){
+		return (short) getJComboBoxKeG().getSelectedIndex();
+	}
+	
+	private short getKeyExchangeMethod(){
+		if (getJComboBoxKeX().getSelectedIndex() == 0)
+			return KeyExchangeManager.KEX_FULLY_AUTOMATIC;
+		if (getJComboBoxKeX().getSelectedIndex() == 1)
+			return KeyExchangeManager.KEX_MANUAL;
+
+		return KeyExchangeManager.KEX_MANUAL;
+	}
+	
+	private int getTickTimer(){
+		if (jRadioButtonTickSleep0.isSelected()) return 0;
+		if (jRadioButtonTickSleep1.isSelected()) return 1000;
+		if (jRadioButtonTickSleep2.isSelected()) return 20000;
+		return 1000;
+	}
+	
+	private short getVariableMessageLengthsFeature(){
+		if (getJCheckBoxVariableMessageLength().isSelected())
+			return WorkCycleManager.MESSAGE_LENGTHS_VARIABLE;
+		else return WorkCycleManager.MESSAGE_LENGTHS_FIXED;
 	}
 }
