@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.InfoService.InfoService;
-import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
@@ -52,15 +51,13 @@ public class Server implements Runnable {
 	/**
 	 * @param listenPort specifies the port on which the DC Service shall be provided.
 	 */
-	public Server(int listenPort) {
-		// set port
-		if(port > 0){ this.port = listenPort; }
+	public Server(int listenPort, short keyGenerationMethod, short keyExchangeMethod, short individualMessageLengths) {
+		this.port = listenPort;
 		
-		// create InfoService
 		info = new InfoService(this);
 		
 		workCycleManager = new WorkCycleManager(
-				KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP,
+				keyGenerationMethod,
 				0 /*Better: Long.MIN_VALUE */,
 				symbollength,
 				WorkCycleManager.MESSAGE_LENGTHS_VARIABLE);

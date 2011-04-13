@@ -48,6 +48,7 @@ public class WorkCycleManager implements Observer{
 	private LinkedList<byte[]>	payloads		= new LinkedList<byte[]>();
 	private TreeSet<WorkCycle> 		workcycless 			= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private TreeSet<WorkCycle>		oldworkcycles		= new TreeSet<WorkCycle>(new WorkCycleComparator());
+	private long 				tickPause		= 1000;
 	private Server				server			= null;
 	private boolean 			servermode		= false;
 	
@@ -239,6 +240,9 @@ public class WorkCycleManager implements Observer{
 		return payloadlengths;
 	}
 	
+	public long getTickPause(){
+		return tickPause;
+	}
 	
 	public boolean isRunning(){
 		return getCurrentWorkCycle().workCycleHasStarted();
@@ -296,6 +300,10 @@ public class WorkCycleManager implements Observer{
 	public synchronized void setServer(Server s){
 		servermode = true;
 		server = s;
+	}
+	
+	public void setTickPause(long p){
+		tickPause = p;
 	}
 	
 	/**
