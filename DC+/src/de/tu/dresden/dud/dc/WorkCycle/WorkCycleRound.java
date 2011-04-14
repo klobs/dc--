@@ -67,10 +67,10 @@ public class WorkCycleRound extends WorkCycle {
 						+ expectedConnections.size()
 						+ " more expected  messages");
 
-		checkWhetherToAddUp();
+		checkWhetherToAddUpAndIfYesDoSo();
 	}
 	
-	public void checkWhetherToAddUp(){
+	public void checkWhetherToAddUpAndIfYesDoSo(){
 		if (expectedConnections.size() == 0) {
 			log.debug("	there are no more new messages expected. ADDing notification");
 			setChanged();
