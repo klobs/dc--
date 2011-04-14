@@ -4,8 +4,10 @@
  */
 package de.tu.dresden.dud.dc;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
@@ -60,7 +62,7 @@ public class ParticipantManager extends Observable{
 	 */
 	public  static final int 	PARTMNG_INTERVAL_CHANGED_PASSIVE 	= 4;
 	
-	private LinkedList<ParticipantMgmntInfo> participantDB 	= new LinkedList<ParticipantMgmntInfo>();
+	private List<ParticipantMgmntInfo> participantDB 		= Collections.synchronizedList(new LinkedList<ParticipantMgmntInfo>());
 	private Participant 					 me 			= null;
 	
 	/**
