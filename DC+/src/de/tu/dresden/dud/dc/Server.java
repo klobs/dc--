@@ -54,7 +54,8 @@ public class Server implements Runnable {
 	public Server(int listenPort, short keyGenerationMethod, short keyExchangeMethod, short individualMessageLengths) {
 		this.port = listenPort;
 		
-		info = new InfoService(this);
+		info = new InfoService();
+		info.setServer(this);
 		
 		workCycleManager = new WorkCycleManager(
 				keyGenerationMethod,

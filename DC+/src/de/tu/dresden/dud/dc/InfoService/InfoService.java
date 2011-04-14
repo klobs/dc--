@@ -17,27 +17,9 @@ import de.tu.dresden.dud.dc.Server;
  */
 public class InfoService {
 	
-	private Participant participant = null;
 	private Server		server  	= null;
 	private String 		version 	= new String("0.0.4");
 	
-	
-	/**
-	 * Default constructor
-	 * @param s the server for which the information shall be provided.
-	 */
-	public InfoService(Server s){
-		this.server = s;		
-	}
-
-	/**
-	 * Default constructor
-	 * @param p the participant for which the information shall be provided.
-	 */
-	public InfoService(Participant p){
-		this.participant = p;
-	}
-
 	
 	/**
 	 * Do we accept new participants? 
@@ -105,6 +87,9 @@ public class InfoService {
 		return "";
 	}
 	
+	public void setServer(Server s){
+		server = s;
+	}
 	
 	/**
 	 * When there is a getter, there has to be a setter, hasn't it?
