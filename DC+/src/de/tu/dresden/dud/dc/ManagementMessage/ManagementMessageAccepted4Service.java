@@ -14,7 +14,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageAccepted4Service extends ManagementMessage{
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageAccepted4Service.class);
+    private static Logger log = Logger.getLogger(ManagementMessageAccepted4Service.class);
 
 	
 	public static final int ACCEPTED 	= 0;

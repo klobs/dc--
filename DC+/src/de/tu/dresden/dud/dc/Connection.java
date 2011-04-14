@@ -28,7 +28,9 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfoRequest;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageJoinWorkCycle;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageQuitService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2Service;
@@ -54,14 +56,21 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class Connection extends Observable implements Runnable {
 
 	// Logging
-	Logger log = Logger.getLogger(Connection.class);
+	private static Logger log = Logger.getLogger(Connection.class);
 
 	/**
 	 *  Default port
 	 */
 	public static final int DEFAULTPORT = 6867;
 
-	// available modes for the connection.
+	// Lost connection handling
+	
+	/**
+	 * No handling for lost / broken connections
+	 */
+	public static final short HANDLING_EXPLODE = 0; 
+	
+	// Modes for the connection.
 	
 	/**
 	 * Status indicator for connections. This connection is broken and can no
@@ -129,10 +138,12 @@ public class Connection extends Observable implements Runnable {
 	protected ManagementMessageRegisterAtService 		regsiterAtService;
 	protected ManagementMessageJoinWorkCycle 	joinWorkCycle;
 	protected ManagementMessageLeaveWorkCycle	leaveWorkCycle;
+	protected ManagementMessageKThxBye			kThxBye = null;
 	protected ManagementMessageAdd				lastAdd;
 	protected ManagementMessageAdded			lastAdded;
 	protected ManagementMessage 				lastMessage;
 	protected ManagementMessageTick 			lastTick;
+	protected ManagementMessageQuitService		lastQuit;
 	protected ManagementMessageWelcome2Service 	welcome2Service;
 	protected ManagementMessageWelcome2WorkCycle 	welcome2WorkCycle;
 
@@ -194,6 +205,11 @@ public class Connection extends Observable implements Runnable {
 		}
 	}
 	
+	public boolean checkWhetherQuitRequestedOnParticipantSide(){
+		if(kThxBye != null)
+			return true;
+		return false;
+	}
 	
 	/**
 	 * Analyses an {@link InfoServiceInfoKeyExchangeCommit} and activates the
@@ -213,7 +229,25 @@ public class Connection extends Observable implements Runnable {
 			assocKeyManager.activateKeyExchangeBetween(i.getP1(), false,
 					assocParticipantManager);
 	}
-
+	
+	/**
+	 * Call this method when using automatic key exchange.
+	 * @param p
+	 */
+	public void commitKeyExchange(final String p){
+		
+		if (p.compareToIgnoreCase(assocParticipant.getId()) < 0){
+			assocKeyManager.activateKeyExchangeBetween(p, true,
+					assocParticipantManager);
+		} else if (p.compareToIgnoreCase(assocParticipant.getId()) > 0){
+			assocKeyManager.activateKeyExchangeBetween(p, false,
+					assocParticipantManager);
+		}
+		
+		log.debug("Automatic key exchange: no need to exchange keys with yourself");
+		
+	}
+	
 	/**
 	 * Each {@link Participant} can decide at any time to send DC/DC+ messages
 	 * over a communication, whether the {@link WorkCycle}s are already running, or
@@ -308,6 +342,12 @@ public class Connection extends Observable implements Runnable {
 	
 	public long getExpectedLeavingWorkCycle(){
 		return expectedLeavingWC;
+	}
+	
+	public short getKeyExchangeMethod(){
+		if (welcome2Service != null)
+			return welcome2Service.getKeXMethod();
+		return KeyExchangeManager.KEX_MANUAL;
 	}
 	
 	/**
@@ -441,6 +481,20 @@ public class Connection extends Observable implements Runnable {
 		}
 
 	}
+	
+	public void quitService(Participant p){
+		if (assocParticipantManager.getParticipantMgmntInfoFor(p).isActive()) {
+			log.debug("My dear, next time you better leave the work cycles");
+		}
+
+		try {
+			ManagementMessageQuitService m = new ManagementMessageQuitService();
+			this.sendMessage(m.getMessage());
+		} catch (IOException e) {
+			log.error("Problems occured within the quitService method: " + e.toString());
+		}
+	}
+	
 	
 	/**
 	 * A {@link Participant} can call this method to request a list of all
@@ -772,6 +826,12 @@ public class Connection extends Observable implements Runnable {
 		    		return;
 		    	}
 		    	//LEAVESERVICE
+		    	else if((m instanceof ManagementMessageQuitService)){
+		    		this.lastQuit = (ManagementMessageQuitService) m;
+		    		server.quitServiceRequest(this);
+		    		return;
+		    	}
+		    	
 	    	} 
 	    	// only messages that can go from Server -> Participant
 	    	else if ( !servermode ) {
@@ -796,16 +856,41 @@ public class Connection extends Observable implements Runnable {
 					&& (currentMode == MODE_PASSIVE)) {
 		    		this.welcome2WorkCycle = (ManagementMessageWelcome2WorkCycle) m;
 		    		
-		    		if (welcome2WorkCycle.isAccepted()) {
-		    			
-		    			this.currentMode = MODE_ACTIVE;
-		    			this.setExpectedEntryWorkCycle(welcome2WorkCycle.getWorkCycle());
-		    			
-					if (welcome2WorkCycle.isAccepted())
-						assocParticipantManager.setParticipantActiveAfterWorkCycle(
-								assocParticipant, welcome2WorkCycle.getWorkCycle());
-		    			assocParticipantManager.setParticipantsActive(welcome2WorkCycle
-							.getActiveParticipantIDs());
+				if (welcome2WorkCycle.isAccepted()) {
+
+					this.currentMode = MODE_ACTIVE;
+					this.setExpectedEntryWorkCycle(welcome2WorkCycle
+							.getWorkCycle());
+
+					assocParticipantManager.setParticipantActiveAfterWorkCycle(
+							assocParticipant, welcome2WorkCycle.getWorkCycle());
+					assocParticipantManager
+							.setParticipantsActive(welcome2WorkCycle
+									.getActiveParticipantIDs());
+					
+					// Exchange keys if mode is automatic
+					if (welcome2Service.getKeXMethod() == KeyExchangeManager.KEX_FULLY_AUTOMATIC) {
+						for (int i = 0; i < welcome2WorkCycle.getActiveParticipantIDs().size();	i++){
+							if (!assocParticipantManager
+									.getParticipantMgmntInfoByParticipantID(
+											welcome2WorkCycle
+													.getActiveParticipantIDs()
+													.get(i).getId())
+									.hasExchangedKey()) {
+
+								assocParticipantManager
+										.getParticipantMgmntInfoByParticipantID(
+												welcome2WorkCycle
+														.getActiveParticipantIDs()
+														.get(i).getId())
+										.getKey().setSate(DCKey.KEY_REQUESTED);
+								
+								commitKeyExchange(welcome2WorkCycle
+										.getActiveParticipantIDs().get(i)
+										.getId());
+							}
+						}
+					}
 		    		}
 				return;
 			} 	
@@ -823,9 +908,8 @@ public class Connection extends Observable implements Runnable {
 						assocWorkCycleManager
 								.tickArrived(lastTick.getWorkCycleNumber());
 					} else {
-						assocWorkCycleManager = new WorkCycleManager(welcome2Service
-								.getMethod(), lastTick.getWorkCycleNumber(),
-								welcome2Service.getCharLength());
+						assocWorkCycleManager = new WorkCycleManager(welcome2Service.getKeGMethod(), lastTick.getWorkCycleNumber(),
+								welcome2Service.getCharLength(), welcome2Service.getFeatureMessageLength());
 						assocWorkCycleManager.setParticipant(assocParticipant);
 						assocWorkCycleManager
 								.setAssocParticipantManager(assocParticipantManager);
@@ -854,6 +938,18 @@ public class Connection extends Observable implements Runnable {
 		    		}
 		    		
 		    		assocWorkCycleManager.addedMessageArrived(lastAdded);
+		    		return;
+		    	}
+		    	
+		    	// K THX BYE
+		    	else if ((m instanceof ManagementMessageKThxBye)){
+		    		kThxBye = (ManagementMessageKThxBye) m;
+		    		if(kThxBye.getQuitOK() == ManagementMessageKThxBye.QUITOK_ALL_OK){
+		    			kThxBye = null;
+		    			stop(true);
+		    		}
+		    		else if (kThxBye.getQuitOK() == ManagementMessageKThxBye.QUITOK_LEAVE_WC_FIRST)
+		    			assocParticipant.leaveWorkCycle(this);
 		    		return;
 		    	}
 	    	}
@@ -901,6 +997,20 @@ public class Connection extends Observable implements Runnable {
 		this.stopped = s;
 	}
 
+	public void tellGoodByeFromService(final short quitOK){
+		ManagementMessageKThxBye m = new ManagementMessageKThxBye(quitOK);
+
+		try{
+			sendMessage(m.getMessage());
+			if (quitOK == ManagementMessageKThxBye.QUITOK_ALL_OK) {
+				stop(true);
+				clientSocket.close();
+			}
+		} catch (IOException e){
+			log.error(e.toString());
+		}
+	}
+	
 	/**
 	 * This method has to be called on {@link Participant} side after a
 	 * {@link ManagementMessageTick} arrived.
@@ -963,7 +1073,7 @@ public class Connection extends Observable implements Runnable {
 			return;
 		}
 
-		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s, assocWorkCycleManager.getMethod());
+		ManagementMessageWelcome2Service m = new ManagementMessageWelcome2Service(s);
 		try {
 
 			log.debug("Sending WELCOME2SERVER: " );

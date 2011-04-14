@@ -7,9 +7,11 @@ package de.tu.dresden.dud.dc.WorkCycle;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
+import de.tu.dresden.dud.dc.Util;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 
 
@@ -23,10 +25,11 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 public class WorkCycleReserving extends WorkCycleSending {
 	
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleReserving.class);
+	private static Logger log = Logger.getLogger(WorkCycleReserving.class);
 
-	private int 	actualRoundsCalculated	= 0;
+	private LinkedList<Integer> 	actualRoundsCalculated	= new LinkedList<Integer>();
 	private short	myRandomNumber	 			= 0;
+	
 	
 	/**
 	 * @param r
@@ -54,7 +57,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 
 		while (i.hasNext()) {
 			byte[] c = i.next();
-			b = mergeDCwise(b, c);
+			b = Util.mergeDCwise(b, c, WorkCycleSending.MODULUS);
 		}
 
 		payloadSend = b;
@@ -62,8 +65,17 @@ public class WorkCycleReserving extends WorkCycleSending {
 	
 	
 	private void performDCReservationParticipantSide() {
+		int desiredMessageLength = getSystemPayloadLength();
+		
+		if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
+			desiredMessageLength = (assocWorkCycle.getNextPayload().length % 4 == 0) ? assocWorkCycle
+					.getNextPayload().length
+					: assocWorkCycle.getNextPayload().length
+							+ (4 - (assocWorkCycle.getNextPayload().length % 4));
+		}
+		
 		WorkCycleReservationPayload		 	a = null;
-		WorkCycleReservationPayload 		rp = new WorkCycleReservationPayload(getSystemPayloadLength(), myRandomNumber);
+		WorkCycleReservationPayload 		rp = new WorkCycleReservationPayload(desiredMessageLength, myRandomNumber);
 		ManagementMessageAdd 			m = null;
 		
 		// collision detection
@@ -86,12 +98,19 @@ public class WorkCycleReserving extends WorkCycleSending {
 					&& (this.assocWorkCycle.hasPayload())
 					&& !collisiondetected) {
 				// Yes, we do want, so prepare the message with the right keys.
-				byte[] p = mergeDCwise(rp.getPayload(), calcKeysMain(WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE));
+				byte[] p = Util.mergeDCwise(
+						rp.getPayload(),
+						assocKeyGenerator
+								.calcKeys(
+										WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
+										workcycleNumber, rc), WorkCycleSending.MODULUS);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 				waited = 0;
 			} else {
 				// no, so only an empty message with the keys has to be sent.
-				byte[] p = calcKeysMain(WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE);
+				byte[] p = assocKeyGenerator.calcKeys(
+						WorkCycleReservationPayload.RESERVATION_PAYLOAD_SIZE,
+						workcycleNumber, rc);
 				m = new ManagementMessageAdd(workcycleNumber, rc, p);
 			}
 			
@@ -123,7 +142,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				wait = 1;
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated++;
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 				}
 			}
 			else if (myRandomNumber <= a.getAverage() &&  relativeRound < 0) { // left side of the branch
@@ -131,8 +150,8 @@ public class WorkCycleReserving extends WorkCycleSending {
 				// Current average is my random number and I am the only sender
 				if ((a.getParticipantCount() == 1) && (myRandomNumber == a.getAverage()))
 				{
-					relativeRound = actualRoundsCalculated;
-					actualRoundsCalculated++;
+					relativeRound = actualRoundsCalculated.size();
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 					expectedRounds--;
 				} 
 				// Current average is my random sum, but there are more people trying to send it -> collusion
@@ -162,7 +181,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 				//Did somebody else find the slot?
 				if(a.getParticipantCount() == 1){
 					expectedRounds--;
-					actualRoundsCalculated++;
+					actualRoundsCalculated.add(a.getDesiredPayloadLength());
 					wait--;
 				} else if (collisionpayload != null 
 						&& collisionpayload.getAverage() == a.getAverage() 
@@ -181,7 +200,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 			finished = (expectedRounds == 0);
 		}
 		
-		expectedRounds = actualRoundsCalculated;
+		expectedRounds = actualRoundsCalculated.size();
 		
 		if (collisiondetected == true) relativeRound = -1;
 		
@@ -189,21 +208,13 @@ public class WorkCycleReserving extends WorkCycleSending {
 		setChanged();
 		notifyObservers(WorkCycle.WC_RESERVATION_FINISHED);
 	}
+	
+	public LinkedList<Integer> getIndividualMessageLengths(){
+		return actualRoundsCalculated;
+	}
 
 	@Override
 	public void run(){
-		switch (method) {
-
-		case WorkCycleManager.METHOD_DC:
-			performDCReservationParticipantSide();
-			break;
-		case WorkCycleManager.METHOD_DCPLUS:
-			performDCReservationParticipantSide();
-			break;
-		default:
-			log.error( "Unknown reservation method");
-		}
-
-
+		performDCReservationParticipantSide();
 	}
 }

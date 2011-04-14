@@ -4,8 +4,11 @@
  */
 package de.tu.dresden.dud.dc;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 
 import de.tu.dresden.dud.dc.WorkCycle.WorkCycle;
@@ -60,7 +63,7 @@ public class ParticipantManager extends Observable{
 	 */
 	public  static final int 	PARTMNG_INTERVAL_CHANGED_PASSIVE 	= 4;
 	
-	private LinkedList<ParticipantMgmntInfo> participantDB 	= new LinkedList<ParticipantMgmntInfo>();
+	private List<ParticipantMgmntInfo> participantDB 		= Collections.synchronizedList(new LinkedList<ParticipantMgmntInfo>());
 	private Participant 					 me 			= null;
 	
 	/**
@@ -115,6 +118,18 @@ public class ParticipantManager extends Observable{
 		return l;
 	}
 
+	public void cleanAllButPassiveConnections(LinkedList<Participant> ppl){
+		HashSet<ParticipantMgmntInfo> oldPpl = new HashSet<ParticipantMgmntInfo>();
+		
+		oldPpl.addAll(getPassivePartMgmtInfo());
+		oldPpl.removeAll(ppl);
+		
+		participantDB.removeAll(oldPpl);
+		
+		setChanged();
+		notifyObservers(PARTMNG_INTERVAL_CHANGED_PASSIVE);
+	}
+	
 	public LinkedList<ParticipantMgmntInfo> getActivePartExtKeysMgmtInfo(){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		LinkedList<ParticipantMgmntInfo> l = new LinkedList<ParticipantMgmntInfo>();
@@ -247,6 +262,20 @@ public class ParticipantManager extends Observable{
 	 */
 	public int getSize() {
 		return participantDB.size();
+	}
+	
+	public void removeParticipant(ParticipantMgmntInfo pmi){
+		if (participantDB.contains(pmi)){
+			participantDB.remove(pmi);
+		}
+	}
+	
+	public void removeParticipant(Participant p){
+		ParticipantMgmntInfo pmi = getParticipantMgmntInfoFor(p);
+		
+		if (pmi != null){
+			participantDB.remove(pmi);
+		}
 	}
 	
 	/**

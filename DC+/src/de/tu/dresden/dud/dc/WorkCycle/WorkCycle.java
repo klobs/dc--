@@ -22,6 +22,7 @@ import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceUpdateActiveJoining;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceUpdateActiveLeaving;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
@@ -42,7 +43,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 public class WorkCycle extends Observable implements Observer {
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycle.class);
+	private static Logger log = Logger.getLogger(WorkCycle.class);
 
 	// Events
 	public final static int WC_ROUND_ADDUP              = 0;
@@ -68,12 +69,13 @@ public class WorkCycle extends Observable implements Observer {
 	
 	private   LinkedList<InfoServiceInfoKeyExchangeCommit> keyExchangeCommitMessages = new LinkedList<InfoServiceInfoKeyExchangeCommit>();
 	
+	protected KeyGenerator			assocKeyGenerator	= null;
 	protected WorkCycleManager		assocWorkCycleManag	= null;
 	protected int					currentPhase		= 0;
 	protected int 					expectedRounds 	= 0;
-	protected int					method				= -1;
+	protected int					keyGenerationMethod				= -1;
 	protected LinkedList<byte[]> 	payloads 			= new LinkedList<byte[]>();
-	protected LinkedList<Integer>	otherPayloadLength	= new LinkedList<Integer>();
+	protected LinkedList<Integer>	individualPayloadLengths	= new LinkedList<Integer>();
 	protected int 					relativeRound 	= -1;
 	private	  ServerReservationChecker reservationChecker = null;
 	protected long 					workcycleNumber 		= 0; // Long.MIN_VALUE;
@@ -92,7 +94,6 @@ public class WorkCycle extends Observable implements Observer {
 	 * do not use this constructor.
 	 */
 	public WorkCycle(){
-		
 	}
 
 	public WorkCycle(long workcycleNumber, int timeout, int payloadLength, WorkCycleManager r) {
@@ -100,7 +101,8 @@ public class WorkCycle extends Observable implements Observer {
 		this.timeout = timeout;
 		this.systemPayloadLength = payloadLength;
 		this.assocWorkCycleManag = r;
-		this.method = r.getMethod();
+		this.keyGenerationMethod  = r.getKeyGenerationMethod();
+		this.assocKeyGenerator = r.getKeyGenerator();
 		this.addObserver(this);
 	}
 	
@@ -147,7 +149,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (method == WorkCycleManager.METHOD_DC) {
+		if (KeyGenerator.isAsynchronous(keyGenerationMethod)) {
 			switch (currentPhase) {
 			case WC_RESERVATION:
 				m.setReservation(true);
@@ -160,7 +162,7 @@ public class WorkCycle extends Observable implements Observer {
 				break;
 			}
 		}
-		else if (method == WorkCycleManager.METHOD_DCPLUS){
+		else if (KeyGenerator.isSynchronous(keyGenerationMethod)){
 			addedMessagesBin = Util.concatenate(addedMessagesBin, m.getPayload());
 			switch (currentPhase) {
 			case WC_RESERVATION:
@@ -204,15 +206,23 @@ public class WorkCycle extends Observable implements Observer {
 	
 	public boolean checkWhetherReservationIsFinishedOnServerSide(ManagementMessageAdded m){
 		if (reservationChecker.hasReservationFinished(m)){
+			
 			expectedRounds = reservationChecker.getExpectedRounds();
+			
+			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE)
+				individualPayloadLengths = reservationChecker.getIndividualPayloadLengths();
+			
 			currentPhase = WC_RESERVATION_FINISHED;
+			
 			if (reservationChecker.getExpectedRounds() > 0) {
 				workCycleSending = new WorkCycleSending(this);
 				workCycleSending.addObserver(this);
+			
 			} else {
 				setChanged();
 				notifyObservers(WC_FINISHED);
 			}
+			
 			return true;
 		}
 		return false;
@@ -241,7 +251,7 @@ public class WorkCycle extends Observable implements Observer {
 	*/
 	public byte[] consumePayload(){
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
-			return WorkCycleSending.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
+			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
 		}
 		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
 		return assocWorkCycleManag.getPayloadList().removeFirst();
@@ -297,13 +307,28 @@ public class WorkCycle extends Observable implements Observer {
 		return this.expectedRounds;
 	}
 
+	public LinkedList<Integer> getIndividualMessageLenghts(){
+		if(assocWorkCycleManag.getMessageLengthMode() != WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
+			log.warn("Individual message lengths requested, but not in right mode for using them");
+		}
+		
+		return individualPayloadLengths;
+	}
 	
-	public int getMethod(){
-		return this.method;
+	public int getKeyGenerationMethod(){
+		return this.keyGenerationMethod;
 	}
 
 	public byte[] getMessageBin(){
 		return addedMessagesBin;
+	}
+	
+	public byte[] getNextPayload(){
+		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
+			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
+		}
+		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
+		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
 	public LinkedList<byte[]> getPayloads(){
@@ -352,36 +377,15 @@ public class WorkCycle extends Observable implements Observer {
 	/**
 	 * Actually does the work for a work cycle on the side of the participants
 	 */
-	public void performSendingOnParticipantSide(){
+	public void performSendingOnParticipantSide() {
 		started = true;
-		
-		switch (method) {
-		case WorkCycleManager.METHOD_DC:
 
-			// Liste der zu erwartenden Participants updaten.
+		currentPhase = WC_RESERVATION;
+		workCycleReserving = new WorkCycleReserving(this);
+		Thread t = new Thread(workCycleReserving, "WorkCycleReserving");
 
-			// Reservieren.
-			currentPhase = WC_RESERVATION;
-			workCycleReserving = new WorkCycleReserving(this);
-			Thread t = new Thread(workCycleReserving, "WorkCycleReserving");
-
-			workCycleReserving.addObserver(this);
-			t.start();
-			
-			break;
-			
-		case WorkCycleManager.METHOD_DCPLUS: //TODO
-			// Liste der zu erwartenden Participants updaten.
-
-			// Reservieren.
-			currentPhase = WC_RESERVATION;
-			workCycleReserving = new WorkCycleReserving(this);
-			t = new Thread(workCycleReserving, "WorkCycleReserving");
-	
-			workCycleReserving.addObserver(this);
-			t.start();
-			break;
-		}	
+		workCycleReserving.addObserver(this);
+		t.start();
 	}
 
 	/**
@@ -421,8 +425,18 @@ public class WorkCycle extends Observable implements Observer {
 					c.sendMessage(m.getMessage());
 				}
 			}
+		 	
 			currentPhase = WC_STARTED;
-			// Zeichen geben, dass naechste Runde an der Reihe ist.
+			
+			// Zeichen geben, dass naechste Runde an der Reihe ist,
+			// aber vorher nochmal kurze Verschnaufpause.
+			try {
+				Thread.sleep(assocWorkCycleManag.getTickPause());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
 			m = new ManagementMessageTick(workcycleNumber);
 			for (Connection c : getBroadcastConnections()) {
 				c.sendMessage(m.getMessage());
@@ -472,18 +486,22 @@ public class WorkCycle extends Observable implements Observer {
 				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 
+				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
+					individualPayloadLengths = ((WorkCycleReserving) o).getIndividualMessageLengths();
+				}
+				
 				currentPhase = WC_SENDING;
 
 				workCycleSending = new WorkCycleSending(this);
 				workCycleSending.addObserver(this);
 
 				// Summierung Starten
-				if (method == WorkCycleManager.METHOD_DC) {
+				if (KeyGenerator.isAsynchronous(keyGenerationMethod)) {
 
 					if (!assocWorkCycleManag.isServerMode())
 						workCycleSending.performDCRoundsParticipantSide();
 
-				} else if (method == WorkCycleManager.METHOD_DCPLUS) {
+				} else if (KeyGenerator.isSynchronous(keyGenerationMethod)) {
 					if (!assocWorkCycleManag.isServerMode()) {
 
 						Thread t = new Thread(workCycleSending,

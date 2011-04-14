@@ -24,7 +24,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 public class WorkCycleRound extends WorkCycle {
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleRound.class);
+	private static Logger log = Logger.getLogger(WorkCycleRound.class);
 	
 	private int 			roundNumber = 0;
 

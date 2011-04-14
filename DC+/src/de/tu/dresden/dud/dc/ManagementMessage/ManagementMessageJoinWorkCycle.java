@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageJoinWorkCycle extends ManagementMessage {
 	
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageJoinWorkCycle.class);
+    private static Logger log = Logger.getLogger(ManagementMessageJoinWorkCycle.class);
 	
 	/**
 	 * 	Handles the JOINWORKCYCLE management message.

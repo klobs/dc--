@@ -12,13 +12,15 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.Connection;
+import de.tu.dresden.dud.dc.DCKey;
+import de.tu.dresden.dud.dc.KeyExchangeManager;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.Util;
 
 public class InfoServiceUpdateActiveJoining extends InfoServiceInfo {
 
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceUpdateActiveJoining.class);
+	private static Logger log = Logger.getLogger(InfoServiceUpdateActiveJoining.class);
 
 	private LinkedList<Participant> activeJoiningParticipants = new LinkedList<Participant>();
 	private LinkedList<Long> workCycleNumbers = new LinkedList<Long>();	
@@ -109,9 +111,22 @@ public class InfoServiceUpdateActiveJoining extends InfoServiceInfo {
 	
 	@Override
 	public void handleInfo(Connection c) {
+		
 		for(int i=0; i < activeJoiningParticipants.size(); i++){
 			c.getAssociatedParticipantManager().setParticipantActiveAfterWorkCycle(activeJoiningParticipants.get(i), workCycleNumbers.get(i));
 		}
+
+		if (c.getKeyExchangeMethod() == KeyExchangeManager.KEX_FULLY_AUTOMATIC) {
+
+			for (int i = 0; i < activeJoiningParticipants.size(); i++) {
+				c.getAssociatedParticipantManager().getParticipantMgmntInfoFor(
+						activeJoiningParticipants.get(i)).getKey().setSate(
+						DCKey.KEY_REQUESTED);
+				c.commitKeyExchange(activeJoiningParticipants.get(i).getId());
+			}
+
+		}
+	
 	}
 
 }

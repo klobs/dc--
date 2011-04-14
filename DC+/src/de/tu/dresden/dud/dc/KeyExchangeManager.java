@@ -23,9 +23,36 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class KeyExchangeManager {
 
 	// Logging
-	Logger log = Logger.getLogger(KeyExchangeManager.class);
+	private static Logger log = Logger.getLogger(KeyExchangeManager.class);
 
+	// Key exchange methods
+	
+	/**
+	 * Exchange Keys all manual
+	 */
+	public static final short KEX_MANUAL = 0;
+	
+	/**
+	 * All all active participants will receive exchange commit notifications 
+	 */
+	public static final short KEX_SEMI_AUTOMATIC = 1;
+	
+	/**
+	 * All active participants are expected to generate keys with for all other 
+	 * active participants, even without receiving exchange commit notifications.
+	 */
+	public static final short KEX_FULLY_AUTOMATIC = 2;
+	
 	private HashSet<String> exchanges = new HashSet<String>();
+	private short handling = -1;
+	
+	public KeyExchangeManager(short kex_handling){
+		handling = kex_handling;
+	}
+	
+	public short getKexHandling(){
+		return handling;
+	}
 	
 	public void handleExchange(InfoServiceInfoRequestKeyExchange info, ParticipantManager pm, WorkCycleManager rm){
 		String fromTo = new String(info.getFrom() + info.getTo());

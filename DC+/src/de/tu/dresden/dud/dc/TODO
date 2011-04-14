@@ -1,5 +1,3 @@
--DC+
--Variable sized payloads
 -Collision handling, if 2 random numbers are the same during reservation 
  Only testing has to be done.
 -Error handling  (what if somebody leaves the network without telling)
@@ -8,12 +6,14 @@
 -Gui improvements
 -High level API / library
 -Sending traps.
--REMOVE sleep interval in ManagementMessageTick
 -Maybe handle the broadcast lists within the round manager?
 -Documentation
 -Restore participants prefs.
 -Key management: revocation / expiry...
 -Joining: right now the oracle almost has no infos to decide upon whether to accept a participant, or not. Maybe I should add a challenge - response, to see whether the participant really has the public key's counter part...
+-Study Bitcoins
+-React properly on failing connections
+-Design library / API
 
 -Read:
 Scholz, I.: Dining cryptographers, the protocol. In: 24th Chaos Communication Congress. (2007)

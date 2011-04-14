@@ -42,10 +42,11 @@ public class ManagementMessage{
 	public static final int ADDEDRESERVATION	= 10;
 	public static final int TICK   				= 11; 
 	public static final int LEAVEWORKCYCLE   		= 12; 
-	public static final int LEAVESERVICE		= 13;
+	public static final int QUITSERVICE			= 13;
+	public static final int KTHXBYE				= 14;
 
 	// The spoken / implemented version
-	public static final char  VERSION			= 0;
+	public static final char  VERSION			= 1;
 	
 	// variable for the assembled payload
 	protected byte[] message = null;
@@ -174,10 +175,14 @@ public class ManagementMessage{
 			m = new ManagementMessageLeaveWorkCycle(payload);
 			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as LEAVEWORKCYCLE Message");
 			return m;
-//		} else if (messageType == ManagementMessage.LEAVESERVICE){
-//			m = new ManagementMessageLeaveService(payload);
-//			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as LEAVESERVICE Message");
-//			return m;
+		} else if (messageType == ManagementMessage.QUITSERVICE){
+			m = new ManagementMessageQuitService(payload);
+			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as QUITSERVICE Message");
+			return m;
+		} else if (messageType == ManagementMessage.KTHXBYE){
+			m = new ManagementMessageKThxBye(payload);
+			if( m.errorProcessing()) throw new IllegalArgumentException("The Payload you provided could not be evaluated as QUIT SERVICE CONFIRMATION Message");
+			return m;
 		} else {
 			throw new IllegalArgumentException("The Payload you provided could not be evaluated as any Message (perhaps messagetype " + String.valueOf(messageType) + " is not implemented, or invalid)");
 		}

@@ -24,7 +24,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageWelcome2WorkCycle extends ManagementMessage {
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageWelcome2WorkCycle.class);
+    private static Logger log = Logger.getLogger(ManagementMessageWelcome2WorkCycle.class);
 	
 	public static final int ACCEPTED = 0;
 	public static final int REJECTED = 1;

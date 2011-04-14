@@ -25,7 +25,7 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
 public class Participant extends Observable implements Observer {
 
 	// Logging
-	Logger log = Logger.getLogger(Participant.class);
+	private static Logger log = Logger.getLogger(Participant.class);
 
 	private ArrayList<Connection> 	connections = new ArrayList<Connection>();
 	private InfoService				infoService	= null;
@@ -175,6 +175,11 @@ public class Participant extends Observable implements Observer {
 	public void leaveWorkCycle(Connection c){
 		if(connections.contains(c))
 			c.leaveWorkCycle(this);
+	}
+	
+	public void quitService(Connection c){
+		if(connections.contains(c))
+			c.quitService(this);
 	}
 	
 	public void setId(String id) {

@@ -18,7 +18,7 @@ import de.tu.dresden.dud.dc.Util;
 public class ManagementMessageLeaveWorkCycle extends ManagementMessage {
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageLeaveWorkCycle.class);
+    private static Logger log = Logger.getLogger(ManagementMessageLeaveWorkCycle.class);
 
 	private long workcyclenumber;
 

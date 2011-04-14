@@ -19,7 +19,7 @@ public class ManagementMessageAdded extends ManagementMessage {
 
 
     // Logging
-    private Logger log = Logger.getLogger(ManagementMessageAdded.class);
+    private static Logger log = Logger.getLogger(ManagementMessageAdded.class);
 	
 	private byte[]	payload;
 	private int		payloadLength 	= 0;

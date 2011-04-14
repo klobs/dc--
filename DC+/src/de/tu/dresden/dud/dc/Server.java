@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import de.tu.dresden.dud.dc.InfoService.InfoService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageLeaveWorkCycle;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageRegisterAtService;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2WorkCycle;
@@ -34,13 +35,13 @@ import de.tu.dresden.dud.dc.WorkCycle.WorkCycleManager;
 public class Server implements Runnable {
 
 	// Logging
-	Logger log = Logger.getLogger(Server.class);
+	private static Logger log = Logger.getLogger(Server.class);
 
 	private int				symbollength	= 12;
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();
 	private InfoService		info			= null;
 	private boolean			isStopped    	= false;
-	private KeyExchangeManager keyExManager = new KeyExchangeManager();
+	private KeyExchangeManager keyExManager = new KeyExchangeManager(KeyExchangeManager.KEX_FULLY_AUTOMATIC);
 	private ParticipantManager participantManager = new ParticipantManager();
 	private int 			port 			= 6867;
 	private WorkCycleManager	workCycleManager	= null;
@@ -50,14 +51,16 @@ public class Server implements Runnable {
 	/**
 	 * @param listenPort specifies the port on which the DC Service shall be provided.
 	 */
-	public Server(int listenPort) {
-		// set port
-		if(port > 0){ this.port = listenPort; }
+	public Server(int listenPort, short keyGenerationMethod, short keyExchangeMethod, short individualMessageLengths) {
+		this.port = listenPort;
 		
-		// create InfoService
 		info = new InfoService(this);
 		
-		workCycleManager = new WorkCycleManager(WorkCycleManager.METHOD_DCPLUS ,0 /*Long.MIN_VALUE*/, symbollength);
+		workCycleManager = new WorkCycleManager(
+				keyGenerationMethod,
+				0 /*Better: Long.MIN_VALUE */,
+				symbollength,
+				WorkCycleManager.MESSAGE_LENGTHS_VARIABLE);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
 	}
@@ -93,7 +96,7 @@ public class Server implements Runnable {
 		c.setAssocWorkCycleManager(workCycleManager);
 	}
 	
-	public void deactivateConnection(Connection c, long workcycle){
+	private void deactivateConnection(Connection c, long workcycle){
 		participantManager.unsetParticipantActiveAfterWorkCycle(c.getAssociatedParticipant(), workcycle);
 		c.setExpectedLeavingWorkCycle(workcycle);
 		this.workCycleManager.addLeavingConnection(c);
@@ -120,15 +123,6 @@ public class Server implements Runnable {
 	public LinkedList<Connection> getAspirants(){
 		return this.aspConns;
 	}
-	
-	/**
-	 * How long is one symbol payload? 
-	 * @return character length in bytes
-	 */
-	public int getSymbolLength() {
-		return symbollength;
-	}
-	
 	
 	
 	/**
@@ -158,6 +152,10 @@ public class Server implements Runnable {
 	
 	public KeyExchangeManager getKeyExchangeManager(){
 		return keyExManager;
+	}
+	
+	public WorkCycleManager getWorkCycleManager(){
+		return workCycleManager;
 	}
 	
 	/**
@@ -214,6 +212,31 @@ public class Server implements Runnable {
 			log.error( "Could not bind to port " + String.valueOf(port));
 			log.error(e.toString());
 		}
+	}
+	
+	public void quitServiceRequest(Connection c){
+		
+		if (participantManager.getParticipantMgmntInfoFor(c) == null){
+			aspConns.remove(c);
+			c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_ALL_OK);
+			return;
+		}
+		
+		ParticipantMgmntInfo pmi = participantManager.getParticipantMgmntInfoFor(c);
+
+		if (pmi.isActive()){
+			c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_LEAVE_WC_FIRST);
+			return;
+		}
+		
+		// if participant is not active, it should be easy to remove him...
+		if (!pmi.isActive()){
+			pmi = participantManager.getParticipantMgmntInfoFor(c);
+			participantManager.removeParticipant(pmi);
+		}
+
+		c.tellGoodByeFromService(ManagementMessageKThxBye.QUITOK_ALL_OK);
+		
 	}
 
 	/**

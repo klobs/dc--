@@ -17,8 +17,10 @@ import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.ParticipantManager;
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
+import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
+import de.tu.dresden.dud.dc.Util;
 
 /**
  * @author klobs
@@ -27,15 +29,15 @@ import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 public class WorkCycleManager implements Observer{
 
 	// Logging
-	Logger log = Logger.getLogger(WorkCycleManager.class);
+	private static Logger log = Logger.getLogger(WorkCycleManager.class);
 
-	public static final int METHOD_DC					= 0;
-	public static final int METHOD_DCPLUS				= 1;
-
+	public static final short MESSAGE_LENGTHS_FIXED = 0;
+	public static final short MESSAGE_LENGTHS_VARIABLE = 1;
 	
+	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
-	private boolean				fixedMessagemode=true;
+	private short				messageLengthMode 	= MESSAGE_LENGTHS_FIXED;
 	private int 				infoOffset		= 0;
 	private int					joinOffset		= 0;
 	private int 				leaveOffset		= 5;
@@ -44,18 +46,20 @@ public class WorkCycleManager implements Observer{
 	private boolean				participantmode = false;
 	private int 				payloadlengths	= 0;
 	private LinkedList<byte[]>	payloads		= new LinkedList<byte[]>();
-	private int 				method			= -1;
 	private TreeSet<WorkCycle> 		workcycless 			= new TreeSet<WorkCycle>(new WorkCycleComparator());
 	private TreeSet<WorkCycle>		oldworkcycles		= new TreeSet<WorkCycle>(new WorkCycleComparator());
+	private long 				tickPause		= 1000;
 	private Server				server			= null;
 	private boolean 			servermode		= false;
 	
 	
 	
-	public WorkCycleManager(int method, long workCycleNumber, int payloadLengths){
+	public WorkCycleManager(short keyGenerationMethod,long workCycleNumber, int payloadLengths, short messageLengthMode){
 		payloadlengths = payloadLengths;
 		
-		this.method = method;
+		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod,this);
+		
+		this.messageLengthMode = messageLengthMode;
 		
 		currentWorkCycle = workCycleNumber;
 		
@@ -91,8 +95,8 @@ public class WorkCycleManager implements Observer{
 	 */
 	public synchronized int addMessage(byte[] p){
 		if (p.length <= payloadlengths){
-			if(fixedMessagemode){
-				p = WorkCycleSending.fillAndMergeSending(p, new byte[payloadlengths]);
+			if(messageLengthMode == MESSAGE_LENGTHS_FIXED){
+				p = Util.fillAndMergeSending(p, new byte[payloadlengths]);
 			}
 			payloads.add(p);
 			return 0;
@@ -133,6 +137,10 @@ public class WorkCycleManager implements Observer{
 		return getCurrentWorkCycle().getWorkCycleNumber() + joinOffset;
 	}
 	
+	public short getMessageLengthMode(){
+		return messageLengthMode;
+	}
+	
 	public long getInfoOffset(){
 		return infoOffset;
 	}
@@ -145,8 +153,14 @@ public class WorkCycleManager implements Observer{
 		return payloads;
 	}
 	
-	public int getMethod(){
-		return this.method;
+	public KeyGenerator getKeyGenerator(){
+		return assocKeyGenerator;
+	}
+	
+	public short getKeyGenerationMethod(){
+		if (assocKeyGenerator != null)
+			return assocKeyGenerator.getKeyGenerationMethod();
+		return -1;
 	}
 	
 	/**
@@ -218,6 +232,18 @@ public class WorkCycleManager implements Observer{
 		return server;
 	}
 	
+	/**
+	 * How long is one symbol payload? 
+	 * @return character length in bytes
+	 */
+	public int getSymbolLength() {
+		return payloadlengths;
+	}
+	
+	public long getTickPause(){
+		return tickPause;
+	}
+	
 	public boolean isRunning(){
 		return getCurrentWorkCycle().workCycleHasStarted();
 	}
@@ -254,10 +280,6 @@ public class WorkCycleManager implements Observer{
 		currentWorkCycle = n.getWorkCycleNumber();
 	}
 	
-	public synchronized void setFixedMessageMode(boolean m){
-		fixedMessagemode = m;
-	}
-	
 	public synchronized void setInfoOffset(int i){
 		infoOffset = i;
 	}
@@ -278,6 +300,10 @@ public class WorkCycleManager implements Observer{
 	public synchronized void setServer(Server s){
 		servermode = true;
 		server = s;
+	}
+	
+	public void setTickPause(long p){
+		tickPause = p;
 	}
 	
 	/**
@@ -347,6 +373,8 @@ public class WorkCycleManager implements Observer{
 					
 					if (assocParticipantManager.getParticipantMgmntInfoFor(participant).getInactiveInWorkCycle() == currentWorkCycle + 1){
 						assocParticipantManager.update(currentWorkCycle + 1);
+						
+						assocParticipantManager.getParticipantMgmntInfoFor(participant).getAssocConnection().quitService(participant);
 					}
 				}
 				break;

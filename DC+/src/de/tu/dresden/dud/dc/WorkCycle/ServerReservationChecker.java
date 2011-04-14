@@ -4,6 +4,8 @@
  */
 package de.tu.dresden.dud.dc.WorkCycle;
 
+import java.util.LinkedList;
+
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 
@@ -36,7 +38,8 @@ public class ServerReservationChecker {
 	
 	// work cycle information
 	private int 	expectedRounds			= -1;
-	private int 	actualRoundsCalculated 	= 0;
+	private LinkedList<Integer> individualMessageLengths = new LinkedList<Integer>();
+	
 	
 	/**
 	 * The content of this method is mostly a copy from 
@@ -53,7 +56,7 @@ public class ServerReservationChecker {
 
 		if (a.getParticipantCount() == 1) {
 			expectedRounds--;
-			actualRoundsCalculated++;
+			individualMessageLengths.add(a.getDesiredPayloadLength());
 		}
 
 		if (collisionpayload != null
@@ -83,6 +86,11 @@ public class ServerReservationChecker {
 	 *         reservation.
 	 */
 	public int getExpectedRounds(){
-		return actualRoundsCalculated;
+		return individualMessageLengths.size();
 	}
+	
+	public LinkedList<Integer> getIndividualPayloadLengths(){
+		return individualMessageLengths;
+	}
+	
 }

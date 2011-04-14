@@ -20,10 +20,6 @@ import javax.swing.LayoutStyle;
 
 import javax.swing.WindowConstants;
 
-import de.tu.dresden.dud.dc.Connection;
-import de.tu.dresden.dud.dc.Server;
-
-
 /**
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
@@ -41,13 +37,10 @@ public class Gui extends javax.swing.JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JButton toggleServerButton;
 	private JButton newParticipant;
-	private AbstractAction actionToggleServer;
 	private AbstractAction actionNewParticipant;
 	private AbstractAction actionNewParticipantFromConfig;
 	private JButton newParticipantFromConfig;
-	private JMenuItem jMenuItemServer;
 	private JMenuItem jMenuItemParticipant;
 	private JMenu jMenuFile;
 	private JMenuBar File;
@@ -84,31 +77,6 @@ public class Gui extends javax.swing.JFrame {
 				File.add(getJMenu1());
 			}
 			{
-				toggleServerButton = new JButton();
-				toggleServerButton.setText("Start Server");
-				toggleServerButton.setAction(getToggleServerAction());
-				toggleServerButton.addKeyListener(new KeyListener() {
-					
-					@Override
-					public void keyTyped(KeyEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void keyReleased(KeyEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void keyPressed(KeyEvent e) {
-						// TODO Auto-generated method stub
-						if (e.getKeyChar() == KeyEvent.VK_ENTER) getToggleServerAction().actionPerformed(null);
-					}
-				});
-			}
-			{
 				newParticipant = new JButton();
 				newParticipant.setText("New Participant");
 				newParticipant.setAction(getActionNewParticipant());
@@ -136,37 +104,34 @@ public class Gui extends javax.swing.JFrame {
 			{
 				mainPane = new JTabbedPane();
 				mainPane.setFocusable(true);
+				GuiServer g = new GuiServer();
+				
+				getMainPane().add("Server / Log output" , g);
+
 			}
 				thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
 					.addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					    .addComponent(toggleServerButton, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(newParticipant, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getNewParticipantFromConfig(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+					    .addComponent(getNewParticipantFromConfig(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					    .addComponent(newParticipant, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(mainPane, 0, 515, Short.MAX_VALUE)
+					.addComponent(mainPane, 0, 497, Short.MAX_VALUE)
 					.addContainerGap());
-				thisLayout.setHorizontalGroup(thisLayout.createParallelGroup()
-					.addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					    .addComponent(toggleServerButton, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)
-					    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					    .addComponent(newParticipant, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE)
-					    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-					    .addComponent(getNewParticipantFromConfig(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addContainerGap(600, Short.MAX_VALUE))
-					.addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					    .addPreferredGap(toggleServerButton, mainPane, LayoutStyle.ComponentPlacement.INDENT)
-					    .addComponent(mainPane, 0, 928, Short.MAX_VALUE)
-					    .addContainerGap()));
+				thisLayout.setHorizontalGroup(thisLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(thisLayout.createParallelGroup()
+					    .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
+					        .addComponent(newParticipant, GroupLayout.PREFERRED_SIZE, 136, GroupLayout.PREFERRED_SIZE)
+					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					        .addComponent(getNewParticipantFromConfig(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					        .addGap(0, 693, Short.MAX_VALUE))
+					    .addComponent(mainPane, GroupLayout.Alignment.LEADING, 0, 908, Short.MAX_VALUE))
+					.addContainerGap());
 			pack();
 			this.setSize(940, 600);
 		} catch (Exception e) {
 		    //add your error handling code here
 			e.printStackTrace();
 		}
-	}
-	
-	public JButton getToggleServerButton() {
-		return toggleServerButton;
 	}
 	
 	public JTabbedPane getMainPane() {
@@ -176,25 +141,7 @@ public class Gui extends javax.swing.JFrame {
 	public JButton getNewParticipant() {
 		return newParticipant;
 	}
-	
-	private AbstractAction getToggleServerAction() {
-		if(actionToggleServer == null) {
-			actionToggleServer = new AbstractAction("Start Server", null) {
-				private static final long serialVersionUID = 10L;
 
-				public void actionPerformed(ActionEvent evt) {
-					Server s = new Server(Connection.DEFAULTPORT);
-					GuiServer g = new GuiServer();
-					
-					new Thread(s, "Server").start();
-					
-					this.setEnabled(false);
-				}
-			};
-		}
-		return actionToggleServer;
-	}
-	
 	private AbstractAction getActionNewParticipant() {
 		if(actionNewParticipant == null) {
 			actionNewParticipant = new AbstractAction("New participant", null) {
@@ -215,21 +162,9 @@ public class Gui extends javax.swing.JFrame {
 		if(jMenuFile == null) {
 			jMenuFile = new JMenu();
 			jMenuFile.setText("File");
-			jMenuFile.add(getjMenuItemServer());
 			jMenuFile.add(getJMenuItemParticipant());
 		}
 		return jMenuFile;
-	}
-	
-	private JMenuItem getjMenuItemServer() {
-		if(jMenuItemServer == null) {
-			jMenuItemServer = new JMenuItem();
-			jMenuItemServer.setText("Start Server");
-			jMenuItemServer.setAction(getToggleServerAction());
-			jMenuItemServer.setMnemonic('S');
-			jMenuItemServer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.META_MASK));
-		}
-		return jMenuItemServer;
 	}
 	
 	private JMenuItem getJMenuItemParticipant() {

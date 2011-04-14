@@ -35,6 +35,7 @@ import de.tu.dresden.dud.dc.PreferenceSaver;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAccepted4Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageKThxBye;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageTick;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2Service;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageWelcome2WorkCycle;
@@ -111,6 +112,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	private JTextField textName;
 	private Participant assocParticipant;
 	private JButton buttonExchangeKeyPassive;
+	private AbstractAction actionQuitService;
 	private AbstractAction actionExchangeKeyPassive;
 	private JTable tableActiveParts;
 	private JTable tablePassivParts;
@@ -205,7 +207,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	
 	private AbstractAction getStartAction() {
 		if(actionStart == null) {
-			actionStart = new AbstractAction("Start Client", null) {
+			actionStart = new AbstractAction("Start Participant", null) {
 				private static final long serialVersionUID = 8749319356187884901L;
 
 				public void actionPerformed(ActionEvent evt) {
@@ -447,32 +449,30 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 				        .addGroup(jPanel4Layout.createParallelGroup()
 				            .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				                .addComponent(getJLabel9(), GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
-				                .addGap(42))
+				                .addGap(55))
 				            .addComponent(getJLabel8(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				        .addGroup(jPanel4Layout.createParallelGroup()
-				            .addComponent(getLabelTick(), GroupLayout.Alignment.LEADING, 0, 52, Short.MAX_VALUE)
-				            .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-				                .addPreferredGap(getLabelTick(), getLabelWorkCycle(), LayoutStyle.ComponentPlacement.INDENT)
-				                .addComponent(getLabelWorkCycle(), GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))))
+				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.LEADING, 0, 121, Short.MAX_VALUE)
+				            .addComponent(getLabelTick(), GroupLayout.Alignment.LEADING, 0, 121, Short.MAX_VALUE)))
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				        .addPreferredGap(buttonJoinWorkCycle, getJScrollPane2(), LayoutStyle.ComponentPlacement.INDENT)
-				        .addComponent(getJScrollPane2(), 0, 260, Short.MAX_VALUE)))
+				        .addComponent(getJScrollPane2(), 0, 375, Short.MAX_VALUE)))
 				.addContainerGap());
 				jPanel4Layout.setVerticalGroup(jPanel4Layout.createSequentialGroup()
 				.addGroup(jPanel4Layout.createParallelGroup()
 				    .addGroup(jPanel4Layout.createSequentialGroup()
 				        .addGroup(jPanel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getLabelWorkCycle(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 18, GroupLayout.PREFERRED_SIZE)
 				            .addComponent(getJLabel9(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				        .addGroup(jPanel4Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(getLabelTick(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJLabel8(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)))
+				            .addComponent(getJLabel8(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getLabelTick(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)))
 				    .addGroup(GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
 				        .addGap(12)
 				        .addComponent(buttonJoinWorkCycle, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJScrollPane2(), 0, 272, Short.MAX_VALUE)
+				.addComponent(getJScrollPane2(), 0, 400, Short.MAX_VALUE)
 				.addContainerGap(22, 22));
 		}
 		return jPanel4;
@@ -639,7 +639,7 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 					    .addComponent(getJPanel5(), 0, 176, Short.MAX_VALUE))
 					.addComponent(getJPanel1(), GroupLayout.Alignment.LEADING, 0, 790, Short.MAX_VALUE)
 					.addComponent(getJPanel2(), GroupLayout.Alignment.LEADING, 0, 790, Short.MAX_VALUE));
-			this.setPreferredSize(new java.awt.Dimension(800, 499));
+			this.setPreferredSize(new java.awt.Dimension(1036, 628));
 			this.setBackground(new java.awt.Color(233,233,233));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -660,6 +660,11 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    		labelLength.setText( String.valueOf(m.getCharLength()));
 	    		labelVersion.setText(String.valueOf(m.getVersion()));
 	    		labelParticipants.setText(String.valueOf(m.getParticipantsCount()));
+	    		
+	    		getStartAction().setEnabled(false);
+	    		getActionQuitService().setEnabled(true);
+	    		
+	    		buttonStartClient.setAction(getActionQuitService());
 	    	}
 	    	
 	    	// ACCEPTED4SERVICE
@@ -674,6 +679,19 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    		
 	    	} 	
 	    	
+	    	//K THX BYE
+	    	else if (arg instanceof ManagementMessageKThxBye){
+	    		ManagementMessageKThxBye m = (ManagementMessageKThxBye) arg;
+	    		
+	    		if (m.getQuitOK() == ManagementMessageKThxBye.QUITOK_ALL_OK){
+	    			getStartAction().setEnabled(true);
+	    			getActionQuitService().setEnabled(false);
+	    			
+	    			buttonStartClient.setAction(getStartAction());
+	    			getJoinWorkCycleAction().setEnabled(false);
+	    			buttonJoinWorkCycle.setAction(getJoinWorkCycleAction());
+	    		}
+	    	}
 	    	// TICK
 	    	else if (arg instanceof ManagementMessageTick){
 	    		ManagementMessageTick m = (ManagementMessageTick) arg;
@@ -683,11 +701,12 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 	    	// ADDED
 	    	else if (arg instanceof ManagementMessageAdded){
 	    		ManagementMessageAdded m = (ManagementMessageAdded) arg;
+	    		if(assocConnection.getAssociatedWorkCycleManager() != null){
 	    		if (assocConnection.getAssociatedWorkCycleManager().getCurrentWorkCycle().getCurrentPhase() == WorkCycle.WC_RESERVATION)
 	    		modelListSums.addElement("R:" + m.getWorkCycleNumber() + ", SR:"+ m.getRoundNumber() + "(reservation): "+ Arrays.toString(m.getPayload()) );
 	    		else if (assocConnection.getAssociatedWorkCycleManager().getCurrentWorkCycle().getCurrentPhase() == WorkCycle.WC_SENDING)
 		    		modelListSums.addElement("R:" + m.getWorkCycleNumber() + ", SR:"+ m.getRoundNumber() + ": " + new String(m.getPayload()) +"/"+ Arrays.toString(m.getPayload()));
-
+	    		}
 	    	}
 	    	
 	    	else if (arg instanceof ManagementMessageInfo){
@@ -706,32 +725,23 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 			getActionRefreshPassiveParts().setEnabled(false);
 			getActionRefreshActiveParts().setEnabled(false);
 			jPanel5Layout.setHorizontalGroup(jPanel5Layout.createParallelGroup()
-				.addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createParallelGroup()
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJScrollPane4(), 0, 158, Short.MAX_VALUE)
-				        .addGap(6))
-				    .addComponent(getJScrollPane1(), GroupLayout.Alignment.LEADING, 0, 164, Short.MAX_VALUE)
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefresPassiveParts(), GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, Short.MAX_VALUE))
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				        .addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, Short.MAX_VALUE)))
+				.addComponent(getButtonExchangeKeyPassive(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE)
 				.addGroup(GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-				    .addPreferredGap(getJScrollPane4(), getButtonExchangeKeyPassive(), LayoutStyle.ComponentPlacement.INDENT)
-				    .addComponent(getButtonExchangeKeyPassive(), 0, 152, Short.MAX_VALUE)
-				    .addContainerGap()));
+				    .addComponent(getJScrollPane4(), 0, 163, Short.MAX_VALUE)
+				    .addGap(6))
+				.addComponent(getJButtonRefreshActiveParts(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE)
+				.addComponent(getJButtonRefresPassiveParts(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE)
+				.addComponent(getJScrollPane1(), GroupLayout.Alignment.LEADING, 0, 169, Short.MAX_VALUE));
 			jPanel5Layout.setVerticalGroup(jPanel5Layout.createSequentialGroup()
 				.addComponent(getJScrollPane1(), 0, 95, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJButtonRefresPassiveParts(), GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(getJButtonRefresPassiveParts(), GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(getButtonExchangeKeyPassive(), GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, GroupLayout.PREFERRED_SIZE)
-				.addComponent(getJScrollPane4(), 0, 94, Short.MAX_VALUE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(43, 43));
+				.addComponent(getJScrollPane4(), 0, 129, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(getJButtonRefreshActiveParts(), GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE));
 		}
 		return jPanel5;
 	}
@@ -897,6 +907,20 @@ public class GuiParticipant extends javax.swing.JPanel implements Observer {
 			};
 		}
 		return actionExchangeKeyPassive;
+	}
+	
+	private AbstractAction getActionQuitService() {
+		if(actionQuitService == null) {
+			actionQuitService = new AbstractAction("Quit", null) {
+				private static final long serialVersionUID = 4619644940971896342L;
+
+				public void actionPerformed(ActionEvent evt) {
+					assocParticipant.quitService(assocConnection);
+				}
+			};
+			actionQuitService.setEnabled(false);
+		}
+		return actionQuitService;
 	}
 
 }

@@ -21,7 +21,7 @@ import de.tu.dresden.dud.dc.Util;
 public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 	
 	// Logging
-	Logger log = Logger.getLogger(InfoServiceInfoPassiveParticipantList.class);
+	private static Logger log = Logger.getLogger(InfoServiceInfoPassiveParticipantList.class);
 
 	private LinkedList<Participant> passiveParticipants = new LinkedList<Participant>();
 	
@@ -96,6 +96,8 @@ public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 	
 	public void handleInfo(Connection c){
 		requestingconnection = c;
+		
+		c.getAssociatedParticipantManager().cleanAllButPassiveConnections(passiveParticipants);
 		c.getAssociatedParticipantManager().setParticipantsPassive(passiveParticipants);
 		c.finishUnfinishedKeyExchReqs();
 	}
