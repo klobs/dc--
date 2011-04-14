@@ -15,9 +15,6 @@ import de.tu.dresden.dud.dc.Util;
  */
 public abstract class InfoServiceInfo {
 
-	// Logging
-	private static Logger log = Logger.getLogger(InfoServiceInfo.class);
-
 	// here we have a list of available information requests.
 	public static final int INFO_PASSIVEPARTICIPANTLIST 	= 0;
 	public static final int INFO_ACTIVEPARTICIPANTLIST 		= 1;

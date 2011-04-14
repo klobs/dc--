@@ -103,7 +103,7 @@ public class Participant extends Observable implements Observer {
 			
 			new Thread(c, "connectionParticipant_"+ id).start();
 			
-			infoService = new InfoService(this);
+			infoService = new InfoService();
 
 			return c;
 			
