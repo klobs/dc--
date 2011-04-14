@@ -5,6 +5,7 @@
 package de.tu.dresden.dud.dc;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -117,6 +118,18 @@ public class ParticipantManager extends Observable{
 		return l;
 	}
 
+	public void cleanAllButPassiveConnections(LinkedList<Participant> ppl){
+		HashSet<ParticipantMgmntInfo> oldPpl = new HashSet<ParticipantMgmntInfo>();
+		
+		oldPpl.addAll(getPassivePartMgmtInfo());
+		oldPpl.removeAll(ppl);
+		
+		participantDB.removeAll(oldPpl);
+		
+		setChanged();
+		notifyObservers(PARTMNG_INTERVAL_CHANGED_PASSIVE);
+	}
+	
 	public LinkedList<ParticipantMgmntInfo> getActivePartExtKeysMgmtInfo(){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		LinkedList<ParticipantMgmntInfo> l = new LinkedList<ParticipantMgmntInfo>();

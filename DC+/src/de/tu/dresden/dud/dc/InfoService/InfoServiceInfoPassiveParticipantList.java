@@ -96,6 +96,8 @@ public class InfoServiceInfoPassiveParticipantList extends InfoServiceInfo {
 	
 	public void handleInfo(Connection c){
 		requestingconnection = c;
+		
+		c.getAssociatedParticipantManager().cleanAllButPassiveConnections(passiveParticipants);
 		c.getAssociatedParticipantManager().setParticipantsPassive(passiveParticipants);
 		c.finishUnfinishedKeyExchReqs();
 	}
