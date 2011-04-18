@@ -21,6 +21,7 @@ public abstract class InfoServiceInfo {
 	public static final int INFO_UPDATEACTIVEJOINING 		= 2;
 	public static final int INFO_UPDATEACTIVELEAVING 		= 3;
 	public static final int INFO_COMMITKEYEXCHANGE	 		= 4;
+	public static final int INFO_EARLYQUITNOTIFICATION 		= 5;
 	
 	// Inforequests that are handles by the server need an associated server to answer.
 	protected byte[] 		info			 		= new byte[0];
@@ -54,6 +55,8 @@ public abstract class InfoServiceInfo {
 			return new InfoServiceUpdateActiveLeaving(info);
 		case INFO_COMMITKEYEXCHANGE:
 			return new InfoServiceInfoKeyExchangeCommit(info);
+		case INFO_EARLYQUITNOTIFICATION:
+			return new InfoServiceInfoEarlyQuitServiceNotification(info);
 		default:
 			Logger.getLogger(InfoServiceInfo.class).warn("No such infotype defined: " + String.valueOf(infotype));
 			return null;

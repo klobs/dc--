@@ -4,6 +4,7 @@
  */
 package de.tu.dresden.dud.dc.WorkCycle;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -15,11 +16,15 @@ import org.apache.log4j.Logger;
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.Participant;
 import de.tu.dresden.dud.dc.ParticipantManager;
+import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Server;
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
 import de.tu.dresden.dud.dc.KeyGenerators.KeyGenerator;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessage;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdd;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
+import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageInfo;
 import de.tu.dresden.dud.dc.Util;
 
 /**
@@ -115,7 +120,59 @@ public class WorkCycleManager implements Observer{
 		// if (becomeActiveAfter <= m.getWCNumber())							// do we actually need this check? I dont think so.
 			getWCByWCNumber(m.getWorkCycleNumber()).addedMessageArrived(m);
 	}
+
+	public void broadcastToActiveParticipants(InfoServiceInfo i){
+		LinkedList<ParticipantMgmntInfo> apl = assocParticipantManager.getActivePartMgmtInfo();
+		
+		ManagementMessageInfo m = new ManagementMessageInfo(i);
+		
+		for (ParticipantMgmntInfo pmi : apl){
+			try {
+				pmi.getAssocConnection().sendMessage(m.getMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
+	public void broadcastToActiveParticipants(ManagementMessage m){
+		LinkedList<ParticipantMgmntInfo> apl = assocParticipantManager.getActivePartMgmtInfo();
+		
+		for (ParticipantMgmntInfo i : apl){
+			try {
+				i.getAssocConnection().sendMessage(m.getMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void broadcastToPassiveParticipants(InfoServiceInfo i){
+		LinkedList<ParticipantMgmntInfo> apl = assocParticipantManager.getPassivePartMgmtInfo();
+		
+		ManagementMessageInfo m = new ManagementMessageInfo(i);
+		
+		for (ParticipantMgmntInfo pmi : apl){
+			try {
+				pmi.getAssocConnection().sendMessage(m.getMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void broadcastToPassiveParticipants(ManagementMessage m){
+		LinkedList<ParticipantMgmntInfo> ppl = assocParticipantManager.getPassivePartMgmtInfo();
+		
+		for (ParticipantMgmntInfo i : ppl){
+			try {
+				i.getAssocConnection().sendMessage(m.getMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+		
 	public ParticipantManager getAssocParticipantManager(){
 		return assocParticipantManager;
 	}
@@ -242,6 +299,10 @@ public class WorkCycleManager implements Observer{
 	
 	public long getTickPause(){
 		return tickPause;
+	}
+	
+	public void handleEarlyQuit(InfoServiceInfo i){
+		
 	}
 	
 	public boolean isRunning(){

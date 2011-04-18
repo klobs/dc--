@@ -171,7 +171,7 @@ public class WorkCycle extends Observable implements Observer {
 				sem.release();
 				break;
 			case WC_SENDING:
-				addedMessages.add(m); // redundancy rules
+				addedMessages.add(m); // redundancy rulez
 				workCycleSending.addedMessageArrived(m);
 				sem.release();
 				break;
@@ -179,6 +179,10 @@ public class WorkCycle extends Observable implements Observer {
 		}
 	}
 	
+	/**
+	 * Does not actually broadcast the key exchange commit message,
+	 * but just sends it to involved participants.
+	 */
 	public void broadcastKeyCommits() {
 
 		while (keyExchangeCommitMessages.size() > 0) {

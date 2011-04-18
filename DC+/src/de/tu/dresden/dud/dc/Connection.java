@@ -16,7 +16,9 @@ import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
+import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoEarlyQuitServiceNotification;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoReqActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoReqPassiveParticipantList;
@@ -369,6 +371,18 @@ public class Connection extends Observable implements Runnable {
 		return serverSocket;
 	}
 
+	private void handleEarlyQuit(){
+		ParticipantMgmntInfo pmi = assocParticipantManager.getParticipantMgmntInfoFor(this);
+		
+		assocParticipantManager.removeParticipant(pmi);
+		
+		if(pmi.isActive()){
+			InfoServiceInfo i = InfoServiceInfoEarlyQuitServiceNotification.infoServiceInfoEarlyQuitServiceNotificationFor(pmi.getParticipant(), assocWorkCycleManager.getCurrentWorkCycleNumber(), 0);
+			assocWorkCycleManager.broadcastToActiveParticipants(i);
+			assocWorkCycleManager.handleEarlyQuit(i);
+		}
+	}
+	
 	/**
 	 * A connection can be in server mode, or not. A connection being in server
 	 * mode, has an associated {@link Server}. Normally only connections on the
@@ -650,7 +664,10 @@ public class Connection extends Observable implements Runnable {
 						log.warn(e.toString());
 					}
 				} catch(EOFException e){
-					log.warn("Remote connection ended unexpectedly. Cleaing up that mess...");
+					log.warn("Remote connection ended unexpectedly. Not yet cleaning up that mess... :( ");
+					handleEarlyQuit();
+					break;
+					
 				} catch (NullPointerException e) {
 					log.error("Experiencing problems with the connection: ");
 					log.error(e.toString());
@@ -659,7 +676,7 @@ public class Connection extends Observable implements Runnable {
 				} catch (IOException e) {
 					log.error(e.toString());
 					log.info("Remote part " + this.toString() + " seems to be disappeared");
-					log.debug("Better error handling should be installed.");
+					handleEarlyQuit();
 					break;
 				}
 			}
