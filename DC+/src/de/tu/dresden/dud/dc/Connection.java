@@ -377,7 +377,11 @@ public class Connection extends Observable implements Runnable {
 		assocParticipantManager.removeParticipant(pmi);
 		
 		if(pmi.isActive()){
-			InfoServiceInfo i = InfoServiceInfoEarlyQuitServiceNotification.infoServiceInfoEarlyQuitServiceNotificationFor(pmi.getParticipant(), assocWorkCycleManager.getCurrentWorkCycleNumber(), 0);
+			InfoServiceInfo i = InfoServiceInfoEarlyQuitServiceNotification
+					.infoServiceInfoEarlyQuitServiceNotificationFor(
+							pmi.getParticipant(),
+							assocWorkCycleManager.getCurrentWorkCycleNumber(),
+							0);
 			assocWorkCycleManager.broadcastToActiveParticipants(i);
 			assocWorkCycleManager.handleEarlyQuit(i);
 		}
