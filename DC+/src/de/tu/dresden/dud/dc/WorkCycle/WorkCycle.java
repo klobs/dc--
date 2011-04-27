@@ -94,6 +94,9 @@ public class WorkCycle extends Observable implements Observer {
 	 * do not use this constructor.
 	 */
 	public WorkCycle(){
+		/**
+		 * do not use this constructor.
+		 */
 	}
 
 	public WorkCycle(long workcycleNumber, int timeout, int payloadLength, WorkCycleManager r) {
@@ -249,10 +252,6 @@ public class WorkCycle extends Observable implements Observer {
 		}
 	}
 
-/*	public byte[] failStopKeyGeneration(ParticipantMgmntInfo pmi){
-		
-	}
-	*/
 	public byte[] consumePayload(){
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
 			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
