@@ -36,7 +36,8 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	protected WorkCycle assocWorkCycle = null;
 	protected TreeSet<WorkCycleRound> rounds = new TreeSet<WorkCycleRound>(
 			new WorkCycleRoundComparator());
-
+	private   boolean successful = false;
+	
 	// sending
 	protected int currentRound = 0;
 
@@ -77,6 +78,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				&& !Arrays.equals(m.getPayload(), payloadSend)) {
 			log.error("Expected and actual received payloads are not equal! Something is messing around with us!");
 		}
+		successful = true;
 	}
 
 	protected void addUp() {
@@ -191,6 +193,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		return this.finished;
 	}
 
+	public boolean hasWorkCycleBeenSuccessful(){
+		return successful;
+	}
+	
 	public boolean isServerMode() {
 		return assocWorkCycle.getAssocWorkCycleManager().isServerMode();
 	}

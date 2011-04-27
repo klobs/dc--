@@ -376,6 +376,13 @@ public class WorkCycle extends Observable implements Observer {
 		else return false;
 	}
 	
+
+	public boolean hasWorkCycleBeenSuccessful(){
+		if (workCycleSending != null)
+			return workCycleSending.hasWorkCycleBeenSuccessful();
+		return false;
+	}
+
 	
 	/**
 	 * Actually does the work for a work cycle on the side of the participants

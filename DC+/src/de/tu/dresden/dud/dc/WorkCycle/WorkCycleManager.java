@@ -329,6 +329,11 @@ public class WorkCycleManager implements Observer{
 		c.deleteObserver(this);
 		n.addObserver(this);
 		
+		if(c.hasWorkCycleBeenSuccessful()){
+			if(getPayloadList().size() > 0)
+				getPayloadList().removeFirst();
+		}
+		
 		// the next work cycle should contain all the connection that 
 		// were also in the current work cycle.
 		// those connections that were marked for leaving will be 
@@ -418,7 +423,7 @@ public class WorkCycleManager implements Observer{
 					int p = ((WorkCycle) o).getConnections().size();
 
 					if ((p > 1) && !((WorkCycle) o).workCycleHasStarted()) { // This 1 must become
-																		// a 2 in future
+																			// a 2 in future
 						tickServerSide(); // Start the work cycle;
 					}
 				}
