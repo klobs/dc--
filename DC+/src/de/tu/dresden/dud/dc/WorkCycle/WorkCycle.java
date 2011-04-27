@@ -46,14 +46,14 @@ public class WorkCycle extends Observable implements Observer {
 	private static Logger log = Logger.getLogger(WorkCycle.class);
 
 	// Events
-	public final static int WC_ROUND_ADDUP              = 0;
+	public final static int WC_ROUND_ADDUP          = 0;
 	public static final int WC_COUNT_CHANGED 		= 1;
 	public static final int WC_STARTED				= 2;
 	public static final int WC_RESERVATION	  		= 2; // actually nothing else than started
-	public static final int WC_RESERVATION_FINISHED  = 3;
+	public static final int WC_RESERVATION_FINISHED = 3;
 	public static final int WC_SENDING			 	= 3; // actually nothing else than reservation finished.
-	public static final int WC_SENDING_FINISHED 		= 4;
-	public static final int WC_FINISHED 				= 4;
+	public static final int WC_SENDING_FINISHED 	= 4;
+	public static final int WC_FINISHED 			= 4;
 	
 	public static final int WC_MIN_ACTIVE_KEYS		= 0; // TODO find a good minimum here
 	
