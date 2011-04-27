@@ -32,6 +32,7 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
     public static final short FEATURE_LOST_CONNECTION_HANDLING 	= 1;
     public static final short FEATURE_KEY_EXCHANGE				= 2;
     public static final short FEATURE_VARIABLE_PAYLOAD_LENGTH	= 3;
+    public static final short FEATURE_EARLY_QUIT_REACTION		= 4;
     
     
     private HashMap<Short, Short> featureMap = new HashMap<Short, Short>(10);
@@ -159,6 +160,15 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 	public int getAccept() {
 		return accept;
 	}
+	
+	public short getEarlyQuitReaction(){
+		Short b = featureMap.get(Short.valueOf(FEATURE_EARLY_QUIT_REACTION));
+		if (b != null){
+			return b.shortValue();
+		}
+		
+		return WorkCycleManager.EARLY_QUIT_MUST_NOT_HAPPEN;
+	}
 
 	public short getKeGMethod(){
 		Short b = featureMap.get(Short.valueOf(FEATURE_KEY_GENERATION));
@@ -211,7 +221,8 @@ public class ManagementMessageWelcome2Service extends ManagementMessage{
 		
 		featureMap.put(Short.valueOf(FEATURE_VARIABLE_PAYLOAD_LENGTH), Short
 				.valueOf(s.getWorkCycleManager().getMessageLengthMode()));
+		
+		featureMap.put(Short.valueOf(FEATURE_EARLY_QUIT_REACTION), Short
+				.valueOf(s.getWorkCycleManager().getEarlyQuitReaction()));
 	}
-	
-	
 }

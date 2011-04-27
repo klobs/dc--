@@ -257,7 +257,7 @@ public class WorkCycle extends Observable implements Observer {
 			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
 		}
 		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
-		return assocWorkCycleManag.getPayloadList().removeFirst();
+		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
 	public LinkedHashSet<Connection> getBroadcastConnections(){

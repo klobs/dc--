@@ -27,11 +27,13 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 	private long workCycle = Long.MIN_VALUE;
 	private long roundNumber = Long.MIN_VALUE;
 	
-	public InfoServiceInfoEarlyQuitServiceNotification(ArrayList<Participant> apl, long workCycleNumber, long roundNumber) {
+	public InfoServiceInfoEarlyQuitServiceNotification(LinkedList<Participant> apl, long workCycleNumber, long roundNumber) {
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		Iterator<Participant> ip = apl.iterator();
 		Participant p = null;
 
+		earlyLeavingParticipant = apl;
+		
 		this.workCycle   = workCycleNumber;
 		this.roundNumber = roundNumber;
 		
@@ -68,11 +70,11 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 		info = infopayload;
 		
 		int pc = 0;
-		int ul = 4;
+		int ul = 20;
 
 		ArrayList<byte[]> p = new ArrayList<byte[]>(5);
 		
-		if (infopayload.length < 4) {
+		if (infopayload.length < 20) {
 			log.warn("Payload does not correspond to the required min size");
 		}
 		
@@ -97,18 +99,18 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 				}
 			}
 			earlyLeavingParticipant.add(new Participant(new String(p.get(0)),
-					new String(p.get(1)), p.get(2), p.get(3), p.get(3)));
+					new String(p.get(1)), p.get(2), p.get(3), p.get(4)));
 			p.clear();
 		}
 	}
 	
 	public static InfoServiceInfoEarlyQuitServiceNotification infoServiceInfoEarlyQuitServiceNotificationFor(Participant p, long workCycleNumber, long roundNumber){
-		ArrayList<Participant> a = new ArrayList<Participant>();
+		LinkedList<Participant> a = new LinkedList<Participant>();
 		a.add(p);
 		return new InfoServiceInfoEarlyQuitServiceNotification(a, workCycleNumber, roundNumber);
 	}
 	
-	public LinkedList<Participant> getActiveParticipantIDs(){
+	public LinkedList<Participant> getEarlyLeavingParticipantIDs(){
 		return earlyLeavingParticipant;
 	}
 	
@@ -123,5 +125,8 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 	public void handleInfo(Connection c){
 		requestingconnection = c;
 		
+		for(Participant p : earlyLeavingParticipant){
+			c.getAssociatedParticipantManager().removeParticipant(p);
+		}
 	}
 }

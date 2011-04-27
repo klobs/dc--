@@ -16,7 +16,6 @@ import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
-import de.tu.dresden.dud.dc.InfoService.InfoServiceInfo;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoEarlyQuitServiceNotification;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
@@ -377,13 +376,13 @@ public class Connection extends Observable implements Runnable {
 		assocParticipantManager.removeParticipant(pmi);
 		
 		if(pmi.isActive()){
-			InfoServiceInfo i = InfoServiceInfoEarlyQuitServiceNotification
+			InfoServiceInfoEarlyQuitServiceNotification i = InfoServiceInfoEarlyQuitServiceNotification
 					.infoServiceInfoEarlyQuitServiceNotificationFor(
 							pmi.getParticipant(),
 							assocWorkCycleManager.getCurrentWorkCycleNumber(),
 							0);
 			assocWorkCycleManager.broadcastToActiveParticipants(i);
-			assocWorkCycleManager.handleEarlyQuit(i);
+			assocWorkCycleManager.handleEarlyQuit(this);
 		}
 	}
 	
@@ -929,8 +928,12 @@ public class Connection extends Observable implements Runnable {
 						assocWorkCycleManager
 								.tickArrived(lastTick.getWorkCycleNumber());
 					} else {
-						assocWorkCycleManager = new WorkCycleManager(welcome2Service.getKeGMethod(), lastTick.getWorkCycleNumber(),
-								welcome2Service.getCharLength(), welcome2Service.getFeatureMessageLength());
+						assocWorkCycleManager = new WorkCycleManager(
+								welcome2Service.getKeGMethod(),
+								lastTick.getWorkCycleNumber(),
+								welcome2Service.getCharLength(),
+								welcome2Service.getFeatureMessageLength(),
+								welcome2Service.getEarlyQuitReaction());
 						assocWorkCycleManager.setParticipant(assocParticipant);
 						assocWorkCycleManager
 								.setAssocParticipantManager(assocParticipantManager);

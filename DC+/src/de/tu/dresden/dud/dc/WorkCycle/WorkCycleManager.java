@@ -6,6 +6,7 @@ package de.tu.dresden.dud.dc.WorkCycle;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -38,9 +39,16 @@ public class WorkCycleManager implements Observer{
 	public static final short MESSAGE_LENGTHS_FIXED = 0;
 	public static final short MESSAGE_LENGTHS_VARIABLE = 1;
 	
+	public static final short EARLY_QUIT_MUST_NOT_HAPPEN= 0;
+	public static final short EARLY_QUIT_CONTINUE_WC 	= 1;
+	public static final short EARLY_QUIT_RESTART_WC 	= 2;
+	
+	
 	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
 	private long				currentWorkCycle	= -1;
+	private short				earlyQuitReaction = EARLY_QUIT_MUST_NOT_HAPPEN;
+	private LinkedList<Connection> earlyQuitConnections = new LinkedList<Connection>();
 	private int 				infoOffset		= 0;
 	private int					joinOffset		= 0;
 	private int 				leaveOffset		= 5;
@@ -58,21 +66,19 @@ public class WorkCycleManager implements Observer{
 	
 	
 	
-	public WorkCycleManager(short keyGenerationMethod,long workCycleNumber, int payloadLengths, short messageLengthMode){
+	public WorkCycleManager(short keyGenerationMethod,long workCycleNumber, int payloadLengths, short messageLengthMode, short earlyQuitReaction){
 		payloadlengths = payloadLengths;
 		
 		assocKeyGenerator = KeyGenerator.keyGeneratorFactory(keyGenerationMethod,this);
 		
 		this.messageLengthMode = messageLengthMode;
 		
+		this.earlyQuitReaction = earlyQuitReaction;
+		
 		currentWorkCycle = workCycleNumber;
 		
 		workcycless.add(getWCByWCNumber(workCycleNumber));
 		getCurrentWorkCycle().addObserver(this);
-	}
-	
-	public synchronized void addKeyExchangeCommitMessages(InfoServiceInfoKeyExchangeCommit c){
-		
 	}
 	
 	public synchronized void addExpectedConnection(Connection c){
@@ -182,6 +188,10 @@ public class WorkCycleManager implements Observer{
 	
 	public synchronized long getCurrentWorkCycleNumber(){
 		return currentWorkCycle;
+	}
+	
+	public short getEarlyQuitReaction(){
+		return earlyQuitReaction;
 	}
 	
 	/**
@@ -300,8 +310,20 @@ public class WorkCycleManager implements Observer{
 		return tickPause;
 	}
 	
-	public void handleEarlyQuit(InfoServiceInfo i){
-		
+	public void handleEarlyQuit(Connection c){
+		if (getEarlyQuitReaction() == WorkCycleManager.EARLY_QUIT_MUST_NOT_HAPPEN)
+			log.error("Participant left, although this behaviour is not allowed! Let's all panic!!11");
+
+		else if (getEarlyQuitReaction() == WorkCycleManager.EARLY_QUIT_RESTART_WC) {
+			earlyQuitConnections.add(c);
+			if (servermode)
+				tickServerSide();
+		}
+
+		else if (getEarlyQuitReaction() == WorkCycleManager.EARLY_QUIT_CONTINUE_WC) {
+			log.error("Continuing WorkCycle after an early quit of a participant is not implemented, yet");
+		}
+
 	}
 	
 	public boolean isRunning(){
@@ -323,13 +345,14 @@ public class WorkCycleManager implements Observer{
 	 * Delete the old work cycle and make the next work cycle the new current one
 	 */
 	private synchronized void setupNextWorkCycle(){
+		LinkedHashSet<Connection> o = null;
 		WorkCycle c = getCurrentWorkCycle();
 		WorkCycle n = getNextWorkCycle();
 		
 		c.deleteObserver(this);
 		n.addObserver(this);
 		
-		if(c.hasWorkCycleBeenSuccessful()){
+		if(c.hasWorkCycleBeenSuccessful() && !servermode){
 			if(getPayloadList().size() > 0)
 				getPayloadList().removeFirst();
 		}
@@ -338,8 +361,24 @@ public class WorkCycleManager implements Observer{
 		// were also in the current work cycle.
 		// those connections that were marked for leaving will be 
 		// subtracted internally
-		n.addExpectedConnections(c.getConnections());
-		n.setBroadcastConnections(c.getBroadcastConnections());
+		
+		o = c.getConnections();
+		
+		if (earlyQuitConnections.size() > 0)
+			o.removeAll(earlyQuitConnections);
+			
+	
+		n.addExpectedConnections(o);
+
+		o = c.getBroadcastConnections();
+
+		if (earlyQuitConnections.size() > 0)
+			o.removeAll(earlyQuitConnections);
+		
+		n.setBroadcastConnections(o);
+	
+		earlyQuitConnections.clear();
+		
 		oldworkcycles.add(c); // save the old work cycle
 		workcycless.remove(c);
 		currentWorkCycle = n.getWorkCycleNumber();
