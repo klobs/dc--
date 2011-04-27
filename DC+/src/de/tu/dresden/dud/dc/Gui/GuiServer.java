@@ -60,16 +60,23 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 	private DefaultComboBoxModel outputListModel;
 	private JButton toggleServerButton;
 	private AbstractAction actionToggleServer;
+	private JRadioButton jRadioButtonTimeout3000;
+	private JRadioButton jRadioButtonTimeout1000;
+	private JRadioButton jRadioButtonTimeout0;
+	private JPanel jPanelTimeout;
 	private JRadioButton jRadioButtonTickSleep5;
 	private JPanel jPanel3;
 	private JRadioButton jRadioButtonTickSleep20;
 	private JRadioButton jRadioButtonTickSleep1;
-	private JPanel jPanel2;
+	private JPanel jPanelSleepTicks;
 	private JRadioButton jRadioButtonTickSleep0;
 	private JPanel jPanel1;
 	private JCheckBox jCheckBoxVariableMessageLength;
 	private JComboBox jComboBoxKeG;
 	private JComboBox jComboBoxKeX;
+
+	private ButtonGroup buttonGroupTick = new ButtonGroup();
+	private ButtonGroup buttonGroupTimeout = new ButtonGroup();
 	
 	private Server assocServer = null;
 	
@@ -80,8 +87,17 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 			assocServer.getWorkCycleManager().setTickPause(getTickTimer());
 		}
 	};
+
+	private ActionListener actionTimeoutButton = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			assocServer.getWorkCycleManager()
+			.setSocketTimeoutForAcviteConnections(getSocketTimeout());
+		}
+	};
+
 	
-	private ButtonGroup buttonGroupTick = new ButtonGroup();
 	
 	public GuiServer() {
 		super();
@@ -90,6 +106,7 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 	
 	private void initGUI() {
 		try {
+			Component com[] = null;
 			GroupLayout thisLayout = new GroupLayout((JComponent)this);
 			this.setLayout(thisLayout);
 			this.setPreferredSize(new java.awt.Dimension(885, 525));
@@ -123,12 +140,28 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 				getJRadioButtonTickSleep5().addActionListener(actionTickButton);
 				getJRadioButtonTickSleep20().addActionListener(actionTickButton);
 				
-				Component com[] = getJPanel2().getComponents();
+				buttonGroupTimeout.add(getJRadioButtonTimeout0());
+				buttonGroupTimeout.add(getJRadioButtonTimeout1s());
+				buttonGroupTimeout.add(getJRadioButtonTimeout3s());
+				
+
+				getJRadioButtonTimeout0().addActionListener(actionTimeoutButton);
+				getJRadioButtonTimeout1s().addActionListener(actionTimeoutButton);
+				getJRadioButtonTimeout3s().addActionListener(actionTimeoutButton);
+				
+				 
+				com = getJPanelTickSleep().getComponents();
 				
 				for (int a = 0; a < com.length; a++) {
 					com[a].setEnabled(false);
 				}
 
+				com = getJPanelTimeout().getComponents();
+				
+				for (int a = 0; a < com.length; a++) {
+					com[a].setEnabled(false);
+				}
+				
 			}
 				thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
 					.addContainerGap()
@@ -173,10 +206,16 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 					     com[a].setEnabled(false);
 					}
 					
-					com = getJPanel2().getComponents();
+					com = getJPanelTickSleep().getComponents();
 
 					for (int a = 0; a < com.length; a++) {
 					     com[a].setEnabled(true);
+					}
+					
+					com = getJPanelTimeout().getComponents();
+					
+					for (int a = 0; a < com.length; a++) {
+						com[a].setEnabled(true);
 					}
 					
 					this.setEnabled(false);
@@ -245,12 +284,12 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 		return jPanel1;
 	}
 	
-	private JPanel getJPanel2() {
-		if(jPanel2 == null) {
-			jPanel2 = new JPanel();
-			GroupLayout jPanel2Layout = new GroupLayout((JComponent)jPanel2);
-			jPanel2.setLayout(jPanel2Layout);
-			jPanel2.setBorder(BorderFactory.createTitledBorder(null, "Sleep during ticks", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION));
+	private JPanel getJPanelTickSleep() {
+		if(jPanelSleepTicks == null) {
+			jPanelSleepTicks = new JPanel();
+			GroupLayout jPanel2Layout = new GroupLayout((JComponent)jPanelSleepTicks);
+			jPanelSleepTicks.setLayout(jPanel2Layout);
+			jPanelSleepTicks.setBorder(BorderFactory.createTitledBorder(null, "Sleep during ticks", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION));
 			jPanel2Layout.setHorizontalGroup(jPanel2Layout.createParallelGroup()
 				.addComponent(getJRadioButtonTickSleep0(), GroupLayout.Alignment.LEADING, 0, 143, Short.MAX_VALUE)
 				.addComponent(getJRadioButtonTickSleep1(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
@@ -265,7 +304,7 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 				.addComponent(getJRadioButtonTickSleep20(), GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(17, Short.MAX_VALUE));
 		}
-		return jPanel2;
+		return jPanelSleepTicks;
 	}
 	
 	private JRadioButton getJRadioButtonTickSleep0() {
@@ -309,10 +348,14 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 			jPanel3.setBorder(BorderFactory.createTitledBorder("Adjust while running"));
 			jPanel3.setEnabled(true);
 			jPanel3Layout.setHorizontalGroup(jPanel3Layout.createSequentialGroup()
-				.addComponent(getJPanel2(), GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(694, Short.MAX_VALUE));
+				.addComponent(getJPanelTickSleep(), GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(getJPanelTimeout(), GroupLayout.PREFERRED_SIZE, 166, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(528, Short.MAX_VALUE));
 			jPanel3Layout.setVerticalGroup(jPanel3Layout.createSequentialGroup()
-				.addComponent(getJPanel2(), 0, 124, Short.MAX_VALUE)
+				.addGroup(jPanel3Layout.createParallelGroup()
+				    .addComponent(getJPanelTickSleep(), GroupLayout.Alignment.LEADING, 0, 131, Short.MAX_VALUE)
+				    .addComponent(getJPanelTimeout(), GroupLayout.Alignment.LEADING, 0, 131, Short.MAX_VALUE))
 				.addContainerGap());
 		}
 		return jPanel3;
@@ -330,7 +373,14 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 
 		return KeyExchangeManager.KEX_MANUAL;
 	}
-	
+
+	private int getSocketTimeout(){
+		if (jRadioButtonTimeout0.isSelected()) return 0;
+		if (jRadioButtonTimeout1000.isSelected()) return 1000;
+		if (jRadioButtonTimeout3000.isSelected()) return 3000;
+		return 0;
+	}
+
 	private int getTickTimer(){
 		if (jRadioButtonTickSleep0.isSelected()) return 0;
 		if (jRadioButtonTickSleep1.isSelected()) return 1000;
@@ -343,5 +393,53 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 		if (getJCheckBoxVariableMessageLength().isSelected())
 			return WorkCycleManager.MESSAGE_LENGTHS_VARIABLE;
 		else return WorkCycleManager.MESSAGE_LENGTHS_FIXED;
+	}
+	
+	private JPanel getJPanelTimeout() {
+		if(jPanelTimeout == null) {
+			jPanelTimeout = new JPanel();
+			jPanelTimeout.setBorder(BorderFactory.createTitledBorder(null, "Timeout for sockets", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION));
+			jPanelTimeout.add(getJRadioButtonTimeout0());
+			jPanelTimeout.add(getJRadioButtonTimeout1s());
+			jPanelTimeout.add(getJRadioButtonTimeout3s());
+		}
+		return jPanelTimeout;
+	}
+	
+	private JRadioButton getJRadioButtonTimeout0() {
+		if(jRadioButtonTimeout0 == null) {
+			jRadioButtonTimeout0 = new JRadioButton();
+			GroupLayout jRadioButtonTimeout0Layout = new GroupLayout((JComponent)jRadioButtonTimeout0);
+			jRadioButtonTimeout0.setLayout(null);
+			jRadioButtonTimeout0.setText("No timeout");
+			jRadioButtonTimeout0.setPreferredSize(new java.awt.Dimension(156, 23));
+			jRadioButtonTimeout0.setSelected(true);
+			jRadioButtonTimeout0Layout.setVerticalGroup(jRadioButtonTimeout0Layout.createParallelGroup());
+			jRadioButtonTimeout0Layout.setHorizontalGroup(jRadioButtonTimeout0Layout.createParallelGroup());
+		}
+		return jRadioButtonTimeout0;
+	}
+	
+	private JRadioButton getJRadioButtonTimeout1s() {
+		if(jRadioButtonTimeout1000 == null) {
+			jRadioButtonTimeout1000 = new JRadioButton();
+			GroupLayout jRadioButton1Layout = new GroupLayout((JComponent)jRadioButtonTimeout1000);
+			jRadioButtonTimeout1000.setText("1 sec");
+			jRadioButtonTimeout1000.setLayout(null);
+			jRadioButtonTimeout1000.setPreferredSize(new java.awt.Dimension(156, 23));
+			jRadioButton1Layout.setVerticalGroup(jRadioButton1Layout.createParallelGroup());
+			jRadioButton1Layout.setHorizontalGroup(jRadioButton1Layout.createParallelGroup());
+		}
+		return jRadioButtonTimeout1000;
+	}
+	
+	private JRadioButton getJRadioButtonTimeout3s() {
+		if(jRadioButtonTimeout3000 == null) {
+			jRadioButtonTimeout3000 = new JRadioButton();
+			jRadioButtonTimeout3000.setText("3 sec");
+			jRadioButtonTimeout3000.setLayout(null);
+			jRadioButtonTimeout3000.setPreferredSize(new java.awt.Dimension(156,23));
+		}
+		return jRadioButtonTimeout3000;
 	}
 }

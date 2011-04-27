@@ -406,6 +406,10 @@ public class WorkCycleManager implements Observer{
 		server = s;
 	}
 	
+	public void setSocketTimeoutForAcviteConnections(int i){
+		
+	}
+	
 	public void setTickPause(long p){
 		tickPause = p;
 	}
