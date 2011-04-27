@@ -211,7 +211,8 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		ManagementMessageAdd m = null;
 		int currentMessageLength = 0;
 		
-		if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
+		if (relativeRound >= 0 && 
+			assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE) {
 			payloadSend = Util.fillAndMergeSending(payloadSend,
 					new byte[individualPayloadLengths.get(relativeRound)
 							.intValue()]);

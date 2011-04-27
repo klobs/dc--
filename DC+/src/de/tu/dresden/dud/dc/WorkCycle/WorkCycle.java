@@ -85,7 +85,7 @@ public class WorkCycle extends Observable implements Observer {
 	protected boolean 				started 			= false;
 	protected int 					systemPayloadLength = 0;
 	protected int 					timeout 			= 0;
-	private   boolean				trap_when_possible  = true;
+	private   boolean				trap_when_possible  = false;
 
 	// Semaphore
 	protected final Semaphore sem	= new Semaphore(0, true);
@@ -256,7 +256,7 @@ public class WorkCycle extends Observable implements Observer {
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
 			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
 		}
-		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
+		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return new byte[0];
 		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
@@ -330,7 +330,7 @@ public class WorkCycle extends Observable implements Observer {
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
 			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
 		}
-		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return null;
+		else if (assocWorkCycleManag.getPayloadList().size() <= 0) return new byte[0];
 		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
