@@ -86,7 +86,7 @@ public class InfoServiceInfoActiveParticipantList extends InfoServiceInfo {
 				}
 			}
 			activeParticipant.add(new Participant(new String(p.get(0)),
-					new String(p.get(1)), p.get(2), p.get(3), p.get(3)));
+					new String(p.get(1)), p.get(2), p.get(3), p.get(4)));
 			p.clear();
 		}
 	}
