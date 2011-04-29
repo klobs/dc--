@@ -406,7 +406,7 @@ public class WorkCycleManager implements Observer{
 		server = s;
 	}
 	
-	public void setSocketTimeoutForAcviteConnections(int i){
+	public synchronized void setSocketTimeoutForAcviteConnections(int i){
 		
 	}
 	

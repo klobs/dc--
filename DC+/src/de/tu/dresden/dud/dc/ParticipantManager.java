@@ -105,7 +105,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @return The list with active participants.
 	 */
-	public LinkedList<ParticipantMgmntInfo> getActivePartMgmtInfo(){
+	public synchronized LinkedList<ParticipantMgmntInfo> getActivePartMgmtInfo(){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		LinkedList<ParticipantMgmntInfo> l = new LinkedList<ParticipantMgmntInfo>();
 		ParticipantMgmntInfo pmi = null;
@@ -118,7 +118,7 @@ public class ParticipantManager extends Observable{
 		return l;
 	}
 
-	public void cleanAllButPassiveConnections(LinkedList<Participant> ppl){
+	public synchronized void cleanAllButPassiveConnections(LinkedList<Participant> ppl){
 		HashSet<ParticipantMgmntInfo> oldPpl = new HashSet<ParticipantMgmntInfo>();
 		
 		oldPpl.addAll(getPassivePartMgmtInfo());
@@ -130,7 +130,7 @@ public class ParticipantManager extends Observable{
 		notifyObservers(PARTMNG_INTERVAL_CHANGED_PASSIVE);
 	}
 	
-	public LinkedList<ParticipantMgmntInfo> getActivePartExtKeysMgmtInfo(){
+	public synchronized LinkedList<ParticipantMgmntInfo> getActivePartExtKeysMgmtInfo(){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		LinkedList<ParticipantMgmntInfo> l = new LinkedList<ParticipantMgmntInfo>();
 		ParticipantMgmntInfo pmi = null;
@@ -148,7 +148,7 @@ public class ParticipantManager extends Observable{
 	 * @param i which element of the database you want to return
 	 * @return the corresponding {@link ParticipantMgmntInfo}
 	 */
-	public ParticipantMgmntInfo getElementAt(int i){
+	public synchronized ParticipantMgmntInfo getElementAt(int i){
 		return participantDB.get(i);
 	}
 
@@ -158,12 +158,12 @@ public class ParticipantManager extends Observable{
 	 * @return The {@link Participant} which is the owner of the
 	 *         {@link ParticipantManager}.
 	 */
-	public Participant getMe(){
+	public synchronized Participant getMe(){
 		return me;
 	}
 	
 	
-	public ParticipantMgmntInfo getMyInfo(){
+	public synchronized ParticipantMgmntInfo getMyInfo(){
 		return getParticipantMgmntInfoFor(me);
 	}
 	
@@ -176,7 +176,7 @@ public class ParticipantManager extends Observable{
 	 * @return the ManagementInformation for the specific participant p. Returns
 	 *         null, if p is null, or does not exist.
 	 */
-	public ParticipantMgmntInfo getParticipantMgmntInfoFor(Participant p){
+	public synchronized ParticipantMgmntInfo getParticipantMgmntInfoFor(Participant p){
 		if (p == null) return null;
 		
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
@@ -199,7 +199,7 @@ public class ParticipantManager extends Observable{
 	 * @return the ManagementInformation for the specific participant p. Returns
 	 *         null, if p is null, or does not exist.
 	 */
-	public ParticipantMgmntInfo getParticipantMgmntInfoFor(Connection c){
+	public synchronized ParticipantMgmntInfo getParticipantMgmntInfoFor(Connection c){
 		if (c == null) return null;
 		
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
@@ -222,7 +222,7 @@ public class ParticipantManager extends Observable{
 	 * @return the ManagementInformation that belongs to the {@link Participant}
 	 *         with the id.
 	 */
-	public ParticipantMgmntInfo getParticipantMgmntInfoByParticipantID(String id){
+	public synchronized ParticipantMgmntInfo getParticipantMgmntInfoByParticipantID(String id){
 		if (id == null) return null;
 		
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
@@ -243,7 +243,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @return The list with active participants.
 	 */
-	public LinkedList<ParticipantMgmntInfo> getPassivePartMgmtInfo(){
+	public synchronized LinkedList<ParticipantMgmntInfo> getPassivePartMgmtInfo(){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		LinkedList<ParticipantMgmntInfo> l = new LinkedList<ParticipantMgmntInfo>();
 		ParticipantMgmntInfo pmi = null;
@@ -260,17 +260,17 @@ public class ParticipantManager extends Observable{
 	 * Standard getter.
 	 * @return The number of tracked participants.
 	 */
-	public int getSize() {
+	public synchronized int getSize() {
 		return participantDB.size();
 	}
 	
-	public void removeParticipant(ParticipantMgmntInfo pmi){
+	public synchronized void removeParticipant(ParticipantMgmntInfo pmi){
 		if (participantDB.contains(pmi)){
 			participantDB.remove(pmi);
 		}
 	}
 	
-	public void removeParticipant(Participant p){
+	public synchronized void removeParticipant(Participant p){
 		ParticipantMgmntInfo pmi = getParticipantMgmntInfoFor(p);
 		
 		if (pmi != null){
@@ -284,7 +284,7 @@ public class ParticipantManager extends Observable{
 	 * Associate a {@link Participant} with the {@link ParticipantManager}.
 	 * @param p The participant that you want to associate to the participant manager.
 	 */
-	public void setMe(Participant p){
+	public synchronized void setMe(Participant p){
 		me = p;
 	}
 
@@ -297,7 +297,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @param p
 	 */
-	public void setParticipantActive(Participant p){
+	public synchronized void setParticipantActive(Participant p){
 		if(p == null) return;
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(t == null) t = addParticipant(p);
@@ -312,7 +312,7 @@ public class ParticipantManager extends Observable{
 	 * @param p Participant that shall be modified.
 	 * @param r work cycle number on which p becomes active.
 	 */
-	public void setParticipantActiveAfterWorkCycle(Participant p, long r){
+	public synchronized void setParticipantActiveAfterWorkCycle(Participant p, long r){
 		if(p == null) return;
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(t == null) t = addParticipant(p);
@@ -323,7 +323,7 @@ public class ParticipantManager extends Observable{
 	 * Take each {@link Participant} in p and call setParticipantActive().
 	 * @param pl A list of participants that shall be set to be active.
 	 */
-	public void setParticipantsActive(LinkedList<Participant> pl){
+	public synchronized void setParticipantsActive(LinkedList<Participant> pl){
 		for(Participant p : pl)
 			setParticipantActive(p);
 	}
@@ -338,7 +338,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @param p
 	 */
-	public void setParticipantPassive(Participant p){
+	public synchronized void setParticipantPassive(Participant p){
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(p == null) return;
 		if(t == null) t = addParticipant(p);
@@ -352,7 +352,7 @@ public class ParticipantManager extends Observable{
 	 * Take each {@link Participant} in p and call setParticipantPassive().
 	 * @param pl A list of participants that shall be set to be passive.
 	 */
-	public void setParticipantsPassive(LinkedList<Participant> pl){
+	public synchronized void setParticipantsPassive(LinkedList<Participant> pl){
 		for(Participant p : pl)
 			setParticipantPassive(p);
 	}
@@ -363,7 +363,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @param p Participant that you want to set inactive. Remark: p stays passive. 
 	 */
-	public void unsetParticipantActive(Participant p){
+	public synchronized void unsetParticipantActive(Participant p){
 		if(p == null) return;
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(t == null) t = addParticipant(p);
@@ -378,7 +378,7 @@ public class ParticipantManager extends Observable{
 	 * Take each {@link Participant} in p and call unsetParticipantActive().
 	 * @param pl A list of participants that shall be set to be inactive.
 	 */
-	public void unsetParticipantsActive(LinkedList<Participant> pl){
+	public synchronized void unsetParticipantsActive(LinkedList<Participant> pl){
 		for(Participant p : pl)
 			unsetParticipantActive(p);
 	}
@@ -388,7 +388,7 @@ public class ParticipantManager extends Observable{
 	 * @param p Participant that shall be modified.
 	 * @param r work cycle number on which p becomes active.
 	 */
-	public void unsetParticipantActiveAfterWorkCycle(Participant p, long r){
+	public synchronized void unsetParticipantActiveAfterWorkCycle(Participant p, long r){
 		if(p == null) return;
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(t == null) t = addParticipant(p);
@@ -401,7 +401,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @param p Participant that you want to set inpassive. 
 	 */
-	public void unsetParticipantPassive(Participant p){
+	public synchronized void unsetParticipantPassive(Participant p){
 		ParticipantMgmntInfo t = getParticipantMgmntInfoFor(p);
 		if(p == null) return;
 		if(t == null) t = addParticipant(p);
@@ -415,7 +415,7 @@ public class ParticipantManager extends Observable{
 	 * Take each {@link Participant} in p and call unsetParticipantPassive().
 	 * @param pl A list of participants that shall be set to be inpassive.
 	 */
-	public void unsetParticipantsPassive(LinkedList<Participant> pl){
+	public synchronized void unsetParticipantsPassive(LinkedList<Participant> pl){
 		for(Participant p : pl)
 			unsetParticipantPassive(p);
 	}
@@ -429,7 +429,7 @@ public class ParticipantManager extends Observable{
 	 * 
 	 * @param workcyclenumber
 	 */
-	public void update(long workcyclenumber){
+	public synchronized void update(long workcyclenumber){
 		Iterator<ParticipantMgmntInfo> i = participantDB.iterator();
 		ParticipantMgmntInfo pmi = null;
 		
