@@ -800,6 +800,7 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void setStatus(ManagementMessage m){
 
+		m.setArrivalTime(System.currentTimeMillis());
 		this.lastMessage = m;
 	    	
 	    	// before actually make the mode transition, notify the others. 

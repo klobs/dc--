@@ -51,6 +51,8 @@ public class ManagementMessage{
 	// variable for the assembled payload
 	protected byte[] message = null;
 	
+	protected long arrivalTime = 0;
+	
 	/**
 	 * This intern method prepares a bytefield which can be send over the wire.
 	 * Necessary length is calculated here.
@@ -96,6 +98,9 @@ public class ManagementMessage{
 		return this.errorProcessing;
 	}
 	
+	public long getArrivalTime(){
+		return arrivalTime;
+	}
 	
 	/**
 	 * Getter for the message as byte array.
@@ -188,4 +193,8 @@ public class ManagementMessage{
 		}
 	}
 
+	public void setArrivalTime(long t){
+		arrivalTime = t;
+	}
+	
 }
