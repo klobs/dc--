@@ -93,7 +93,7 @@ public class GuiServer extends javax.swing.JPanel implements Observer{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			assocServer.getWorkCycleManager()
-			.setSocketTimeoutForAcviteConnections(getSocketTimeout());
+			.setPacketTimeout(getSocketTimeout());
 		}
 	};
 
