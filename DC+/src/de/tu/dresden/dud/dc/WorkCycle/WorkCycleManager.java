@@ -422,6 +422,10 @@ public class WorkCycleManager implements Observer{
 		if (getCurrentWorkCycle().workCycleHasStarted()){
 			// the current work cycle has already started, so it seems that we are
 			// in a hot system.
+
+			// for the case, that nobody inteded to send anything.
+			getCurrentWorkCycle().getSemaphore().release();
+
 			setupNextWorkCycle();
 		} 
 		
