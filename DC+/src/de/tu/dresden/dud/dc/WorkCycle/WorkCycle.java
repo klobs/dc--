@@ -79,9 +79,8 @@ public class WorkCycle extends Observable implements Observer {
 	protected int 					relativeRound 	= -1;
 	private	  ServerReservationChecker reservationChecker = null;
 	protected long 					workcycleNumber 		= 0; // Long.MIN_VALUE;
-	protected WorkCycleReserving		workCycleReserving		= null;
+	protected WorkCycleReserving	workCycleReserving		= null;
 	protected WorkCycleSending		workCycleSending 		= null;
-	protected Thread				workCycleSendingThread	= null;
 	protected boolean 				started 			= false;
 	protected int 					systemPayloadLength = 0;
 	protected int 					timeout 			= 0;
@@ -235,23 +234,6 @@ public class WorkCycle extends Observable implements Observer {
 		return false;
 	}
 	
-	/**
-	 * This method collects the payloads, which are incoming from the different
-	 * connections
-	 * 
-	 * Should be called on <b>server side</b>.
-	 * 
-	 * @param c
-	 * @param p
-	 */
-	public void collectPayload(Connection c, byte[] p) {
-		if (expectedConnections.contains(c)) {
-			payloads.add(p);
-			expectedConnections.remove(c);
-			confirmedConnections.add(c);
-		}
-	}
-
 	public byte[] consumePayload(){
 		if (trap_when_possible && assocWorkCycleManag.getPayloadList().size() <= 0){
 			return Util.fillAndMergeSending((new String("Trap").getBytes()), new byte [systemPayloadLength]);
@@ -369,7 +351,7 @@ public class WorkCycle extends Observable implements Observer {
 	public int getTimeout() {
 		return this.timeout;
 	}
-	
+		
 	public boolean hasPayload(){
 		if (trap_when_possible) return true;
 		else if (assocWorkCycleManag.getPayloadList().size() > 0) return true;
@@ -443,8 +425,7 @@ public class WorkCycle extends Observable implements Observer {
 			try {
 				Thread.sleep(assocWorkCycleManag.getTickPause());
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.warn(e.toString());
 			}
 	
 			m = new ManagementMessageTick(workcycleNumber);

@@ -406,10 +406,6 @@ public class WorkCycleManager implements Observer{
 		server = s;
 	}
 	
-	public synchronized void setSocketTimeoutForAcviteConnections(int i){
-		
-	}
-	
 	public void setTickPause(long p){
 		tickPause = p;
 	}
@@ -478,7 +474,7 @@ public class WorkCycleManager implements Observer{
 			
 			case WorkCycle.WC_FINISHED:
 				if (servermode){
-				tickServerSide();
+					tickServerSide();
 				}
 				
 				if(! servermode){
