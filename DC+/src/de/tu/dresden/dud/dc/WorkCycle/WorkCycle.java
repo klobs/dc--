@@ -495,7 +495,10 @@ public class WorkCycle extends Observable implements Observer {
 				// Suck out those information
 				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
-
+				
+				if (expectedRounds <= 0)
+					return;
+				
 				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
 					individualPayloadLengths = ((WorkCycleReserving) o).getIndividualMessageLengths();
 				}

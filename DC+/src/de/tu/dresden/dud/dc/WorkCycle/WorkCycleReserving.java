@@ -132,8 +132,13 @@ public class WorkCycleReserving extends WorkCycleSending {
 			// The semaphore has be unlocked form a different thread (the producer, the work cycle)
 			// Now we can fetch the long awaited response and continue the algorithm.
 			
-			a =  new WorkCycleReservationPayload(assocWorkCycle.getAddedMessages().removeFirst().getPayload());
-			
+			if(assocWorkCycle.getAddedMessages().size() > 0){
+				a =  new WorkCycleReservationPayload(assocWorkCycle.getAddedMessages().removeFirst().getPayload());
+			} else { 
+				finished = true;
+				break;
+			}
+				
 			// get the expected count of steps for the reservation, if not done, yet
 			// (so only the 1st time.
 			if (expectedRounds < 0) expectedRounds = a.getParticipantCount();
