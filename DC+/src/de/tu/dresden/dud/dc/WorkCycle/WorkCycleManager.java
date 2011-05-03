@@ -452,7 +452,10 @@ public class WorkCycleManager implements Observer{
 		
 		// it seems to be the first work cycle, or we had 
 		// interruptions in between
-			getCurrentWorkCycle().performDCWorkCycleOnServerSide();
+		WorkCycle wc = getCurrentWorkCycle();
+		Thread t  = new Thread(new WorkCycleTimeoutController(packettimeout, wc), "workCycleTimeoutChecker_" + wc.getWorkCycleNumber());
+		wc.performDCWorkCycleOnServerSide();
+		t.start();
 	}
 	
 	@Override
