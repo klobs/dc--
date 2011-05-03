@@ -48,11 +48,8 @@ public class WorkCycle extends Observable implements Observer {
 	// Events
 	public final static int WC_ROUND_ADDUP          = 0;
 	public static final int WC_COUNT_CHANGED 		= 1;
-	public static final int WC_STARTED				= 2;
 	public static final int WC_RESERVATION	  		= 2; // actually nothing else than started
-	public static final int WC_RESERVATION_FINISHED = 3;
 	public static final int WC_SENDING			 	= 3; // actually nothing else than reservation finished.
-	public static final int WC_SENDING_FINISHED 	= 4;
 	public static final int WC_FINISHED 			= 4;
 	
 	public static final int WC_MIN_ACTIVE_KEYS		= 0; // TODO find a good minimum here
@@ -144,7 +141,7 @@ public class WorkCycle extends Observable implements Observer {
 		case WC_RESERVATION:
 			workCycleReserving.addMessageArrived(c, m);
 			break;
-		case WC_RESERVATION_FINISHED:
+		case WC_SENDING:
 			workCycleSending.addMessageArrived(c, m);
 			break;
 		}
@@ -218,7 +215,7 @@ public class WorkCycle extends Observable implements Observer {
 			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE)
 				individualPayloadLengths = reservationChecker.getIndividualPayloadLengths();
 			
-			currentPhase = WC_RESERVATION_FINISHED;
+			currentPhase = WC_SENDING;
 			
 			if (reservationChecker.getExpectedRounds() > 0) {
 				workCycleSending = new WorkCycleSending(this);
@@ -227,6 +224,7 @@ public class WorkCycle extends Observable implements Observer {
 			} else {
 				setChanged();
 				notifyObservers(WC_FINISHED);
+				currentPhase = WC_FINISHED;
 			}
 			
 			return true;
@@ -272,7 +270,7 @@ public class WorkCycle extends Observable implements Observer {
 		return l;
 	}
 	
-	public int getCurrentPhase(){
+	public synchronized int getCurrentPhase(){
 		return this.currentPhase;
 	}
 
@@ -418,7 +416,7 @@ public class WorkCycle extends Observable implements Observer {
 				}
 			}
 		 	
-			currentPhase = WC_STARTED;
+			currentPhase = WC_RESERVATION;
 			
 			// Zeichen geben, dass naechste Runde an der Reihe ist,
 			// aber vorher nochmal kurze Verschnaufpause.
@@ -469,16 +467,19 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
+	public synchronized void update(Observable o, Object arg) {
 		if (o instanceof WorkCycleReserving) {
-			if (((Integer) arg).intValue() == WorkCycle.WC_RESERVATION_FINISHED) {
+			if (((Integer) arg).intValue() == WorkCycle.WC_SENDING) {
 
 				// Suck out those information
 				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 				
-				if (expectedRounds <= 0)
+				if (expectedRounds <= 0){
+					setChanged();
+					notifyObservers(WC_FINISHED);
 					return;
+				}
 				
 				if(assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
 					individualPayloadLengths = ((WorkCycleReserving) o).getIndividualMessageLengths();
@@ -506,8 +507,7 @@ public class WorkCycle extends Observable implements Observer {
 				}
 			}
 		} else if (o instanceof WorkCycleSending
-					&& ((Integer) arg).intValue() == WorkCycle.WC_SENDING_FINISHED) {
-
+					&& ((Integer) arg).intValue() == WorkCycle.WC_FINISHED) {
 				// TODO
 				// Statistiken: Durchschnittliche Rundendauer
 				// Durchschnittliche Teilnehmerzahl
@@ -515,6 +515,7 @@ public class WorkCycle extends Observable implements Observer {
 				// Runde zu ende
 				setChanged();
 				notifyObservers(WC_FINISHED);
+				currentPhase = WC_FINISHED;
 			}
 	}
 	

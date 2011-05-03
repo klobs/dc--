@@ -144,7 +144,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 				&& (currentRound == expectedRounds)) {
 			finished = true;
 			setChanged();
-			notifyObservers(WorkCycle.WC_SENDING_FINISHED);
+			notifyObservers(WorkCycle.WC_FINISHED);
 		}
 	}
 
@@ -258,7 +258,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		}
 		
 		setChanged();
-		notifyObservers(WorkCycle.WC_SENDING_FINISHED);		
+		notifyObservers(WorkCycle.WC_FINISHED);		
 	}
 
 	public void run() {

@@ -211,7 +211,7 @@ public class WorkCycleReserving extends WorkCycleSending {
 		
 		// Reservation has finished. Notify the observers!
 		setChanged();
-		notifyObservers(WorkCycle.WC_RESERVATION_FINISHED);
+		notifyObservers(WorkCycle.WC_SENDING);
 	}
 	
 	public LinkedList<Integer> getIndividualMessageLengths(){
