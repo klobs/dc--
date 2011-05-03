@@ -42,7 +42,8 @@ public class ManagementMessageAdd extends ManagementMessage {
 	 * @param payload the payload that the participant intends to send.
 	 */	
 	public ManagementMessageAdd(long wcn, int rn, byte[] payload){
-
+		realtime = true;
+		
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		
 		byte[] messagetype		= Util.stuffIntIntoShort(ManagementMessage.ADD);
@@ -73,7 +74,7 @@ public class ManagementMessageAdd extends ManagementMessage {
 	 *   
 	 */	
 	public ManagementMessageAdd(byte[] payload){
-		
+		realtime = true;
 		message = payload;
 		
 		if(payload.length < 8){

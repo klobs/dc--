@@ -44,6 +44,8 @@ public class ManagementMessageAdded extends ManagementMessage {
 	 * @param payload the payload that the participant intends to send.
 	 */	
 	public ManagementMessageAdded(long wcn, int rn, byte[] payload){
+		realtime = true;
+		
 		this.payload 		= payload;
 		this.payloadLength 	= payload.length;
 		this.workcyclenumber  	= wcn;
@@ -79,7 +81,7 @@ public class ManagementMessageAdded extends ManagementMessage {
 	 *   
 	 */	
 	public ManagementMessageAdded(byte[] payload){
-		
+		realtime = true;
 		message = payload;
 		
 		if(payload.length < 8){

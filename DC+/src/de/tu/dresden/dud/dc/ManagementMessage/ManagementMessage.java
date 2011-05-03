@@ -52,6 +52,7 @@ public class ManagementMessage{
 	protected byte[] message = null;
 	
 	protected long arrivalTime = 0;
+	protected boolean realtime = false;
 	
 	/**
 	 * This intern method prepares a bytefield which can be send over the wire.
@@ -111,6 +112,9 @@ public class ManagementMessage{
 		return message;
 	}
 
+	public boolean isRealtime(){
+		return realtime;
+	}
 	
 	/**
 	 * Transforms an payload to a ManagementMessage object, or its subclasses.
