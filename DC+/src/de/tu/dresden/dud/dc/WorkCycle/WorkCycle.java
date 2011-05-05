@@ -328,14 +328,6 @@ public class WorkCycle extends Observable implements Observer {
 		return relativeRound;
 	}
 
-	public synchronized LinkedHashSet<Connection> getRemainingConnections(){
-		if (workCycleSending != null)
-			return workCycleSending.getExpectedConnections();
-		else if (workCycleReserving != null)
-			return workCycleReserving.getExpectedConnections();
-		else return expectedConnections;
-	}
-	
 	/**
 	 * @return the work cycle number
 	 */

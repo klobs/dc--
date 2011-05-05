@@ -242,10 +242,6 @@ public class WorkCycleManager implements Observer{
 		return getWCByWCNumber(getCurrentWorkCycle().getWorkCycleNumber()+1);
 	}
 	
-	public synchronized int getPacketTimeout(){
-		return this.packettimeout;
-	}
-	
 	public synchronized Participant getParticipant(){
 		return this.participant;
 	}
