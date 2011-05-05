@@ -253,6 +253,11 @@ public class WorkCycleManager implements Observer{
 	public synchronized boolean getParticipantMode(){
 		return participantmode;
 	}
+	
+	public synchronized int getRealtimeMessageTimeout(){
+		return this.packettimeout;
+	}
+	
 	/**
 	 * Returns a work cycle with a desired work cycle number.
 	 * If the work cycle does not exsist yet in the database,
@@ -452,10 +457,7 @@ public class WorkCycleManager implements Observer{
 		
 		// it seems to be the first work cycle, or we had 
 		// interruptions in between
-		WorkCycle wc = getCurrentWorkCycle();
-		Thread t  = new Thread(new WorkCycleTimeoutController(packettimeout, wc), "workCycleTimeoutChecker_" + wc.getWorkCycleNumber());
-		wc.performDCWorkCycleOnServerSide();
-		t.start();
+		getCurrentWorkCycle().performDCWorkCycleOnServerSide();
 	}
 	
 	@Override

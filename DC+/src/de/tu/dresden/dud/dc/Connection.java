@@ -386,6 +386,14 @@ public class Connection extends Observable implements Runnable {
 		}
 	}
 	
+	public void handleEarlyQuitConnectionUnresponsive(){
+		try {
+			this.clientSocket.close();
+		} catch (IOException e) {
+			log.error(e.toString());
+		}
+	}
+	
 	/**
 	 * A connection can be in server mode, or not. A connection being in server
 	 * mode, has an associated {@link Server}. Normally only connections on the

@@ -27,6 +27,7 @@ public class WorkCycleRound extends WorkCycle {
 	private static Logger log = Logger.getLogger(WorkCycleRound.class);
 	
 	private int 			roundNumber = 0;
+	private Thread 			roundTimeoutController = null;
 
 	/**
 	 * Each round belongs to a work cycle and has a unique round number.
@@ -55,6 +56,17 @@ public class WorkCycleRound extends WorkCycle {
 	 *            the management message that arrived.
 	 */
 	public synchronized void addMessageArrived(Connection c, ManagementMessageAdd m){
+		
+		if (payloads.size() == 0){
+			roundTimeoutController = new Thread(
+					new WorkCycleRoundTimeoutController(workCycleSending
+							.getAssocWorkCycleManager()
+							.getRealtimeMessageTimeout(), this),
+					"roundTimeoutChecker_" + this.getWorkCycleNumber()
+							+ ":" + this.getRoundNumber());
+			roundTimeoutController.start();
+		}
+		
 		payloads.add(m.getPayload());
 		
 		expectedConnections.remove(c);
@@ -72,6 +84,12 @@ public class WorkCycleRound extends WorkCycle {
 	
 	public void checkWhetherToAddUpAndIfYesDoSo(){
 		if (expectedConnections.size() == 0) {
+			
+			if(roundTimeoutController != null){
+				if(roundTimeoutController.getState() != Thread.State.TERMINATED){
+					roundTimeoutController.interrupt();
+				}
+			}
 			log.debug("	there are no more new messages expected. ADDing notification");
 			setChanged();
 			notifyObservers(WorkCycle.WC_ROUND_ADDUP);
@@ -84,5 +102,9 @@ public class WorkCycleRound extends WorkCycle {
 	 */
 	public int getRoundNumber(){
 		return this.roundNumber;
+	}
+	
+	public Thread getTimeoutController(){
+		return roundTimeoutController;
 	}
 }
