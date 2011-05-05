@@ -370,7 +370,7 @@ public class Connection extends Observable implements Runnable {
 		return serverSocket;
 	}
 
-	private void handleEarlyQuit(){
+	private void handleEarlyQuitConnectionClosed(){
 		ParticipantMgmntInfo pmi = assocParticipantManager.getParticipantMgmntInfoFor(this);
 		
 		assocParticipantManager.removeParticipant(pmi);
@@ -668,7 +668,7 @@ public class Connection extends Observable implements Runnable {
 					}
 				} catch(EOFException e){
 					log.warn("Remote connection ended unexpectedly. Not yet cleaning up that mess... :( ");
-					handleEarlyQuit();
+					handleEarlyQuitConnectionClosed();
 					break;
 					
 				} catch (NullPointerException e) {
@@ -679,7 +679,7 @@ public class Connection extends Observable implements Runnable {
 				} catch (IOException e) {
 					log.error(e.toString());
 					log.info("Remote part " + this.toString() + " seems to be disappeared");
-					handleEarlyQuit();
+					handleEarlyQuitConnectionClosed();
 					break;
 				}
 			}
