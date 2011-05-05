@@ -156,6 +156,7 @@ public class WorkCycle extends Observable implements Observer {
 				sem.release();
 				break;
 			case WC_SENDING:
+			case WC_FINISHED:
 				addedMessages.add(m); // redundancy rules
 				workCycleSending.addedMessageArrived(m);
 				break;
@@ -170,6 +171,7 @@ public class WorkCycle extends Observable implements Observer {
 				sem.release();
 				break;
 			case WC_SENDING:
+			case WC_FINISHED:
 				addedMessages.add(m); // redundancy rulez
 				workCycleSending.addedMessageArrived(m);
 				sem.release();
