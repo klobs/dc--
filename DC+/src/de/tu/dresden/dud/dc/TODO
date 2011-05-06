@@ -1,18 +1,15 @@
 -Collision handling, if 2 random numbers are the same during reservation 
  Only testing has to be done.
--Error handling  (what if somebody leaves the network without telling)
--Timeouts (needed for errorhandling)
 -Statistics
--Gui improvements
 -High level API / library
 -Sending traps.
--Maybe handle the broadcast lists within the round manager?
+-Maybe handle the broadcast lists within the WorkCycle manager?
 -Documentation
 -Restore participants prefs.
 -Key management: revocation / expiry...
--Joining: right now the oracle almost has no infos to decide upon whether to accept a participant, or not. Maybe I should add a challenge - response, to see whether the participant really has the public key's counter part...
--Study Bitcoins
--React properly on failing connections
+-Joining: right now the oracle almost has no infos to decide upon whether to
+ accept a participant, or not. Maybe I should add a challenge - response, to see
+ whether the participant really has the public key's counter part...
 -Design library / API
 
 -Read:
