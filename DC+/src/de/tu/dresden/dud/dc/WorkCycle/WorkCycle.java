@@ -438,7 +438,7 @@ public class WorkCycle extends Observable implements Observer {
 			workCycleReserving = new WorkCycleReserving(this);
 			workCycleReserving.addObserver(this);
 			
-			Thread w = new Thread(new WorkCycleTimeoutController(workCycleReserving));
+			Thread w = new Thread(new WorkCycleTimeoutController(workCycleReserving), "WorkCycleTimeoutController-" + workcycleNumber);
 			w.start();
 			// rest gets done as soon as messages arrive...
 			
