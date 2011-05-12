@@ -437,6 +437,9 @@ public class WorkCycle extends Observable implements Observer {
 			reservationChecker = new ServerReservationChecker();
 			workCycleReserving = new WorkCycleReserving(this);
 			workCycleReserving.addObserver(this);
+			
+			Thread w = new Thread(new WorkCycleTimeoutController(workCycleReserving));
+			w.start();
 			// rest gets done as soon as messages arrive...
 			
 		} catch (IOException e) {

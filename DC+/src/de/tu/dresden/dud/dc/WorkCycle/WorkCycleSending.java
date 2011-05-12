@@ -37,6 +37,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	protected TreeSet<WorkCycleRound> rounds = new TreeSet<WorkCycleRound>(
 			new WorkCycleRoundComparator());
 	private   boolean successful = false;
+	private		boolean anyAddmessageArrived = false;
 	
 	// sending
 	protected int currentRound = 0;
@@ -69,6 +70,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 	public synchronized void addMessageArrived(Connection c,
 			ManagementMessageAdd m) {
+		anyAddmessageArrived = true;
 		WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
 		rn.addMessageArrived(c, m);			
 	}
@@ -189,6 +191,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		return r;
 	}
 
+	public boolean hasAnyAddMessageArrivedAtServerside(){
+		return anyAddmessageArrived;
+	}
+	
 	public boolean hasFinished() {
 		return this.finished;
 	}
