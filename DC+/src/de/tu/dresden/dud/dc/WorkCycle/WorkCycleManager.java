@@ -350,39 +350,41 @@ public class WorkCycleManager implements Observer{
 		WorkCycle c = getCurrentWorkCycle();
 		WorkCycle n = getNextWorkCycle();
 		
-		c.deleteObserver(this);
-		n.addObserver(this);
-		
-		if(c.hasWorkCycleBeenSuccessful() && !servermode){
-			if(getPayloadList().size() > 0)
-				getPayloadList().removeFirst();
+		synchronized (c) {
+
+			c.deleteObserver(this);
+			n.addObserver(this);
+
+			if (c.hasWorkCycleBeenSuccessful() && !servermode) {
+				if (getPayloadList().size() > 0)
+					getPayloadList().removeFirst();
+			}
+
+			// the next work cycle should contain all the connection that
+			// were also in the current work cycle.
+			// those connections that were marked for leaving will be
+			// subtracted internally
+
+			o = c.getConnections();
+
+			if (earlyQuitConnections.size() > 0)
+				o.removeAll(earlyQuitConnections);
+
+			n.addExpectedConnections(o);
+
+			o = c.getBroadcastConnections();
+
+			if (earlyQuitConnections.size() > 0)
+				o.removeAll(earlyQuitConnections);
+
+			n.setBroadcastConnections(o);
+
+			earlyQuitConnections.clear();
+
+			oldworkcycles.add(c); // save the old work cycle
+			workcycless.remove(c);
+			currentWorkCycle = n.getWorkCycleNumber();
 		}
-		
-		// the next work cycle should contain all the connection that 
-		// were also in the current work cycle.
-		// those connections that were marked for leaving will be 
-		// subtracted internally
-		
-		o = c.getConnections();
-		
-		if (earlyQuitConnections.size() > 0)
-			o.removeAll(earlyQuitConnections);
-			
-	
-		n.addExpectedConnections(o);
-
-		o = c.getBroadcastConnections();
-
-		if (earlyQuitConnections.size() > 0)
-			o.removeAll(earlyQuitConnections);
-		
-		n.setBroadcastConnections(o);
-	
-		earlyQuitConnections.clear();
-		
-		oldworkcycles.add(c); // save the old work cycle
-		workcycless.remove(c);
-		currentWorkCycle = n.getWorkCycleNumber();
 	}
 	
 	public synchronized void setInfoOffset(int i){
@@ -457,37 +459,54 @@ public class WorkCycleManager implements Observer{
 	}
 	
 	@Override
-	public synchronized void update(Observable o, Object arg){
-		if( o instanceof WorkCycle ){
-	
-			switch (((Integer) arg).intValue()) {
-			
-			case WorkCycle.WC_COUNT_CHANGED:
-				if (servermode) {
-					int p = ((WorkCycle) o).getConnections().size();
+	public synchronized void update(Observable o, Object arg) {
+		synchronized (o) {
 
-					if ((p > 1) && !((WorkCycle) o).workCycleHasStarted()) { // This 1 must become
-																			// a 2 in future
-						tickServerSide(); // Start the work cycle;
+			if (o instanceof WorkCycle) {
+
+				switch (((Integer) arg).intValue()) {
+
+				case WorkCycle.WC_COUNT_CHANGED:
+					if (servermode) {
+						int p = ((WorkCycle) o).getConnections().size();
+
+						if ((p > 1) && !((WorkCycle) o).workCycleHasStarted()) { // This
+																					// 1
+																					// must
+																					// become
+																					// a
+																					// 2
+																					// in
+																					// future
+							tickServerSide(); // Start the work cycle;
+						}
 					}
-				}
-				break;
-			
-			case WorkCycle.WC_FINISHED:
-				if (servermode){
-					tickServerSide();
-				}
-				
-				if(! servermode){
-					
-					if (assocParticipantManager.getParticipantMgmntInfoFor(participant).getInactiveInWorkCycle() == currentWorkCycle + 1){
-						assocParticipantManager.update(currentWorkCycle + 1);
-						
-						if(assocParticipantManager.getParticipantMgmntInfoFor(participant).getAssocConnection().checkWhetherQuitRequestedOnParticipantSide())
-							assocParticipantManager.getParticipantMgmntInfoFor(participant).getAssocConnection().quitService(participant);
+					break;
+
+				case WorkCycle.WC_FINISHED:
+					if (servermode) {
+						tickServerSide();
 					}
+
+					if (!servermode) {
+
+						if (assocParticipantManager.getParticipantMgmntInfoFor(
+								participant).getInactiveInWorkCycle() == currentWorkCycle + 1) {
+							assocParticipantManager
+									.update(currentWorkCycle + 1);
+
+							if (assocParticipantManager
+									.getParticipantMgmntInfoFor(participant)
+									.getAssocConnection()
+									.checkWhetherQuitRequestedOnParticipantSide())
+								assocParticipantManager
+										.getParticipantMgmntInfoFor(participant)
+										.getAssocConnection()
+										.quitService(participant);
+						}
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}

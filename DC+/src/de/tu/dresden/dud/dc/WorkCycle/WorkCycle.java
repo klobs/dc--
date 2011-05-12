@@ -472,7 +472,7 @@ public class WorkCycle extends Observable implements Observer {
 	}
 
 	@Override
-	public synchronized void update(Observable o, Object arg) {
+	public void update(Observable o, Object arg) {
 		if (o instanceof WorkCycleReserving) {
 			if (((Integer) arg).intValue() == WorkCycle.WC_SENDING) {
 
@@ -481,8 +481,10 @@ public class WorkCycle extends Observable implements Observer {
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 				
 				if (expectedRounds <= 0){
+					synchronized (assocWorkCycleManag) {
 					setChanged();
 					notifyObservers(WC_FINISHED);
+					}
 					return;
 				}
 				
