@@ -156,6 +156,10 @@ public class Server implements Runnable {
 		return keyExManager;
 	}
 	
+	public ParticipantManager getParticipantManager(){
+		return participantManager;
+	}
+	
 	public WorkCycleManager getWorkCycleManager(){
 		return workCycleManager;
 	}
