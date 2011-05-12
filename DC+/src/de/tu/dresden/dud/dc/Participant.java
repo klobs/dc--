@@ -223,6 +223,4 @@ public class Participant extends Observable implements Observer {
     		notifyObservers(a);
     	}
     }
-    
-
 }
