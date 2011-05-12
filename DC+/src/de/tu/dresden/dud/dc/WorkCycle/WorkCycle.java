@@ -481,8 +481,10 @@ public class WorkCycle extends Observable implements Observer {
 				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
 				
 				if (expectedRounds <= 0){
+					synchronized (assocWorkCycleManag) {
 					setChanged();
 					notifyObservers(WC_FINISHED);
+					}
 					return;
 				}
 				
