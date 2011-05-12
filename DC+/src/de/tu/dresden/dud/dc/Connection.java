@@ -118,7 +118,7 @@ public class Connection extends Observable implements Runnable {
 													 // unsigned problem with java.
 													 // Long.MIN_VALUE;
 	protected long 			expectedLeavingWC = -1;
-	private   LinkedList<String> sendMessageBuffer = new LinkedList<String>(); // we use this if no work cycle manager is active yet.
+	private   LinkedList<byte[]> sendMessageBuffer = new LinkedList<byte[]>(); // we use this if no work cycle manager is active yet.
 	protected boolean 		servermode; 		// we should know whether this connection is
 												// created on serverside, or not
 
@@ -262,11 +262,16 @@ public class Connection extends Observable implements Runnable {
 	 */
 	public void feedWorkCycleManager(String s) {
 		if(assocWorkCycleManager != null)
-			assocWorkCycleManager.addMessage(Util
-					.stuffStringIntoCharArray(s));
-		else sendMessageBuffer.add(s);
+			assocWorkCycleManager.addMessage(s.getBytes());
+		else sendMessageBuffer.add(s.getBytes());
 	}
 
+	public void feedWorkCycleManager(byte[] s) {
+		if(assocWorkCycleManager != null)
+			assocWorkCycleManager.addMessage(s);
+		else sendMessageBuffer.add(s);
+	}
+	
 	/**
 	 * An {@link InfoServiceInfoActiveParticipantList} should call this method
 	 * on arrival, to remember this connection to finish unfinished key exchange
