@@ -869,6 +869,8 @@ public class Connection extends Observable implements Runnable {
 		    	if ( m instanceof ManagementMessageWelcome2Service ){
 		    		this.welcome2Service = (ManagementMessageWelcome2Service) m;
 		    		this.currentMode = MODE_REGISTERATSERVICE;
+		    		if (!assocParticipant.getManualSetup())
+		    			assocParticipant.registerAtService(this);
 		    		return;
 		    	}
 		    	
@@ -877,6 +879,8 @@ public class Connection extends Observable implements Runnable {
 		    		this.acceptedForService = (ManagementMessageAccepted4Service) m;
 		    		this.currentMode = MODE_PASSIVE;
 		    		getAssociatedParticipantManager().setParticipantPassive(assocParticipant);
+		    		if (!assocParticipant.getManualSetup())
+		    			assocParticipant.joinWorkCycle(this);
 		    		return;
 		    	}
 

@@ -31,6 +31,7 @@ public class Participant extends Observable implements Observer {
 	private InfoService				infoService	= null;
 	private boolean					isStopped	= false;
 	private KeyManager				keyManager	= null;
+	private boolean					manualSetup = false;
 	
 	private byte[]					dh			= null;
 	private byte[]					dhs			= null;
@@ -71,6 +72,13 @@ public class Participant extends Observable implements Observer {
 		this.id		   =  keyManager.getDSAPublicKeyID();
 		this.dh		   =  keyManager.getDHPublicPart();
 		this.dhs 	   =  keyManager.getDHPublicPartSignature();
+	}
+	
+	public Connection doAllTheThingsToBecomeActive(String hostname, int port){
+		Connection c = establishNewConnection(hostname, port);
+		registerAtService(c);
+		
+		return c;
 	}
 	
 	/**
@@ -149,6 +157,10 @@ public class Participant extends Observable implements Observer {
 		return keyManager.getDSAKeypair();
 	}
 
+	public boolean getManualSetup(){
+		return manualSetup;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
