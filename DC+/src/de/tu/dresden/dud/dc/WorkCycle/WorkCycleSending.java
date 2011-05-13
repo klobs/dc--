@@ -68,11 +68,13 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		this.addObserver(this);
 	}
 
-	public synchronized void addMessageArrived(Connection c,
+	public void addMessageArrived(Connection c,
 			ManagementMessageAdd m) {
-		anyAddmessageArrived = true;
-		WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
-		rn.addMessageArrived(c, m);			
+		synchronized (assocWorkCycleManag) {
+			anyAddmessageArrived = true;
+			WorkCycleRound rn = getRoundByRoundNumber(m.getRoundNumber());
+			rn.addMessageArrived(c, m);
+		}
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
