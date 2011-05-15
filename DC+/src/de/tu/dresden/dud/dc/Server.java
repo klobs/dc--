@@ -250,10 +250,6 @@ public class Server implements Runnable {
 	 */
 	@Override
 	public void run(){
-        synchronized(this){
-            // this.runningThread = Thread.currentThread(); //can this be usefull?
-        }
-           
         openServerSocket();
         while(! isStopped()){
         	Socket clientSocket;

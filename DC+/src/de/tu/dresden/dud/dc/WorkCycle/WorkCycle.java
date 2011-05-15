@@ -112,7 +112,7 @@ public class WorkCycle extends Observable implements Observer {
 	public void addExpectedConnection(Connection c) {
 		expectedConnections.add(c);
 		setChanged();
-		notifyObservers(new Integer(WC_COUNT_CHANGED));
+		notifyObservers(Integer.valueOf(WC_COUNT_CHANGED));
 	}
 
 	public void addExpectedConnections(Collection<Connection> l) {

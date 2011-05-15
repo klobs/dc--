@@ -76,7 +76,7 @@ public class InfoServiceUpdateActiveJoining extends InfoServiceInfo {
 
 		for (int i = 0; i < pc; i++) {
 			rn = Util.stuffBytesIntoLongUnsigned(Util.getBytesByOffset(infopayload, ul, 8));
-			workCycleNumbers.add(new Long(rn));
+			workCycleNumbers.add(Long.valueOf(rn));
 			ul = ul + 8;
 			for (int j = 0; j < 5; j++) {
 				if (infopayload.length >= ul + 2) {

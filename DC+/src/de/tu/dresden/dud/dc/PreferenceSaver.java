@@ -44,7 +44,7 @@ public class PreferenceSaver {
 	private static 	PreferenceSaver ps;
 
 	private 		DocumentBuilder docBuilder = null;
-	private 		String 		prefFile = new String();
+	private 		String 		prefFile;
 	private 		Document	doc	     = null;
 	
 	/**

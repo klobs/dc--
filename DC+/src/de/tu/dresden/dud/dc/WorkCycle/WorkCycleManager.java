@@ -387,11 +387,11 @@ public class WorkCycleManager implements Observer{
 		}
 	}
 	
-	public synchronized void setInfoOffset(int i){
+	public void setInfoOffset(int i){
 		infoOffset = i;
 	}
 
-	public synchronized void setJoinOffset(int j){
+	public void setJoinOffset(int j){
 		joinOffset = j;
 	}
 	
