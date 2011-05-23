@@ -20,7 +20,7 @@ public class Util {
 	 * @param b
 	 * @return concatenation of a and b
 	 */
-	public static synchronized byte[] concatenate(byte[] a, byte[] b){
+	public static byte[] concatenate(byte[] a, byte[] b){
 		// source http://forums.sun.com/thread.jspa?threadID=571260&messageID=2827711
 		byte c[] = new byte[a.length + b.length];
 		

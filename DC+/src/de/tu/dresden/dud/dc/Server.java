@@ -104,7 +104,7 @@ public class Server implements Runnable {
 		this.workCycleManager.addLeavingConnection(c);
 	}
 	
-	public synchronized LinkedList<Connection> getActiveConnections(){
+	public LinkedList<Connection> getActiveConnections(){
 		LinkedList<Connection> c = new LinkedList<Connection>();
 		LinkedList<ParticipantMgmntInfo> p = participantManager.getActivePartMgmtInfo();
 		Iterator<ParticipantMgmntInfo> i = p.iterator();
@@ -168,7 +168,7 @@ public class Server implements Runnable {
 	 * 
 	 * @return Returns the status, whether server is running, or not.
 	 */
-	private synchronized boolean isStopped() {
+	private boolean isStopped() {
         return this.isStopped;
     }
 
@@ -250,10 +250,6 @@ public class Server implements Runnable {
 	 */
 	@Override
 	public void run(){
-        synchronized(this){
-            // this.runningThread = Thread.currentThread(); //can this be usefull?
-        }
-           
         openServerSocket();
         while(! isStopped()){
         	Socket clientSocket;
@@ -303,7 +299,7 @@ public class Server implements Runnable {
 	/**
 	 * stop the server
 	 */
-    public synchronized void stop(){
+    public void stop(){
         this.isStopped = true;
         try {
             this.serverSocket.close();
