@@ -81,6 +81,7 @@ public class WorkCycle extends Observable implements Observer {
 	protected boolean 				started 			= false;
 	protected int 					systemPayloadLength = 0;
 	protected int 					timeout 			= 0;
+	private	  Thread				timeoutController	= null;
 	private   boolean				trap_when_possible  = false;
 
 	// Semaphore
@@ -139,6 +140,10 @@ public class WorkCycle extends Observable implements Observer {
 		switch (currentPhase){
 		
 		case WC_RESERVATION:
+			if (timeoutController != null){
+				timeoutController.interrupt();
+				timeoutController = null;
+			}
 			workCycleReserving.addMessageArrived(c, m);
 			break;
 		case WC_SENDING:
@@ -438,8 +443,10 @@ public class WorkCycle extends Observable implements Observer {
 			workCycleReserving = new WorkCycleReserving(this);
 			workCycleReserving.addObserver(this);
 			
-			Thread w = new Thread(new WorkCycleTimeoutController(workCycleReserving), "WorkCycleTimeoutController-" + workcycleNumber);
-			w.start();
+			timeoutController = new Thread(new WorkCycleTimeoutController(
+					workCycleReserving), "WorkCycleTimeoutController-"
+					+ workcycleNumber);
+			timeoutController.start();
 			// rest gets done as soon as messages arrive...
 			
 		} catch (IOException e) {

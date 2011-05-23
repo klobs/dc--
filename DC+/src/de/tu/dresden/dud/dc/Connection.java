@@ -280,7 +280,7 @@ public class Connection extends Observable implements Runnable {
 	 * This method invokes the {@link KeyManager}'s
 	 * finishUnfinishedKeyExchReqs().
 	 */
-	public synchronized void finishUnfinishedKeyExchReqs(){
+	public void finishUnfinishedKeyExchReqs(){
 		assocKeyManager.finishUnfinishedKeyExchReqs(this);
 	}
 	

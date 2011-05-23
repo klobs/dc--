@@ -25,11 +25,9 @@ public class WorkCycleTimeoutController implements Runnable {
 
 		synchronized (workCycle) {
 
-			if (!workCycle.hasAnyAddMessageArrivedAtServerside()) {
 				log
 						.info("Those lazy participants have not sent one message, yet... :( Trying to sync");
 				workCycle.getAssocWorkCycleManager().tickServerSide();
-			}
 		}
 	}
 }
