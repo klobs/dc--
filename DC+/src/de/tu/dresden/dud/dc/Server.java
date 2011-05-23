@@ -37,7 +37,7 @@ public class Server implements Runnable {
 	// Logging
 	private static Logger log = Logger.getLogger(Server.class);
 
-	private int				symbollength	= 30;
+	private int				symbollength	= 1024;
 	private LinkedList<Connection> 	aspConns		= new LinkedList<Connection>();
 	private InfoService		info			= null;
 	private boolean			isStopped    	= false;
