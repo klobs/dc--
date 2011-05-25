@@ -444,7 +444,7 @@ public class WorkCycle extends Observable implements Observer {
 			workCycleReserving.addObserver(this);
 			
 			timeoutController = new Thread(new WorkCycleTimeoutController(
-					workCycleReserving), "WorkCycleTimeoutController-"
+					workCycleReserving, assocWorkCycleManag.getRealtimeMessageTimeout()), "WorkCycleTimeoutController-"
 					+ workcycleNumber);
 			timeoutController.start();
 			// rest gets done as soon as messages arrive...
