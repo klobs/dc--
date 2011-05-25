@@ -975,7 +975,7 @@ public class Connection extends Observable implements Runnable {
 		    		lastAdded = (ManagementMessageAdded) m;
 		    		
 		    		if (assocWorkCycleManager == null){
-		    			log.error("ADDED message arrived before the first tick. Skipping message.");
+		    			log.warn("ADDED message arrived before the first tick. Skipping message.");
 		    			return;
 		    		}
 		    		
