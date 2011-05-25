@@ -29,6 +29,9 @@ public class KeyGeneratorProbabFailStop extends KeyGeneratorNormalDC {
 	
 	public KeyGeneratorProbabFailStop(WorkCycleManager wcm) {
 		super(wcm);
+		if (wcm.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE){
+			log.warn("Server uses probabilistic fail stop together with variable message lengths. This is highly discurraged, as it might have influences on security of the participants.");
+		}
 		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP;
 	}
 
