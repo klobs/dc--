@@ -386,6 +386,7 @@ public class Connection extends Observable implements Runnable {
 							pmi.getParticipant(),
 							assocWorkCycleManager.getCurrentWorkCycleNumber(),
 							0);
+			log.info("Kicking " + pmi.getParticipant().getId());
 			assocWorkCycleManager.broadcastToActiveParticipants(i);
 			assocWorkCycleManager.handleEarlyQuit(this);
 		}
@@ -680,21 +681,28 @@ public class Connection extends Observable implements Runnable {
 						log.warn(e.toString());
 					}
 				} catch(EOFException e){
-					log.warn("Remote connection ended unexpectedly. Not yet cleaning up that mess... :( ");
-					handleEarlyQuitConnectionClosed();
+					log.warn("Remote connection ended unexpectedly. Trying to clean up that mess... :( ");
+					if (servermode)
+						handleEarlyQuitConnectionClosed();
 					break;
-					
 				} catch (NullPointerException e) {
 					log.error("Experiencing problems with the connection: ");
 					log.error(e.toString());
+					if (servermode)
+						handleEarlyQuitConnectionUnresponsive();
+					break;
 				} catch (IndexOutOfBoundsException e) {
 					log.error(e.toString());
+					if (servermode)
+						handleEarlyQuitConnectionUnresponsive();
+					break;
 				} catch (IOException e) {
 					log.error(e.toString());
 					log.info("Remote part " + this.toString() + " seems to be disappeared");
-					handleEarlyQuitConnectionClosed();
+					if (servermode)
+						handleEarlyQuitConnectionUnresponsive();
 					break;
-				}
+				} 
 			}
 		} catch (IOException e) {
 			log.error("IOExcheption caught");
@@ -730,9 +738,12 @@ public class Connection extends Observable implements Runnable {
 			output.write(r, 0, r.length);
 			// output.flush();
 		} catch (IOException e) {
+			stopped = true;
+			if(servermode){
+				handleEarlyQuitConnectionClosed();
+			}
 			log.error("Output error: " + e.toString());
 			log.error("Closing Connection");
-			stopped = true;
 		}
 	}
 
