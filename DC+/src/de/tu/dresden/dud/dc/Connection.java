@@ -16,8 +16,6 @@ import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoEarlyQuitServiceNotification;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
@@ -721,13 +719,6 @@ public class Connection extends Observable implements Runnable {
 					}
 				} catch (IOException e) {
 				}
-
-			if (server != null) {
-				synchronized (server.getConnections()) {
-					server.getAspirants().remove(clientSocket);
-					server.getConnections().remove(clientSocket);
-				}
-			}
 		}
 
 	}
