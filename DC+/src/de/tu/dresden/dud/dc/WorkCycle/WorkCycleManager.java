@@ -43,6 +43,7 @@ public class WorkCycleManager implements Observer{
 	public static final short EARLY_QUIT_CONTINUE_WC 	= 1;
 	public static final short EARLY_QUIT_RESTART_WC 	= 2;
 	
+	public static final short MIN_DC_PARTICIPANTS		= 2;
 	
 	private KeyGenerator		assocKeyGenerator	= null;
 	private ParticipantManager	assocParticipantManager = null;
@@ -444,18 +445,23 @@ public class WorkCycleManager implements Observer{
 	 * 
 	 * This method also sends notification about the new work cycle start to all active participants.
 	 */
-	public synchronized void tickServerSide(){
+	public synchronized void tickServerSide() {
 		if (getCurrentWorkCycle().workCycleHasStarted()){
-			// the current work cycle has already started, so it seems that we are
-			// in a hot system.
+			// the current work cycle has already started, so it seems that we
+			// are in a hot system.
 			setupNextWorkCycle();
+		}
+		
+		if ( getCurrentWorkCycle().getExpectedConnections().size() >= MIN_DC_PARTICIPANTS) {
 			setJoinOffset(3);
 			setInfoOffset(1);
+			getCurrentWorkCycle().performDCWorkCycleOnServerSide();
+			return;
+		} else if (getCurrentWorkCycle().getExpectedConnections().size() < MIN_DC_PARTICIPANTS) {
+			setJoinOffset(0);
+			setInfoOffset(0);
+			return;
 		} 
-		
-		// it seems to be the first work cycle, or we had 
-		// interruptions in between
-		getCurrentWorkCycle().performDCWorkCycleOnServerSide();
 	}
 	
 	@Override
@@ -470,15 +476,8 @@ public class WorkCycleManager implements Observer{
 					if (servermode) {
 						int p = ((WorkCycle) o).getConnections().size();
 
-						if ((p > 1) && !((WorkCycle) o).workCycleHasStarted()) { // This
-																					// 1
-																					// must
-																					// become
-																					// a
-																					// 2
-																					// in
-																					// future
-							tickServerSide(); // Start the work cycle;
+						if ((p == MIN_DC_PARTICIPANTS) && !((WorkCycle) o).workCycleHasStarted()) { 
+							tickServerSide();
 						}
 					}
 					break;
