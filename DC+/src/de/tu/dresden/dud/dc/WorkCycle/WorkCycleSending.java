@@ -116,10 +116,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			assocWorkCycle.checkWhetherReservationIsFinishedOnServerSide(m);
 
 		try {
-			Iterator<Connection> i = getBroadcastConnections().iterator();
-			while (i.hasNext()) {
-				i.next().sendMessage(m.getMessage());
-			}
+				Iterator<Connection> i = getBroadcastConnections().iterator();
+				while (i.hasNext()) {
+					i.next().sendMessage(m.getMessage());
+				}
 		} catch (IOException o) {
 			log.error(o.toString());
 		}
