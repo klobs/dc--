@@ -16,6 +16,8 @@ import java.util.Observable;
 
 import org.apache.log4j.Logger;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoEarlyQuitServiceNotification;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoKeyExchangeCommit;
@@ -376,19 +378,22 @@ public class Connection extends Observable implements Runnable {
 	}
 
 	private void handleEarlyQuitConnectionClosed(){
-		ParticipantMgmntInfo pmi = assocParticipantManager.getParticipantMgmntInfoFor(this);
-		
-		assocParticipantManager.removeParticipant(pmi);
-		
-		if(pmi.isActive()){
-			InfoServiceInfoEarlyQuitServiceNotification i = InfoServiceInfoEarlyQuitServiceNotification
-					.infoServiceInfoEarlyQuitServiceNotificationFor(
-							pmi.getParticipant(),
-							assocWorkCycleManager.getCurrentWorkCycleNumber(),
-							0);
-			log.info("Kicking " + pmi.getParticipant().getId());
-			assocWorkCycleManager.broadcastToActiveParticipants(i);
-			assocWorkCycleManager.handleEarlyQuit(this);
+		synchronized (assocWorkCycleManager) {
+			ParticipantMgmntInfo pmi = assocParticipantManager
+					.getParticipantMgmntInfoFor(this);
+			if (pmi != null) {
+				assocParticipantManager.removeParticipant(pmi);
+
+				if (pmi.isActive()) {
+					InfoServiceInfoEarlyQuitServiceNotification i = InfoServiceInfoEarlyQuitServiceNotification
+							.infoServiceInfoEarlyQuitServiceNotificationFor(pmi
+									.getParticipant(), assocWorkCycleManager
+									.getCurrentWorkCycleNumber(), 0);
+					log.info("Kicking " + pmi.getParticipant().getId());
+					assocWorkCycleManager.broadcastToActiveParticipants(i);
+					assocWorkCycleManager.handleEarlyQuit(this);
+				}
+			}
 		}
 	}
 	
@@ -708,15 +713,20 @@ public class Connection extends Observable implements Runnable {
 			log.error("IOExcheption caught");
 			e.printStackTrace();
 		} finally {
+
 			if (clientSocket != null)
 				try {
-					clientSocket.close();
+					synchronized (clientSocket) {
+						clientSocket.close();
+					}
 				} catch (IOException e) {
 				}
 
 			if (server != null) {
-				server.getAspirants().remove(clientSocket);
-				server.getConnections().remove(clientSocket);
+				synchronized (server.getConnections()) {
+					server.getAspirants().remove(clientSocket);
+					server.getConnections().remove(clientSocket);
+				}
 			}
 		}
 
