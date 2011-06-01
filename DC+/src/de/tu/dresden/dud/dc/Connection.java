@@ -69,7 +69,9 @@ public class Connection extends Observable implements Runnable {
 	/**
 	 * No handling for lost / broken connections
 	 */
-	public static final short HANDLING_EXPLODE = 0; 
+	public static final short HANDLING_EXPLODE = 0;
+	
+	public static final short CONNECTION_CRASHED = 1;
 	
 	// Modes for the connection.
 	
@@ -376,23 +378,26 @@ public class Connection extends Observable implements Runnable {
 	}
 
 	private void handleEarlyQuitConnectionClosed(){
+		stopped = true;
 		synchronized (assocWorkCycleManager) {
 			ParticipantMgmntInfo pmi = assocParticipantManager
 					.getParticipantMgmntInfoFor(this);
 			if (pmi != null) {
 				assocParticipantManager.removeParticipant(pmi);
-
-				if (pmi.isActive()) {
+				
+				if (servermode && pmi.isActive()) {
 					InfoServiceInfoEarlyQuitServiceNotification i = InfoServiceInfoEarlyQuitServiceNotification
 							.infoServiceInfoEarlyQuitServiceNotificationFor(pmi
 									.getParticipant(), assocWorkCycleManager
 									.getCurrentWorkCycleNumber(), 0);
 					log.info("Kicking " + pmi.getParticipant().getId());
 					assocWorkCycleManager.broadcastToActiveParticipants(i);
-					assocWorkCycleManager.handleEarlyQuit(this);
+					assocWorkCycleManager.handleEarlyQuitOnServerside(this);
 				}
 			}
 		}
+		setChanged();
+		notifyObservers(CONNECTION_CRASHED);
 	}
 	
 	public void handleEarlyQuitConnectionUnresponsive(){
@@ -685,25 +690,21 @@ public class Connection extends Observable implements Runnable {
 					}
 				} catch(EOFException e){
 					log.warn("Remote connection ended unexpectedly. Trying to clean up that mess... :( ");
-					if (servermode)
-						handleEarlyQuitConnectionClosed();
+					handleEarlyQuitConnectionClosed();
 					break;
 				} catch (NullPointerException e) {
 					log.error("Experiencing problems with the connection: ");
 					log.error(e.toString());
-					if (servermode)
-						handleEarlyQuitConnectionUnresponsive();
+					handleEarlyQuitConnectionUnresponsive();
 					break;
 				} catch (IndexOutOfBoundsException e) {
 					log.error(e.toString());
-					if (servermode)
-						handleEarlyQuitConnectionUnresponsive();
+					handleEarlyQuitConnectionUnresponsive();
 					break;
 				} catch (IOException e) {
 					log.error(e.toString());
 					log.info("Remote part " + this.toString() + " seems to be disappeared");
-					if (servermode)
-						handleEarlyQuitConnectionUnresponsive();
+					handleEarlyQuitConnectionUnresponsive();
 					break;
 				} 
 			}
@@ -740,9 +741,7 @@ public class Connection extends Observable implements Runnable {
 			// output.flush();
 		} catch (IOException e) {
 			stopped = true;
-			if(servermode){
-				handleEarlyQuitConnectionClosed();
-			}
+			handleEarlyQuitConnectionClosed();
 			log.error("Output error: " + e.toString());
 			log.error("Closing Connection");
 		}

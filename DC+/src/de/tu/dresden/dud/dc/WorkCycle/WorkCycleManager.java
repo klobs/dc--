@@ -313,7 +313,7 @@ public class WorkCycleManager implements Observer{
 		return tickPause;
 	}
 	
-	public void handleEarlyQuit(Connection c){
+	public void handleEarlyQuitOnServerside(Connection c){
 		if (getEarlyQuitReaction() == WorkCycleManager.EARLY_QUIT_MUST_NOT_HAPPEN)
 			log.error("Participant left, although this behaviour is not allowed! Let's all panic!!11");
 

@@ -107,6 +107,8 @@ public class Participant extends Observable implements Observer {
 			c.setParticipant(this);
 			c.setAssocKeyManager(keyManager);
 			c.addObserver(this);
+			if(connections.size() != 0)
+				connections.clear();
 			connections.add(c);
 			
 			new Thread(c, "connectionParticipant_"+ id).start();
@@ -221,6 +223,11 @@ public class Participant extends Observable implements Observer {
     	if (o instanceof Connection && a instanceof ManagementMessage){
     		setChanged();
     		notifyObservers(a);
+    	}
+    	else if (o instanceof Connection
+				&& ((Short) a).shortValue() == Connection.CONNECTION_CRASHED) {
+    		setChanged();
+    		notifyObservers(new IOException("Connection Crashed"));
     	}
     }
 }
