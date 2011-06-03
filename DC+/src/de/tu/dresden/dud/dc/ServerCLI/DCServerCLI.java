@@ -1,5 +1,9 @@
 package de.tu.dresden.dud.dc.ServerCLI;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import de.tu.dresden.dud.dc.Connection;
 import de.tu.dresden.dud.dc.KeyExchangeManager;
 import de.tu.dresden.dud.dc.Server;
@@ -34,7 +38,12 @@ public class DCServerCLI {
 	    short 	individualMessageLengths	= WorkCycleManager.MESSAGE_LENGTHS_VARIABLE;
 				
 	    Server  server = null;
+	    Thread  t = null;
 		
+	    InputStreamReader 	input 	= new InputStreamReader(System.in);
+	    BufferedReader 		reader 	= new BufferedReader(input); 
+	    String 				cmd		= null;
+	    
 		Options options = new Options();
 		
 		options.addOption( "v", "verbose", 	false, "Increase verbosity" );
@@ -77,90 +86,127 @@ public class DCServerCLI {
 		GnuParser parser = new GnuParser();
 		
 		try {
-			CommandLine cmd = parser.parse( options, args);
+			CommandLine startArgs = parser.parse( options, args);
 
 			// there are unknown options
-			if (cmd.getArgList().size() != 0){
+			if (startArgs.getArgList().size() != 0){
 				HelpFormatter formatter = new HelpFormatter();
 				formatter.printHelp( "dcServerCLI", options );
-				return;
+				System.exit(-1);
 			}
 		
 			// just take the default options
-			if (cmd.getOptions().length == 0){
+			if (startArgs.getOptions().length == 0){
 				log.info("Starting the server using the default options. use --help to see available options");
 			} else {
 				
 				// verbosity level
-				if(cmd.hasOption("v")){
+				if(startArgs.hasOption("v")){
 					Logger.getRootLogger().setLevel(Level.INFO);
 					log.info("Using INFO verbosity");
 					
 				}
-				if(cmd.hasOption("d")){
+				if(startArgs.hasOption("d")){
 					Logger.getRootLogger().setLevel(Level.DEBUG);
 					log.info("Using DEBUG verbosity");
 				}
 				
 				// fixed message length
-				if(cmd.hasOption("f")){
+				if(startArgs.hasOption("f")){
 					individualMessageLengths = WorkCycleManager.MESSAGE_LENGTHS_FIXED;
 					log.info("Starting Server with fixed sized messages");
 				}
 				
-				if(cmd.hasOption("h")){
+				if(startArgs.hasOption("h")){
 					HelpFormatter formatter = new HelpFormatter();
 					formatter.printHelp( "dcServerCLI", options );
-					return;
+					System.exit(-1);
 				}
 				
 				// the port
-				if(cmd.hasOption("p")){
-					listenPort = Integer.valueOf(cmd.getOptionValue("p")).intValue();
-					log.info("Listening on port " + cmd.getOptionValue("p"));
+				if(startArgs.hasOption("p")){
+					listenPort = Integer.valueOf(startArgs.getOptionValue("p")).intValue();
+					log.info("Listening on port " + startArgs.getOptionValue("p"));
 				}
 				
 				// key generation
-				if(cmd.hasOption("g")){
-					if (cmd.getOptionValue("g").equalsIgnoreCase("null")){
+				if(startArgs.hasOption("g")){
+					if (startArgs.getOptionValue("g").equalsIgnoreCase("null")){
 						log.info("Using NULL-keys");
 						keyGenerationMethod = KeyGenerator.KGMETHOD_NULL;
-					} else if (cmd.getOptionValue("g").equalsIgnoreCase("normalDC")){
+					} else if (startArgs.getOptionValue("g").equalsIgnoreCase("normalDC")){
 						log.info("Using normal DC-keys");
 						keyGenerationMethod = KeyGenerator.KGMETHOD_DC;
-					} else if (cmd.getOptionValue("g").equalsIgnoreCase("workCycleFailStop")){
+					} else if (startArgs.getOptionValue("g").equalsIgnoreCase("workCycleFailStop")){
 						log.info("Using Fail-Stop-Keys within work cycles");
 						keyGenerationMethod = KeyGenerator.KGMETHOD_DC_FAIL_STOP_WORK_CYCLE;
-					} else if (cmd.getOptionValue("g").equalsIgnoreCase("probabilisticWorkCycleFailStop")){
+					} else if (startArgs.getOptionValue("g").equalsIgnoreCase("probabilisticWorkCycleFailStop")){
 						log.info("Using Probabilistic-Fail-Stop-Keys within work cycles");
-						if (!cmd.hasOption("f"))
+						if (!startArgs.hasOption("f"))
 							log.warn("Warning! It is highly discurraged to use this key generation method with variable sized messages. Considder using -f.");
 						keyGenerationMethod = KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP;
 					} else {
-						log.error("Exit. Reason: Unknown key generation method:" + cmd.getOptionValue("g"));
-						return;
+						log.error("Exit. Reason: Unknown key generation method:" + startArgs.getOptionValue("g"));
+						System.exit(-1);
 					}
 				}
 
 				// key exchange
-				if (cmd.hasOption("e")) {
-					if (cmd.getOptionValue("e").equalsIgnoreCase("manual")) {
+				if (startArgs.hasOption("e")) {
+					if (startArgs.getOptionValue("e").equalsIgnoreCase("manual")) {
 						log.info("Keys have to be exchanged manually");
 						keyExchangeMethod = KeyExchangeManager.KEX_MANUAL;
-					} else if (cmd.getOptionValue("e").equalsIgnoreCase(
+					} else if (startArgs.getOptionValue("e").equalsIgnoreCase(
 							"fullyautomatic")) {
 						log.info("Keys are exchanged fully automatic");
 						keyExchangeMethod = KeyExchangeManager.KEX_FULLY_AUTOMATIC;
 					} else {
 						log.error("Exit. Reason: Unknown key exchange method:"
-										+ cmd.getOptionValue("e"));
-						return;
+										+ startArgs.getOptionValue("e"));
+						System.exit(-1);
 					}
 				}
 			}
 			
 			server = new Server(listenPort, keyGenerationMethod,keyExchangeMethod,individualMessageLengths);
-			new Thread(server, "Server").start();
+			t = new Thread(server, "Server");
+			t.start();
+			
+			while(true){
+				try {
+					cmd = reader.readLine();
+					
+					if (cmd.equalsIgnoreCase("")){
+						
+					}
+					else if (cmd.equalsIgnoreCase("h") || cmd.equalsIgnoreCase("help")){
+						System.out.println("da :\t Display active participants");
+						System.out.println("dp :\t Display all participants");
+						System.out.println("dwc :\t Display current work cycle number");
+						System.out.println("h, help:\t Show this help");
+						System.out.println("q, quit:\t Quit the service");
+					}
+
+					else if (cmd.equalsIgnoreCase("q") || cmd.equalsIgnoreCase("quit")){
+						log.info("Good bye!");
+						System.exit(0);
+					}
+
+					else if (cmd.equalsIgnoreCase("da") || cmd.equalsIgnoreCase("dp")){
+						log.warn("not implemented yet!");
+					}
+					else if (cmd.equalsIgnoreCase("dwc")){
+						log.info(String.valueOf(server.getWorkCycleManager().getCurrentWorkCycleNumber()));
+					}
+					else {
+						log.warn("unknown command!");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(-1);
+				}
+			}
+			
 		
 		} catch (ParseException e) {
 			HelpFormatter formatter = new HelpFormatter();
