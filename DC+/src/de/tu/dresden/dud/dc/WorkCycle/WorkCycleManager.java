@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -312,7 +313,7 @@ public class WorkCycleManager implements Observer{
 		return tickPause;
 	}
 	
-	public void handleEarlyQuit(Connection c){
+	public void handleEarlyQuitOnServerside(Connection c){
 		if (getEarlyQuitReaction() == WorkCycleManager.EARLY_QUIT_MUST_NOT_HAPPEN)
 			log.error("Participant left, although this behaviour is not allowed! Let's all panic!!11");
 
@@ -347,7 +348,7 @@ public class WorkCycleManager implements Observer{
 	 * Delete the old work cycle and make the next work cycle the new current one
 	 */
 	private synchronized void setupNextWorkCycle(){
-		LinkedHashSet<Connection> o = null;
+		Set<Connection> o = null;
 		WorkCycle c = getCurrentWorkCycle();
 		WorkCycle n = getNextWorkCycle();
 		

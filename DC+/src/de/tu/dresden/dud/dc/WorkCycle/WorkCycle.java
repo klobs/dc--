@@ -6,10 +6,12 @@ package de.tu.dresden.dud.dc.WorkCycle;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
@@ -57,7 +59,7 @@ public class WorkCycle extends Observable implements Observer {
 	protected LinkedList<ManagementMessageAdded> addedMessages = new LinkedList<ManagementMessageAdded>();
 	private   byte[] addedMessagesBin = new byte[0];
 	
-	protected LinkedHashSet<Connection> 	broadcastConnections = new LinkedHashSet<Connection>();  // Those connections will receive messages as a broadcast:
+	protected Set<Connection> 				broadcastConnections = Collections.synchronizedSet(new LinkedHashSet<Connection>());  // Those connections will receive messages as a broadcast:
 	protected LinkedHashSet<Connection> 	confirmedConnections = new LinkedHashSet<Connection>();  // Connections  that  have  actually sent  packages  during  that  work cycle.
 	protected LinkedHashSet<Connection> 	expectedConnections = new LinkedHashSet<Connection>();   //Connections that are expected to send packages during that work cycle.
 	private   LinkedHashSet<Connection> 	notifyJoinConnections = new LinkedHashSet<Connection>(); // Connections  that  will  join in  a  few  work cycles
@@ -247,7 +249,7 @@ public class WorkCycle extends Observable implements Observer {
 		return assocWorkCycleManag.getPayloadList().getFirst();
 	}
 	
-	public LinkedHashSet<Connection> getBroadcastConnections(){
+	public Set<Connection> getBroadcastConnections(){
 		return this.broadcastConnections;
 	}
 	
@@ -444,7 +446,7 @@ public class WorkCycle extends Observable implements Observer {
 			workCycleReserving.addObserver(this);
 			
 			timeoutController = new Thread(new WorkCycleTimeoutController(
-					workCycleReserving), "WorkCycleTimeoutController-"
+					workCycleReserving, assocWorkCycleManag.getRealtimeMessageTimeout()), "WorkCycleTimeoutController-"
 					+ workcycleNumber);
 			timeoutController.start();
 			// rest gets done as soon as messages arrive...
@@ -458,7 +460,7 @@ public class WorkCycle extends Observable implements Observer {
 		return started;
 	}
 
-	public void setBroadcastConnections(LinkedHashSet<Connection> l ){
+	public void setBroadcastConnections(Set<Connection> l ){
 		this.broadcastConnections = l;
 	}
 	

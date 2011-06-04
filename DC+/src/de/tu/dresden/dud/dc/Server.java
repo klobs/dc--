@@ -61,7 +61,7 @@ public class Server implements Runnable {
 				keyGenerationMethod,
 				0 /*Better: Long.MIN_VALUE */,
 				symbollength,
-				WorkCycleManager.MESSAGE_LENGTHS_VARIABLE,
+				individualMessageLengths,
 				WorkCycleManager.EARLY_QUIT_RESTART_WC);
 		workCycleManager.setServer(this);
 		workCycleManager.setAssocParticipantManager(participantManager);
