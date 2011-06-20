@@ -25,9 +25,9 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 
 	private LinkedList<Participant> earlyLeavingParticipant = new LinkedList<Participant>();
 	private long workCycle = Long.MIN_VALUE;
-	private long roundNumber = Long.MIN_VALUE;
+	private int roundNumber = Short.MIN_VALUE;
 	
-	public InfoServiceInfoEarlyQuitServiceNotification(LinkedList<Participant> apl, long workCycleNumber, long roundNumber) {
+	public InfoServiceInfoEarlyQuitServiceNotification(LinkedList<Participant> apl, long workCycleNumber, int roundNumber) {
 		ArrayList<byte[]> b = new ArrayList<byte[]>();
 		Iterator<Participant> ip = apl.iterator();
 		Participant p = null;
@@ -38,7 +38,7 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 		this.roundNumber = roundNumber;
 		
 		byte[] wcn = Util.stuffLongIntoLong(workCycleNumber);
-		byte[] rn  = Util.stuffLongIntoLong(roundNumber);
+		byte[] rn  = Util.stuffIntIntoShort(roundNumber);
 		byte[] ac  = Util.stuffIntIntoShort(apl.size());
 
 		b.add(Util
@@ -70,18 +70,18 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 		info = infopayload;
 		
 		int pc = 0;
-		int ul = 20;
+		int ul = 14;
 
 		ArrayList<byte[]> p = new ArrayList<byte[]>(5);
 		
-		if (infopayload.length < 20) {
+		if (infopayload.length < 12) {
 			log.warn("Payload does not correspond to the required min size");
 		}
 		
 		workCycle 	= Util.stuffBytesIntoLong(Util.getBytesByOffset(infopayload, 2, 8));
-		roundNumber = Util.stuffBytesIntoLong(Util.getBytesByOffset(infopayload, 10, 8));
+		roundNumber = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, 10, 2));
 		
-		pc = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, 18, 2));
+		pc = Util.stuffBytesIntoUInt(Util.getBytesByOffset(infopayload, 12, 2));
 
 		for (int i = 0; i < pc; i++) {
 			for (int j = 0; j < 5; j++) {
@@ -104,7 +104,7 @@ public class InfoServiceInfoEarlyQuitServiceNotification extends InfoServiceInfo
 		}
 	}
 	
-	public static InfoServiceInfoEarlyQuitServiceNotification infoServiceInfoEarlyQuitServiceNotificationFor(Participant p, long workCycleNumber, long roundNumber){
+	public static InfoServiceInfoEarlyQuitServiceNotification infoServiceInfoEarlyQuitServiceNotificationFor(Participant p, long workCycleNumber, int roundNumber){
 		LinkedList<Participant> a = new LinkedList<Participant>();
 		a.add(p);
 		return new InfoServiceInfoEarlyQuitServiceNotification(a, workCycleNumber, roundNumber);
