@@ -60,7 +60,7 @@ public class Participant extends Observable implements Observer {
 	
 	/**
 	 * Constructor for a new participant.
-	 * Use this constructor, if a new DSA Keypair have to be generated.
+	 * Use this constructor, if a new DSA Keypair has to be generated.
 	 * 
 	 * @param u
 	 */

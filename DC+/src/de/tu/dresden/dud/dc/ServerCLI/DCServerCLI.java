@@ -30,7 +30,7 @@ public class DCServerCLI {
 	    BasicConfigurator.configure();
 		
 	    Logger.getRootLogger().setLevel(Level.WARN);
-		Logger log = Logger.getLogger(Server.class);
+		Logger log = Logger.getLogger(DCServerCLI.class);
 
 	    int 	listenPort					= Connection.DEFAULTPORT;
 	    short 	keyGenerationMethod			= KeyGenerator.KGMETHOD_PROBAB_FAIL_STOP; 
