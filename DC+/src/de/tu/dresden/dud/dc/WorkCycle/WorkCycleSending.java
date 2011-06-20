@@ -79,8 +79,10 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		if (relativeRound == m.getRoundNumber()
 				&& !Arrays.equals(m.getPayload(), payloadSend)) {
 			log.error("Expected and actual received payloads are not equal! Something is messing around with us!");
+			successful = false;
 		}
-		successful = true;
+		else 
+			successful = true;
 	}
 
 	protected void addUp() {
