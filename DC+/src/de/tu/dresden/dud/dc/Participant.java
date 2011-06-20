@@ -31,7 +31,7 @@ public class Participant extends Observable implements Observer {
 	private InfoService				infoService	= null;
 	private boolean					isStopped	= false;
 	private KeyManager				keyManager	= null;
-	private boolean					manualSetup = false;
+	private boolean					manualSetup = true;
 	
 	private byte[]					dh			= null;
 	private byte[]					dhs			= null;
