@@ -197,6 +197,10 @@ public class Participant extends Observable implements Observer {
 			c.quitService(this);
 	}
 	
+	public void setManualSetup(boolean m){
+		manualSetup = m;
+	}
+	
 	public void setId(String id) {
 		this.id = id;
 	}
