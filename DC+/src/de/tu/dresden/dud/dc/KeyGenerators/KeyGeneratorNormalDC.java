@@ -2,6 +2,8 @@ package de.tu.dresden.dud.dc.KeyGenerators;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,6 +16,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
@@ -37,6 +40,8 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 	
 	public KeyGeneratorNormalDC(WorkCycleManager wcm) {
 		super(wcm);
+		Security.addProvider(new BouncyCastleProvider());
+
 		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_DC;
 	}
 
@@ -60,7 +65,7 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 					Util.stuffIntIntoShort(rn));
 
 			s = new SecretKeySpec(sharedSecret, 0, 32, "AES");
-			c = Cipher.getInstance("AES/ECB/NoPadding");
+			c = Cipher.getInstance("AES/ECB/NoPadding", "BC");
 			c.init(Cipher.ENCRYPT_MODE, s);
 
 			byte[] prern = nonce;
@@ -83,6 +88,10 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 			e.toString();
 			e.printStackTrace();
 		} catch (BadPaddingException e) {
+			e.toString();
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			log.error("This is not the provider you are looking for");
 			e.toString();
 			e.printStackTrace();
 		}

@@ -15,6 +15,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
@@ -22,6 +23,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoActiveParticipantList;
 import de.tu.dresden.dud.dc.InfoService.InfoServiceInfoPassiveParticipantList;
@@ -91,13 +93,15 @@ public class KeyManager {
 	public KeyManager(){
 		try {
 			
+			Security.addProvider(new BouncyCastleProvider());
+			
 			// Generate DSA public/private key-pair
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
 			SecureRandom r1 = SecureRandom.getInstance("SHA1PRNG", "SUN");
 		
 			keyGen.initialize(1024, r1);
 		
-			dsa = Signature.getInstance("SHA1withDSA", "SUN"); 
+			dsa = Signature.getInstance("SHA1withDSA", "BC"); 
 			keyPair = keyGen.generateKeyPair();
 			
 			dsa.initSign(keyPair.getPrivate());
@@ -119,7 +123,7 @@ public class KeyManager {
         	// setup the DSA Part
         	// look at http://download.oracle.com/javase/tutorial/security/apisign/vstep2.html for an explanation
         	X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(dsaPublicKey);
-			KeyFactory keyFactory = KeyFactory.getInstance("DSA", "SUN");
+			KeyFactory keyFactory = KeyFactory.getInstance("DSA", "BC");
 
 	        PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
 			
@@ -259,13 +263,16 @@ public class KeyManager {
 		if (keyPair == null) return null;
 		MessageDigest md;
 		try {
-			md = MessageDigest.getInstance( "SHA1" );
+			md = MessageDigest.getInstance( "SHA1", "BC" );
 			md.update(keyPair.getPublic().getEncoded());
 
 			byte[] digest = md.digest();
 			
 			return Util.convertToHex(digest);
 		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.toString();
 			e.printStackTrace();
 		}
 		return null;
@@ -287,11 +294,11 @@ public class KeyManager {
 		
 			X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(
 					p.getDSAPublicSignature());
-			KeyFactory keyFactory = KeyFactory.getInstance("DSA", "SUN");
+			KeyFactory keyFactory = KeyFactory.getInstance("DSA", "BC");
 
 	        PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
 
-	        Signature sig = Signature.getInstance("SHA1withDSA", "SUN");
+	        Signature sig = Signature.getInstance("SHA1withDSA", "BC");
 
 	        sig.initVerify(pubKey);
 
