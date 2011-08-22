@@ -1,7 +1,7 @@
 What is this?
 -------------
 
-This is piece of code implements a protocol for a [Dining Cryptographers](http://en.wikipedia.org/wiki/Dining_cryptographers_problem).
+This is piece of code implements a protocol for a [Dining Cryptographers Network](http://en.wikipedia.org/wiki/Dining_cryptographers_problem).
 
 It offers a server that sums up and participants.
 
