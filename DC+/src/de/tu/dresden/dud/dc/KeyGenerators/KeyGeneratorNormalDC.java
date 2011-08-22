@@ -1,22 +1,17 @@
 package de.tu.dresden.dud.dc.KeyGenerators;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.crypto.BlockCipher;
+import org.bouncycastle.crypto.BufferedBlockCipher;
+import org.bouncycastle.crypto.DataLengthException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.params.KeyParameter;
 
 import de.tu.dresden.dud.dc.ParticipantMgmntInfo;
 import de.tu.dresden.dud.dc.Util;
@@ -40,7 +35,6 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 	
 	public KeyGeneratorNormalDC(WorkCycleManager wcm) {
 		super(wcm);
-		Security.addProvider(new BouncyCastleProvider());
 
 		actualKeyGeneratingMethod = KeyGenerator.KGMETHOD_DC;
 	}
@@ -55,43 +49,30 @@ public class KeyGeneratorNormalDC extends KeyGenerator {
 
 	protected synchronized byte[] calcKeysAESPRNG(final long wcn, final int rn,
 			final byte[] sharedSecret, final byte[] nonce, final int partn) {
-		Cipher c = null;
-		byte[] cr = new byte[0];
-		SecretKeySpec s = null;
+		BufferedBlockCipher cipher = null;
+		BlockCipher engine = new AESEngine();
+		byte[] cr = new byte[16];
+
+		byte[] trn = Util.concatenate(Util.stuffLongIntoLong(wcn),
+				Util.stuffIntIntoShort(rn));
+
+		cipher = new BufferedBlockCipher(engine);
+		cipher.init(true, new KeyParameter(sharedSecret));
+
+		byte[] prern = nonce;
+
+		prern = Util.concatenate(prern, trn);
+		prern = Util.concatenate(prern, Util.stuffIntIntoShort(partn));
 
 		try {
-
-			byte[] trn = Util.concatenate(Util.stuffLongIntoLong(wcn),
-					Util.stuffIntIntoShort(rn));
-
-			s = new SecretKeySpec(sharedSecret, 0, 32, "AES");
-			c = Cipher.getInstance("AES/ECB/NoPadding", "BC");
-			c.init(Cipher.ENCRYPT_MODE, s);
-
-			byte[] prern = nonce;
-
-			prern = Util.concatenate(prern, trn);
-			prern = Util.concatenate(prern, Util.stuffIntIntoShort(partn));
-
-			cr = Util.concatenate(cr, c.doFinal(prern));
-			
-		} catch (NoSuchAlgorithmException e) {
+			cipher.doFinal(cr, cipher.processBytes(prern, 0, prern.length, cr, 0));
+		} catch (DataLengthException e) {
 			e.toString();
 			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
+		} catch (IllegalStateException e) {
 			e.toString();
 			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.toString();
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.toString();
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.toString();
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			log.error("This is not the provider you are looking for");
+		} catch (InvalidCipherTextException e) {
 			e.toString();
 			e.printStackTrace();
 		}
