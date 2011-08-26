@@ -358,6 +358,15 @@ public class Connection extends Observable implements Runnable {
 		return KeyExchangeManager.KEX_MANUAL;
 	}
 	
+	public int getMinimumAnonymitySetSize(){
+		if (assocParticipantManager == null) return -1;
+		
+		if(getKeyExchangeMethod() == KeyExchangeManager.KEX_FULLY_AUTOMATIC){
+			return assocParticipantManager.getActivePartMgmtInfo().size();
+		} else 
+			return assocParticipantManager.getActivePartExtKeysMgmtInfo().size();
+	}
+	
 	/**
 	 * Return the current mode of the connection.
 	 * 
