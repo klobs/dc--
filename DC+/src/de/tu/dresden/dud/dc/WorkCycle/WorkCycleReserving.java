@@ -204,7 +204,8 @@ public class WorkCycleReserving extends WorkCycleSending {
 			// Do we want to send in the next reservation round?
 			finished = (expectedRounds == 0);
 		}
-		
+			
+		reservationRoundOffset = rc;
 		expectedRounds = actualRoundsCalculated.size();
 		
 		if (collisiondetected == true) relativeRound = -1;

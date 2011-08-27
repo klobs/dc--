@@ -77,6 +77,7 @@ public class WorkCycle extends Observable implements Observer {
 	protected LinkedList<Integer>	individualPayloadLengths	= new LinkedList<Integer>();
 	protected int 					relativeRound 	= -1;
 	private	  ServerReservationChecker reservationChecker = null;
+	protected int					reservationRoundOffset = 0;
 	protected long 					workcycleNumber 		= 0; // Long.MIN_VALUE;
 	protected WorkCycleReserving	workCycleReserving		= null;
 	protected WorkCycleSending		workCycleSending 		= null;
@@ -220,6 +221,7 @@ public class WorkCycle extends Observable implements Observer {
 		if (reservationChecker.hasReservationFinished(m)){
 			
 			expectedRounds = reservationChecker.getExpectedRounds();
+			reservationRoundOffset = reservationChecker.getReservationRoundOffset();
 			
 			if (assocWorkCycleManag.getMessageLengthMode() == WorkCycleManager.MESSAGE_LENGTHS_VARIABLE)
 				individualPayloadLengths = reservationChecker.getIndividualPayloadLengths();
@@ -335,6 +337,10 @@ public class WorkCycle extends Observable implements Observer {
 		return relativeRound;
 	}
 
+	public int getReservationRoundOffset(){
+		return reservationRoundOffset;
+	}
+	
 	/**
 	 * @return the work cycle number
 	 */
@@ -486,8 +492,9 @@ public class WorkCycle extends Observable implements Observer {
 			if (((Integer) arg).intValue() == WorkCycle.WC_SENDING) {
 
 				// Suck out those information
-				expectedRounds = ((WorkCycleReserving) o).getExpectedRounds();
-				relativeRound = ((WorkCycleReserving) o).getRelativeRound();
+				reservationRoundOffset 	= ((WorkCycleReserving) o).getReservationRoundOffset();
+				expectedRounds 			= ((WorkCycleReserving) o).getExpectedRounds();
+				relativeRound 			= ((WorkCycleReserving) o).getRelativeRound();
 				
 				if (expectedRounds <= 0){
 					synchronized (assocWorkCycleManag) {

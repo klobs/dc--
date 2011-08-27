@@ -6,6 +6,8 @@ package de.tu.dresden.dud.dc.WorkCycle;
 
 import java.util.LinkedList;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 import de.tu.dresden.dud.dc.Server;
 import de.tu.dresden.dud.dc.ManagementMessage.ManagementMessageAdded;
 
@@ -93,4 +95,7 @@ public class ServerReservationChecker {
 		return individualMessageLengths;
 	}
 	
+	public int getReservationRoundOffset(){
+		return rc;
+	}
 }

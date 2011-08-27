@@ -46,6 +46,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		assocWorkCycleManag = r.getAssocWorkCycleManager();
 		assocKeyGenerator = assocWorkCycleManag.getKeyGenerator();
 		broadcastConnections = r.getBroadcastConnections();
+		reservationRoundOffset = r.getReservationRoundOffset();
 		expectedConnections = r.getExpectedConnections();
 		expectedRounds = r.getExpectedRounds() < 1 ? -1 : r
 				.getExpectedRounds();
@@ -76,7 +77,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 	}
 
 	public synchronized void addedMessageArrived(ManagementMessageAdded m) {
-		if (relativeRound == m.getRoundNumber()
+		if (getEffectiveRelativeRound() == m.getRoundNumber()
 				&& !Arrays.equals(m.getPayload(), payloadSend)) {
 			log.error("Expected and actual received payloads are not equal! Something is messing around with us!");
 			successful = false;
@@ -112,7 +113,7 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 
 	protected void broadcastSum() {
 		ManagementMessageAdded m = new ManagementMessageAdded(workcycleNumber,
-				currentRound, payloadSend);
+				getEffectiveCurrentRound(), payloadSend);
 
 		if (assocWorkCycle.getCurrentPhase() == WorkCycle.WC_RESERVATION)
 			assocWorkCycle.checkWhetherReservationIsFinishedOnServerSide(m);
@@ -152,6 +153,18 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 		}
 	}
 
+	private int getEffectiveCurrentRound(){
+		return currentRound + reservationRoundOffset;
+	}
+	
+	private int getEffectiveExpectedRounds(){
+		return expectedRounds + reservationRoundOffset;
+	}
+	
+	private int getEffectiveRelativeRound(){
+		return relativeRound + reservationRoundOffset;
+	}
+	
 	/**
 	 * Returns a work cycle with a desired work cycle number. If the work cycle does not exsist
 	 * yet in the database, it will be created.
@@ -233,11 +246,11 @@ public class WorkCycleSending extends WorkCycle implements Observer, Runnable {
 			
 			if (currentRound == relativeRound) {
 				byte[] p = Util.mergeDCwise(payloadSend,
-						assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, currentRound), MODULUS);
-				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
+						assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, getEffectiveCurrentRound()), MODULUS);
+				m = new ManagementMessageAdd(workcycleNumber, getEffectiveCurrentRound(), p);
 			} else {
-				byte[] p = assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, currentRound);
-				m = new ManagementMessageAdd(workcycleNumber, currentRound, p);
+				byte[] p = assocKeyGenerator.calcKeys(currentMessageLength, workcycleNumber, getEffectiveCurrentRound());
+				m = new ManagementMessageAdd(workcycleNumber, getEffectiveCurrentRound(), p);
 			}
 
 			try {
